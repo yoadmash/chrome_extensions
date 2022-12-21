@@ -1,0 +1,8 @@
+input {
+    font-weight: bold !important;
+}
+
+input::placeholder {
+    font-weight: bold !important;
+    color: rgb(215, 0, 0) !important;
+}

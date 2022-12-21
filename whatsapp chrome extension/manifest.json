@@ -1,0 +1,29 @@
+{
+    "manifest_version": 3,
+    "name": "WhatsApp - Message like it should!",
+    "version": "1.0",
+    "description": "Start a chat with someone who is not in your contacts list!",
+    "icons": {
+        "16": "imgs/whatsapp16.png",
+        "32": "imgs/whatsapp32.png",
+        "48": "imgs/whatsapp48.png",
+        "128": "imgs/whatsapp128.png"
+    },
+    "action": {
+        "default_popup": "popup.html"
+    },
+    "content_scripts": [
+        {
+            "matches": ["*://api.whatsapp.com/send/*"],
+            "js": ["launchWhatsApp.js"]
+        }
+    ],
+    "background": {
+        "service_worker": "background.js"
+    },
+    "permissions": [
+        "contentSettings",
+        "scripting"
+    ],
+    "host_permissions": ["<all_urls>"]
+}
