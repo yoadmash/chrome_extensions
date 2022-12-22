@@ -6,10 +6,9 @@ window.onload = () => {
         if (input.value.length === 10 && !isNaN(input.value)) {
             const formated = input.value.slice(1, input.value.length);
             const url = `https://api.whatsapp.com/send/?phone=972${formated}&text&type=phone_number&app_absent=1`;
-            // chrome.tabs.create({
-            //     url: url
-            // });
-            sendMessage();
+            chrome.tabs.create({
+                url: url
+            });
         }
         else {
             input.value = '';
@@ -19,15 +18,7 @@ window.onload = () => {
             },1000);
         }
     }
-
-    async function sendMessage() {
-        const tabs = async () => {
-            return await chrome.tabs.query({url: "*://web.whatsapp.com/*"});
-        }
-        const tab = await tabs().then((res) => res[0]);
-        chrome.tabs.sendMessage(tab.id, {color: 'red'});
-    }
-
+    
     btn.addEventListener('click', openChat);
     input.addEventListener('keydown', (event) => {
         if (event.key === 'Enter') {
