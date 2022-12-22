@@ -4,7 +4,7 @@
         click on button get by class _3GlyB dwbWf
         check number to match +972 50-989-4366 by getting by class erpdyial i0jNr selectable-text copyable-text
         if no match return error
-        else reporn the tab with the number provided by input.value
+        else reopen the tab with the number provided by input.value
 */
 
 // const body = document.body;
@@ -16,13 +16,9 @@
 //         if(body.contains(phoneNumber) && phoneNumber.innerHTML.includes('+972 50-989-4366')) {
             
 //         } else {
-//             console.log('error: not a bussiness account')
+//             console.log('error: not a business account')
 //         }
 //     } else {
 //         console.log('error: missing whatsapp web connection');
 //     }
 // }, 3000);
-
-chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
-    console.log(message);
-});
