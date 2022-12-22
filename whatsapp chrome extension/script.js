@@ -7,8 +7,7 @@ window.onload = () => {
             const formatted = input.value.slice(1, input.value.length);
             const url = `https://api.whatsapp.com/send/?phone=972${formatted}&text&type=phone_number&app_absent=1`;
             chrome.tabs.create({
-                url: url,
-                active: false
+                url: url
             });
         }
         else {

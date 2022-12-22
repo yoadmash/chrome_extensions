@@ -16,10 +16,6 @@
         {
             "matches": ["*://api.whatsapp.com/send/*"],
             "js": ["launchWhatsApp.js"]
-        },
-        {
-            "matches": ["*://web.whatsapp.com/*"],
-            "js": ["checkConnection.js"]
         }
     ],
     "background": {
