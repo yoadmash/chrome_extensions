@@ -18,7 +18,7 @@ window.onload = () => {
             },1000);
         }
     }
-    
+
     btn.addEventListener('click', openChat);
     input.addEventListener('keydown', (event) => {
         if (event.key === 'Enter') {
