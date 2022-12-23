@@ -16,8 +16,6 @@ setTimeout(() => {
                 const formatted = number.slice(1, number.length);
                 const url = `https://api.whatsapp.com/send/?phone=972${formatted}&text&type=phone_number&app_absent=1`;
                 window.open(url, "_self");
-            } else {
-                alert('Error: wrong number format!');
             }
         })
 

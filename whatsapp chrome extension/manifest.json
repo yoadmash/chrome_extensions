@@ -19,7 +19,7 @@
         },
         {
             "matches": ["*://web.whatsapp.com/*"],
-            "js": ["checkConnection.js"]
+            "js": ["whatsAppInjection.js"]
         }
     ],
     "background": {
