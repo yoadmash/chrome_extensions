@@ -1,5 +1,3 @@
-import './bootstrap/bootstrap.min.css';
-
 setTimeout(() => {
     const body = document.body;
     const qrCode = document.getElementsByClassName("_2UwZ_")[0];
