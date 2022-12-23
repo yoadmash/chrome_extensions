@@ -6,7 +6,7 @@ setTimeout(() => {
 
         const inputButton = document.createElement('div');
         inputButton.innerHTML = '📱';
-        inputButton.style.fontSize = '24px';
+        inputButton.style.fontSize = '20px';
         inputButton.style.cursor = 'pointer';
         inputButton.title = 'New chat by phone number';
 
