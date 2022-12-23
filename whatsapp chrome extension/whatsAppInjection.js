@@ -1,12 +1,3 @@
-/* check qr code appearance by class _2UwZ_
-    if it doesn't exists return error to input.
-    else
-        click on button get by class _3GlyB dwbWf
-        check number to match +972 50-989-4366 by getting by class erpdyial i0jNr selectable-text copyable-text
-        if no match return error
-        else reopen the tab with the number provided by input.value
-*/
-
 setTimeout(() => {
     const body = document.body;
     const qrCode = document.getElementsByClassName("_2UwZ_")[0];
