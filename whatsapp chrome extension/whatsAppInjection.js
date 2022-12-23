@@ -11,7 +11,7 @@ setTimeout(() => {
         inputButton.title = 'New chat by phone number';
 
         inputButton.addEventListener("click", () => {
-            let number = prompt("Required format: 0521234567");
+            let number = prompt("Please type in the phone number, required format: 0521234567");
             if (number !== null && number.length === 10 && !isNaN(number)) {
                 const formatted = number.slice(1, number.length);
                 const url = `https://api.whatsapp.com/send/?phone=972${formatted}&text&type=phone_number&app_absent=1`;

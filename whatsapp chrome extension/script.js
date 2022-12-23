@@ -17,8 +17,7 @@ function openChat() {
         const formatted = input.value.slice(1, input.value.length);
         const url = `https://api.whatsapp.com/send/?phone=972${formatted}&text&type=phone_number&app_absent=1`;
         chrome.tabs.create({
-            url: url,
-            active: false
+            url: url
         });
     }
     else {
@@ -27,5 +26,20 @@ function openChat() {
         setTimeout(() => {
             input.placeholder = 'Required format: 0521234567';
         }, 1000);
+    }
+}
+
+window.onload = async () => {
+    let arr = [];
+    await chrome.storage.local.get(['whatsapp_extension']).then((result) => {
+        if (result.whatsapp_extension) {
+            arr = [...result.whatsapp_extension];
+        }
+    });
+
+    if(arr.length > 0) {
+        list.classList.remove('hidden');
+    } else {
+        list.classList.add('hidden');
     }
 }
