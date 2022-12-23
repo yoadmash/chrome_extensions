@@ -1,30 +1,31 @@
-window.onload = () => {
-    const input = document.querySelector('input');
-    const btn = document.querySelector('button');
+const body = document.body;
+const list = document.querySelector('.history');
+const input = document.querySelector('input');
+const btn = document.querySelector('button');
 
-    function openChat() {
-        if (input.value.length === 10 && !isNaN(input.value)) {
-            const formatted = input.value.slice(1, input.value.length);
-            const url = `https://api.whatsapp.com/send/?phone=972${formatted}&text&type=phone_number&app_absent=1`;
-            chrome.tabs.create({
-                url: url
-            });
-        }
-        else {
-            input.value = '';
-            input.placeholder = 'Error: wrong number format!';
-            setTimeout(() => {
-                input.placeholder = 'Required format: 0521234567';
-            }, 1000);
-        }
+input.focus();
+
+btn.addEventListener('click', openChat);
+input.addEventListener('keydown', (event) => {
+    if (event.key === 'Enter') {
+        openChat();
     }
+})
 
-    btn.addEventListener('click', openChat);
-    input.addEventListener('keydown', (event) => {
-        if (event.key === 'Enter') {
-            openChat();
-        }
-    })
-
-    input.focus();
+function openChat() {
+    if (input.value.length === 10 && !isNaN(input.value)) {
+        const formatted = input.value.slice(1, input.value.length);
+        const url = `https://api.whatsapp.com/send/?phone=972${formatted}&text&type=phone_number&app_absent=1`;
+        chrome.tabs.create({
+            url: url,
+            active: false
+        });
+    }
+    else {
+        input.value = '';
+        input.placeholder = 'Error: wrong number format!';
+        setTimeout(() => {
+            input.placeholder = 'Required format: 0521234567';
+        }, 1000);
+    }
 }
