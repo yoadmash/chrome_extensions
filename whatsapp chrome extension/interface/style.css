@@ -1,7 +1,7 @@
 .form {
     width: 405px;
     height: max-content;
-    background-color: rgb(50, 50, 50);
+    background-color: #323232;
     padding: 5px;
 }
 
@@ -11,7 +11,7 @@ input {
 
 input::placeholder {
     font-weight: bold !important;
-    color: rgb(215, 0, 0) !important;
+    color: #d70000 !important;
 }
 
 .history {
