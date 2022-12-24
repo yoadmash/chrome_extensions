@@ -30,8 +30,8 @@ input::placeholder {
 
 .history::-webkit-scrollbar-thumb {
 	background: white;
+    border: 2px double #323232;
 	border-radius: 5px;
-	height: 50px;
 }
 
 .history::-webkit-scrollbar-thumb:hover {
@@ -56,6 +56,6 @@ input::placeholder {
     border-radius: 3px;
 }
 
-.item .delete, .number {
+.item > .delete, .number {
     cursor: pointer;
 }
