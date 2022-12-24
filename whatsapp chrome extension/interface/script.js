@@ -12,6 +12,7 @@ window.onload = async () => {
             arr = [...result.whatsapp_extension];
         }
     });
+    console.log(arr);
 
     //Setting the input element to focus by default.
     input.focus();
@@ -79,7 +80,7 @@ window.onload = async () => {
         deleteIcon.addEventListener('click', (event) => {
             let newArr = [];
             for(let i = 0; i < arr.length; i++) {
-                if(i != event.target.parentNode.id) {
+                if(i !== Number(event.target.parentNode.parentNode.id)) {
                     newArr.push(arr[i]);
                 }
             }
