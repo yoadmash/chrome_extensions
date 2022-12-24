@@ -1,11 +1,11 @@
-setTimeout(() => {
+setTimeout(() => {    
     const body = document.body;
     const qrCode = document.getElementsByClassName("_2UwZ_")[0];
     if (!body.contains(qrCode)) {
         const buttons = document.getElementsByClassName('_1QVfy _3UaCz')[0].getElementsByTagName('span')[0];
 
         const inputButton = document.createElement('div');
-        inputButton.innerHTML = '📱';
+        inputButton.innerHTML = `<img style='width: 20px; height: 20px;' src=${chrome.runtime.getURL('imgs/injectedIcon.svg')} alt='icon' />`;
         inputButton.style.fontSize = '20px';
         inputButton.style.cursor = 'pointer';
         inputButton.title = 'New chat by phone number';

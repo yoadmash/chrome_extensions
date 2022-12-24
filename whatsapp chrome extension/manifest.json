@@ -22,6 +22,10 @@
             "js": ["whatsAppInjection.js"]
         }
     ],
+    "web_accessible_resources": [{
+        "matches": ["*://web.whatsapp.com/*"],
+        "resources": ["imgs/injectedIcon.svg"]
+    }],
     "background": {
         "service_worker": "background.js"
     },
