@@ -4,30 +4,30 @@
     "version": "1.0",
     "description": "Start a chat with someone who is not in your contacts list!",
     "icons": {
-        "16": "imgs/whatsapp16.png",
-        "32": "imgs/whatsapp32.png",
-        "48": "imgs/whatsapp48.png",
-        "128": "imgs/whatsapp128.png"
+        "16": "icons/whatsapp16.png",
+        "32": "icons/whatsapp32.png",
+        "48": "icons/whatsapp48.png",
+        "128": "icons/whatsapp128.png"
     },
     "action": {
-        "default_popup": "popup.html"
+        "default_popup": "interface/popup.html"
     },
     "content_scripts": [
         {
             "matches": ["*://api.whatsapp.com/send/*"],
-            "js": ["launchWhatsApp.js"]
+            "js": ["content_scripts/launchWhatsApp.js"]
         },
         {
             "matches": ["*://web.whatsapp.com/*"],
-            "js": ["whatsAppInjection.js"]
+            "js": ["content_scripts/whatsAppInjection.js"]
         }
     ],
     "web_accessible_resources": [{
         "matches": ["*://web.whatsapp.com/*"],
-        "resources": ["imgs/injectedIcon.svg"]
+        "resources": ["icons/injectedIcon.svg"]
     }],
     "background": {
-        "service_worker": "background.js"
+        "service_worker": "service/background.js"
     },
     "permissions": [
         "contentSettings",

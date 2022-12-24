@@ -75,7 +75,7 @@ window.onload = async () => {
 
         const deleteIcon = document.createElement('span');
         deleteIcon.classList.add('delete');
-        deleteIcon.innerHTML = `<img style='width: 16px; height: 18px; margin-bottom: 4px; margin-right: 4px;' src=${chrome.runtime.getURL('imgs/deleteIcon.svg')} alt='icon' />`;
+        deleteIcon.innerHTML = `<img style='width: 16px; height: 18px; margin-bottom: 4px; margin-right: 4px;' src=${chrome.runtime.getURL('icons/deleteIcon.svg')} alt='icon' />`;
         deleteIcon.addEventListener('click', (event) => {
             let newArr = [];
             for(let i = 0; i < arr.length; i++) {
