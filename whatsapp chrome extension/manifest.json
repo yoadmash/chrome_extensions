@@ -31,8 +31,6 @@
     },
     "permissions": [
         "contentSettings",
-        "scripting",
         "storage"
-    ],
-    "host_permissions": ["<all_urls>"]
+    ]
 }
