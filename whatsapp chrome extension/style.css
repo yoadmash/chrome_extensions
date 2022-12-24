@@ -1,7 +1,8 @@
-body {
+.form {
     width: 405px;
     height: max-content;
     background-color: rgb(50, 50, 50);
+    padding: 5px;
 }
 
 input {
@@ -20,8 +21,41 @@ input::placeholder {
     color: white;
     font-weight: bold;
     text-indent: 5px;
+    overflow-y: auto;
+}
+
+.history::-webkit-scrollbar {
+	width: 10px;
+}
+
+.history::-webkit-scrollbar-thumb {
+	background: white;
+	border-radius: 5px;
+	height: 50px;
+}
+
+.history::-webkit-scrollbar-thumb:hover {
+	background: #198754;
 }
 
 .hidden {
     display: none;
+}
+
+.scrollable {
+    height: 139px;
+}
+
+.item {
+    display: flex;
+    justify-content: space-between;
+}
+
+.item:hover {
+    background-color: #198754;
+    border-radius: 3px;
+}
+
+.item .delete, .number {
+    cursor: pointer;
 }

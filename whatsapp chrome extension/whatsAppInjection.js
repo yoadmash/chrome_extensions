@@ -10,11 +10,16 @@ setTimeout(() => {
         inputButton.style.cursor = 'pointer';
         inputButton.title = 'New chat by phone number';
 
-        inputButton.addEventListener("click", () => {
+        inputButton.addEventListener("click", async () => {
             let number = prompt("Please type in the phone number, required format: 0521234567");
             if (number !== null && number.length === 10 && !isNaN(number)) {
                 const formatted = number.slice(1, number.length);
                 const url = `https://api.whatsapp.com/send/?phone=972${formatted}&text&type=phone_number&app_absent=1`;
+                await chrome.storage.local.get(['whatsapp_extension']).then((result) => {
+                    if(result.whatsapp_extension) {
+                        chrome.storage.local.set({whatsapp_extension: [number, ...result.whatsapp_extension]});
+                    }
+                })
                 window.open(url, "_self");
             }
         })
@@ -23,4 +28,4 @@ setTimeout(() => {
     } else {
         alert('Attention: In order for this WhatsApp extension to work, please link your device and reload the page.');
     }
-}, 5000);
+}, 5500);
