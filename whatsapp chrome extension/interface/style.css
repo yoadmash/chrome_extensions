@@ -5,6 +5,11 @@
     padding: 5px;
 }
 
+.form-control:focus {
+    border: none;
+    box-shadow: none;
+}
+
 input {
     font-weight: bold !important;
 }
@@ -49,11 +54,17 @@ input::placeholder {
 .item {
     display: flex;
     justify-content: space-between;
+    align-items: center;
+    height: 25px;
 }
 
 .item:hover {
     background-color: #198754;
     border-radius: 3px;
+}
+
+.item > .delete {
+    margin-bottom: 5px; margin-right: 4px;
 }
 
 .item > .delete, .number {
