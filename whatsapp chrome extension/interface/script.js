@@ -51,6 +51,7 @@ async function render() {
             list.remove();
             list = document.createElement('div');
             list.classList.add('history');
+            list.classList.add('m-2');
             if (arr.length >= 5) {
                 list.classList.add('scrollable');
             }
