@@ -1,4 +1,4 @@
-setTimeout(() => {    
+setTimeout(async () => {
     const body = document.body;
     const qrCode = document.getElementsByClassName("_2UwZ_")[0];
     if (!body.contains(qrCode)) {
@@ -16,14 +16,14 @@ setTimeout(() => {
                 const formatted = number.slice(1, number.length);
                 const url = `https://api.whatsapp.com/send/?phone=972${formatted}&text&type=phone_number&app_absent=1`;
                 await chrome.storage.local.get(['whatsapp_extension']).then((result) => {
-                    if(result.whatsapp_extension) {
-                        chrome.storage.local.set({whatsapp_extension: [number, ...result.whatsapp_extension]});
+                    if (result.whatsapp_extension) {
+                        chrome.storage.local.set({ whatsapp_extension: [number, ...result.whatsapp_extension] });
                     }
                 })
                 window.open(url, "_self");
             }
         })
-        
+
         buttons.prepend(inputButton);
     } else {
         alert('Attention: In order for this WhatsApp extension to work, please link your device and reload the page.');

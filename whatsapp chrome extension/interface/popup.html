@@ -15,7 +15,36 @@
             <input class="form-control" type="text" placeholder="Required format: 0521234567">
             <button class="btn btn-success fw-bold">Message</button>
         </div>
+        <div class="contacts m-2 hidden"></div>
         <div class="history m-2 hidden"></div>
+    </div>
+    <div id="options" class="hidden">
+        <div class="options-form">
+            <div class="form-check form-switch">
+                <input class="form-check-input" type="checkbox" id="0">
+                <label class="form-check-label" for="0">WhatsApp Web - direct integration</label>
+            </div>
+            <div class="form-check form-switch">
+                <input class="form-check-input" type="checkbox" id="1">
+                <label class="form-check-label" for="1">History list</label>
+            </div>
+            <div class="form-check form-switch">
+                <input class="form-check-input" type="checkbox" id="2">
+                <label class="form-check-label" for="2">Contacts list</label>
+            </div>
+        </div>
+        <div class="row g-2">
+            <div class="col-3">
+                <button class="btn btn-outline-primary btn-sm fw-bold container">Toggle All</button>
+
+            </div>
+            <div class="col-3">
+                <button class="btn btn-outline-primary btn-sm fw-bold container">Reset</button>
+            </div>
+            <div class="col-6">
+                <button class="btn btn-outline-primary btn-sm fw-bold container">Back\Save</button>
+            </div>
+        </div>
     </div>
 </body>
 <script src="./script.js"></script>
