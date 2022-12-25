@@ -60,7 +60,7 @@ input::placeholder {
 }
 
 .center {
-    margin-left: 5px;
+    margin: 0px 5px;
 }
 
 .item:hover {
@@ -69,7 +69,8 @@ input::placeholder {
 }
 
 .item > .delete {
-    margin-bottom: 5px; margin-right: 4px;
+    margin-bottom: 5px;
+    margin-right: 4px;
 }
 
 .item > .delete, .number {
