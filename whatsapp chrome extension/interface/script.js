@@ -23,8 +23,10 @@ window.onload = async () => {
         }
     })
     input.addEventListener('input', (event) => {
-        let filtered = history.filter(el => el.includes(input.value));
-        renderHistoryList(filtered);
+        if (settings.b_history && history.length > 0) {
+            let filtered = history.filter(el => el.includes(input.value));
+            renderHistoryList(filtered);
+        }
     })
 
     btn[0].addEventListener('click', openChat);
@@ -56,14 +58,14 @@ function openChat() {
         chrome.tabs.create({
             url: url
         });
-        if(history.find(el => el === input.value) === undefined) {
+        if (history.find(el => el === input.value) === undefined) {
             history = [input.value, ...history];
         }
         chrome.storage.local.set({ whatsapp_extension: history });
-    // } else if (input.value === 'options') {
-    //     options.classList = 'options d-flex flex-column gap-2';
-    //     body.classList.add('hidden');
-    //     input.value = '';
+    } else if (input.value === 'options') {
+        options.classList = 'options d-flex flex-column gap-2';
+        body.classList.add('hidden');
+        input.value = '';
     } else {
         input.value = '';
         input.placeholder = 'Error: wrong number format!';
@@ -80,10 +82,10 @@ async function render() {
     // if (settings.c_contacts) {
     //     renderContactsList(contacts);
     // }
-    
-    // if (settings.b_history) {
-    //     renderHistoryList(history);
-    // }
+
+    if (settings.b_history) {
+        renderHistoryList(history);
+    }
 
     //Render options
     for (let i = 0; i < toggles.length; i++) {
@@ -96,7 +98,7 @@ function renderHistoryList(arr) {
         if (list) {
             list.remove();
             list = document.createElement('div');
-            list.classList.add('history');
+            list.classList.add('list');
             list.classList.add('m-2');
             if (arr.length >= 5) {
                 list.classList.add('scrollable');
@@ -116,7 +118,7 @@ function renderContactsList(arr) {
         if (list2) {
             list2.remove();
             list2 = document.createElement('div');
-            list2.classList.add('contacts');
+            list2.classList.add('list');
             list2.classList.add('m-2');
             if (arr.length >= 5) {
                 list2.classList.add('scrollable');
@@ -165,7 +167,7 @@ function createItem(data, id, type) {
     deleteIcon.classList.add('delete');
     deleteIcon.classList.add('hidden');
     deleteIcon.innerHTML = `<img style='width: 16px; height: 16px;' src=${chrome.runtime.getURL('icons/deleteIcon.svg')} alt='icon' />`;
-    if(type === 'history') {
+    if (type === 'history') {
         deleteIcon.addEventListener('click', (event) => {
             let newArr = [];
             for (let i = 0; i < history.length; i++) {
@@ -176,7 +178,7 @@ function createItem(data, id, type) {
             chrome.storage.local.set({ whatsapp_extension: newArr });
             render();
         })
-    } else if(type === 'contacts') {
+    } else if (type === 'contacts') {
         deleteIcon.addEventListener('click', (event) => {
             let newArr = [];
             for (let i = 0; i < contacts.length; i++) {
