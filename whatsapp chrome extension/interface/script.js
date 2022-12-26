@@ -1,8 +1,8 @@
 // DOM Variables.
 const body = document.querySelector('.form');
 const options = document.querySelector('#options');
-let list = document.querySelector('.history');
-let list2 = document.querySelector('.contacts');
+let list = document.querySelector('#history');
+let list2 = document.querySelector('#contacts');
 const input = document.querySelector('input');
 const btn = document.querySelectorAll('button');
 
@@ -77,12 +77,13 @@ function openChat() {
 async function render() {
     await loadDB();
 
-    if (settings.c_contacts) {
-        renderContactsList(contacts);
-    }
-    if (settings.b_history) {
-        renderHistoryList(history);
-    }
+    // if (settings.c_contacts) {
+    //     renderContactsList(contacts);
+    // }
+    
+    // if (settings.b_history) {
+    //     renderHistoryList(history);
+    // }
 
     //Render options
     for (let i = 0; i < toggles.length; i++) {
