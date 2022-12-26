@@ -22,6 +22,10 @@ window.onload = async () => {
             openChat();
         }
     })
+    input.addEventListener('input', (event) => {
+        let filtered = history.filter(el => el.includes(input.value));
+        renderHistoryList(filtered);
+    })
 
     btn[0].addEventListener('click', openChat);
     btn[1].addEventListener('click', () => {
@@ -52,7 +56,9 @@ function openChat() {
         chrome.tabs.create({
             url: url
         });
-        history = [input.value, ...history];
+        if(history.find(el => el === input.value) === undefined) {
+            history = [input.value, ...history];
+        }
         chrome.storage.local.set({ whatsapp_extension: history });
     } else if (input.value === 'options') {
         options.classList = 'options d-flex flex-column gap-2';
@@ -72,10 +78,10 @@ async function render() {
     await loadDB();
 
     if (settings.c_contacts) {
-        renderContactsList();
+        renderContactsList(contacts);
     }
     if (settings.b_history) {
-        renderHistoryList();
+        renderHistoryList(history);
     }
 
     //Render options
@@ -84,42 +90,42 @@ async function render() {
     }
 }
 
-function renderHistoryList() {
-    if (history.length > 0) {
+function renderHistoryList(arr) {
+    if (arr.length > 0) {
         if (list) {
             list.remove();
             list = document.createElement('div');
             list.classList.add('history');
             list.classList.add('m-2');
-            if (history.length >= 5) {
+            if (arr.length >= 5) {
                 list.classList.add('scrollable');
             }
-            history.map((item, i) => {
+            arr.map((item, i) => {
                 list.appendChild(createItem(item, i, 'history'));
             })
             body.appendChild(list);
         }
-    } else if (history.length === 0) {
+    } else if (arr.length === 0) {
         list.remove();
     }
 }
 
-function renderContactsList() {
-    if (contacts.length > 0) {
+function renderContactsList(arr) {
+    if (arr.length > 0) {
         if (list2) {
             list2.remove();
             list2 = document.createElement('div');
             list2.classList.add('contacts');
             list2.classList.add('m-2');
-            if (contacts.length >= 5) {
+            if (arr.length >= 5) {
                 list2.classList.add('scrollable');
             }
-            contacts.map((item, i) => {
+            arr.map((item, i) => {
                 list2.appendChild(createItem(item, i, 'contacts'));
             })
             body.appendChild(list2);
         }
-    } else if (contacts.length === 0) {
+    } else if (arr.length === 0) {
         list2.remove();
     }
 }
