@@ -15,14 +15,20 @@
             <input class="form-control" type="text" placeholder="Required format: 0521234567">
             <button class="btn btn-success fw-bold">Message</button>
         </div>
-        <div id="contacts" class="list m-2 hidden"></div>
-        <div id="history" class="list m-2 hidden"></div>
+        <fieldset id="history" class="list m-2 hidden">
+            <legend>History&nbsp;</legend>
+            <div id="historyContent"></div>
+        </fieldset>
+        <fieldset id="contacts" class="list m-2 hidden">
+            <legend>Contacts&nbsp;</legend>
+            <div id="contactsContent"></div>
+        </fieldset>
     </div>
     <div id="options" class="hidden">
         <div class="options-form">
             <div class="form-check form-switch">
                 <input class="form-check-input" type="checkbox" id="0">
-                <label class="form-check-label" for="0">WhatsApp Web - direct integration</label>
+                <label class="form-check-label" for="0">WhatsApp Web UI</label>
             </div>
             <div class="form-check form-switch">
                 <input class="form-check-input" type="checkbox" id="1">

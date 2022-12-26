@@ -1,17 +1,18 @@
 // DOM Variables.
 const body = document.querySelector('.form');
 const options = document.querySelector('#options');
-let list = document.querySelector('#history');
-let list2 = document.querySelector('#contacts');
+// let list = document.querySelector('#history');
+// let list2 = document.querySelector('#contacts');
 const input = document.querySelector('input');
 const btn = document.querySelectorAll('button');
 
 const toggles = document.querySelectorAll('.form-check-input');
 
-// Accessing extension storage and declaring global arr variable.
+// Accessing extension storage and declaring global arrays & variable.
 let history = [];
 let contacts = [];
 let settings = {};
+let latestVersion = false;
 
 window.onload = async () => {
 
@@ -22,11 +23,12 @@ window.onload = async () => {
             openChat();
         }
     })
-    input.addEventListener('input', (event) => {
+    input.addEventListener('input', (event) => { // live history search
         if (settings.b_history && history.length > 0) {
             let filtered = history.filter(el => el.includes(input.value));
-            renderHistoryList(filtered);
+            renderList('historyContent', filtered);
         }
+        console.log(event);
     })
 
     btn[0].addEventListener('click', openChat);
@@ -58,11 +60,11 @@ function openChat() {
         chrome.tabs.create({
             url: url
         });
-        if (history.find(el => el === input.value) === undefined) {
+        if (history.find(el => el === input.value) === undefined) { // disabled value duplicity
             history = [input.value, ...history];
         }
         chrome.storage.local.set({ whatsapp_extension: history });
-    } else if (input.value === 'options') {
+    } else if (input.value === 'options' && latestVersion) {
         options.classList = 'options d-flex flex-column gap-2';
         body.classList.add('hidden');
         input.value = '';
@@ -79,12 +81,12 @@ function openChat() {
 async function render() {
     await loadDB();
 
-    // if (settings.c_contacts) {
-    //     renderContactsList(contacts);
-    // }
-
     if (settings.b_history) {
-        renderHistoryList(history);
+        renderList('historyContent', history);
+    }
+
+    if (settings.c_contacts) {
+        renderList('contactsContent', contacts);
     }
 
     //Render options
@@ -93,43 +95,23 @@ async function render() {
     }
 }
 
-function renderHistoryList(arr) {
-    if (arr.length > 0) {
-        if (list) {
-            list.remove();
-            list = document.createElement('div');
-            list.classList.add('list');
-            list.classList.add('m-2');
-            if (arr.length >= 5) {
-                list.classList.add('scrollable');
-            }
-            arr.map((item, i) => {
-                list.appendChild(createItem(item, i, 'history'));
-            })
-            body.appendChild(list);
-        }
-    } else if (arr.length === 0) {
+function renderList(list_id, list_arr) {
+    let list = document.getElementById(list_id);
+    const parent = list.parentElement;
+    if (list_arr.length > 0) {
+        parent.classList.remove('hidden');
         list.remove();
-    }
-}
-
-function renderContactsList(arr) {
-    if (arr.length > 0) {
-        if (list2) {
-            list2.remove();
-            list2 = document.createElement('div');
-            list2.classList.add('list');
-            list2.classList.add('m-2');
-            if (arr.length >= 5) {
-                list2.classList.add('scrollable');
-            }
-            arr.map((item, i) => {
-                list2.appendChild(createItem(item, i, 'contacts'));
-            })
-            body.appendChild(list2);
+        list = document.createElement('div');
+        list.setAttribute('id', list_id);
+        if (list_arr.length >= 5) {
+            list.classList.add('scrollable');
         }
-    } else if (arr.length === 0) {
-        list2.remove();
+        list_arr.map((item, i) => {
+            list.appendChild(createItem(item, i, parent.id));
+        })
+        parent.appendChild(list);
+    } else if (list_arr.length === 0) {
+        list.parentElement.classList.add('hidden');
     }
 }
 
@@ -143,6 +125,9 @@ async function loadDB() {
         }
         if (result.contacts) {
             contacts = [...result.contacts];
+        }
+        if (result.latestVersion) {
+            latestVersion = result.latestVersion;
         }
     });
 }

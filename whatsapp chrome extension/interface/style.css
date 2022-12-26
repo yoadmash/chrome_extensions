@@ -1,5 +1,10 @@
+body {
+    height: max-content;
+    width: max-content;
+}
+
 .form {
-    width: 375px;
+    width: inherit;
     height: max-content;
     background-color: #323232;
     padding: 5px;
@@ -29,31 +34,41 @@ input {
 }
 
 input::placeholder {
+    font-size: 14.5px;
     font-weight: bold !important;
     color: #d70000 !important;
 }
 
 .list {
     border: 2px solid #198754;
-    padding: 5px;
+    padding: 0;
     border-radius: 6px;
     color: white;
     font-weight: bold;
     text-indent: 5px;
+}
+
+legend {
+    text-align: center;
+}
+
+#contactsContent, #historyContent {
+    /* border: 2px solid red; */
+    padding: 5px;
     overflow-y: auto;
 }
 
-.list::-webkit-scrollbar {
+::-webkit-scrollbar {
 	width: 10px;
 }
 
-.list::-webkit-scrollbar-thumb {
+::-webkit-scrollbar-thumb {
 	background: white;
     border: 2px double #323232;
 	border-radius: 5px;
 }
 
-.list::-webkit-scrollbar-thumb:hover {
+::-webkit-scrollbar-thumb:hover {
 	background: #198754;
 }
 
