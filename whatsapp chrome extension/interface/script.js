@@ -60,10 +60,10 @@ function openChat() {
             history = [input.value, ...history];
         }
         chrome.storage.local.set({ whatsapp_extension: history });
-    } else if (input.value === 'options') {
-        options.classList = 'options d-flex flex-column gap-2';
-        body.classList.add('hidden');
-        input.value = '';
+    // } else if (input.value === 'options') {
+    //     options.classList = 'options d-flex flex-column gap-2';
+    //     body.classList.add('hidden');
+    //     input.value = '';
     } else {
         input.value = '';
         input.placeholder = 'Error: wrong number format!';
