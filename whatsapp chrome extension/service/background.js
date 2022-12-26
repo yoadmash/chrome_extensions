@@ -5,7 +5,7 @@ chrome.contentSettings.javascript.set({
 
 chrome.runtime.onInstalled.addListener(() => {
     chrome.storage.local.set({
-        latestVersion: true,
+        latestVersion: false,
         whatsapp_extension: [],
         contacts: [],
         options: {a_integration: true, b_history: true, c_contacts: false}
