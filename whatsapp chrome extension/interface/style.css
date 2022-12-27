@@ -1,10 +1,10 @@
 body {
-    height: max-content;
-    width: max-content;
+    display: flex;
+    justify-content: center;
 }
 
 .form {
-    width: inherit;
+    width: 375px;
     height: max-content;
     background-color: #323232;
     padding: 5px;
