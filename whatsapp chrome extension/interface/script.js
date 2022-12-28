@@ -1,8 +1,7 @@
 // DOM Variables.
 const body = document.querySelector('.form');
 const options = document.querySelector('#options');
-// let list = document.querySelector('#history');
-// let list2 = document.querySelector('#contacts');
+const contactsForm = document.querySelector('#contacts');
 const input = document.querySelector('input');
 const btn = document.querySelectorAll('button');
 
@@ -17,36 +16,41 @@ let latestVersion = false;
 window.onload = async () => {
 
     //Setting the input element to focus by default.
-    input.focus();
     input.addEventListener('keydown', (event) => {
         if (event.key === 'Enter') {
             openChat();
         }
     })
     input.addEventListener('input', (event) => { // live history search
-        if (settings.b_history && history.length > 0) {
-            let filtered = history.filter(el => el.includes(input.value));
-            renderList('historyContent', filtered);
+        if (input.value.length > 0) {
+            if (settings.b_history && history.length > 0) {
+                let filtered = history.filter(el => el.includes(input.value));
+                renderList('historyContent', filtered);
+            }
+            if (settings.c_contacts && contacts.length > 0) {
+                let filtered = contacts.filter(el => (el.name.includes(input.value) || el.number.includes(input.value)));
+                renderList('contactsContent', filtered);
+            }
+        } else {
+            render();
         }
-        if (settings.c_contacts && contacts.length > 0) {
-            let filtered = contacts.filter(el => (el.name.includes(input.value) || el.number.includes(input.value)));
-            renderList('contactsContent', filtered);
-        }
-        console.log(event);
     })
 
     btn[0].addEventListener('click', openChat);
     btn[1].addEventListener('click', () => {
+        console.log('clicked');
+    });
+    btn[2].addEventListener('click', () => {
         for (const toggle of toggles) {
             toggle.checked = true;
         }
     })
-    btn[2].addEventListener('click', () => {
+    btn[3].addEventListener('click', () => {
         for (const toggle of toggles) {
             toggle.checked = false;
         }
     })
-    btn[3].addEventListener('click', () => {
+    btn[4].addEventListener('click', () => {
         options.classList = 'hidden';
         body.classList.remove('hidden');
         saveOptions();
@@ -86,6 +90,9 @@ function openChat() {
 
 //Rendering the list according the arr variable.
 async function render() {
+    input.focus();
+    input.value = '';
+
     await loadDB();
 
     if (settings.b_history) {
@@ -93,7 +100,15 @@ async function render() {
     }
 
     if (settings.c_contacts) {
+        contactsForm.classList.remove('hidden');
+        contacts.sort((a, b) => {
+            a = a.name.toUpperCase();
+            b = b.name.toUpperCase();
+            return (a < b) ? -1 : (a > b) ? 1 : 0;
+        });
         renderList('contactsContent', contacts);
+    } else {
+        contactsForm.classList.add('hidden');
     }
 
     //Render options
@@ -118,9 +133,9 @@ function renderList(list_id, list_arr) {
         })
         parent.appendChild(list);
     } else if (list_arr.length === 0) {
-        if(list_id === 'historyContent') {
+        if (list_id === 'historyContent') {
             list.parentElement.classList.add('hidden');
-        } else if(list_id === 'contactsContent') {
+        } else if (list_id === 'contactsContent') {
             list.classList.add('hidden')
         }
     }
@@ -184,7 +199,8 @@ function createItem(data, item_id, list_id) {
         const arr = (list_id === 'historyContent') ? [...history] : [...contacts];
         let newArr = [];
         for (let i = 0; i < arr.length; i++) {
-            if (i !== Number(event.target.parentNode.parentNode.id)) {
+            const content = (list_id === 'historyContent') ? arr[i] : arr[i].name;
+            if (content !== event.target.parentNode.parentNode.firstChild.firstChild.textContent) {
                 newArr.push(arr[i]);
             }
         }
