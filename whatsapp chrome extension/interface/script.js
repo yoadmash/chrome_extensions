@@ -28,6 +28,10 @@ window.onload = async () => {
             let filtered = history.filter(el => el.includes(input.value));
             renderList('historyContent', filtered);
         }
+        if (settings.c_contacts && contacts.length > 0) {
+            let filtered = contacts.filter(el => (el.name.includes(input.value) || el.number.includes(input.value)));
+            renderList('contactsContent', filtered);
+        }
         console.log(event);
     })
 
@@ -64,6 +68,9 @@ function openChat() {
             history = [input.value, ...history];
         }
         chrome.storage.local.set({ whatsapp_extension: history });
+    } else if (input.value === 'test_mode') {
+        latestVersion = !latestVersion;
+        input.value = '';
     } else if (input.value === 'options' && latestVersion) {
         options.classList = 'options d-flex flex-column gap-2';
         body.classList.add('hidden');
@@ -111,7 +118,11 @@ function renderList(list_id, list_arr) {
         })
         parent.appendChild(list);
     } else if (list_arr.length === 0) {
-        list.parentElement.classList.add('hidden');
+        if(list_id === 'historyContent') {
+            list.parentElement.classList.add('hidden');
+        } else if(list_id === 'contactsContent') {
+            list.classList.add('hidden')
+        }
     }
 }
 
@@ -136,7 +147,7 @@ function createItem(data, item_id, list_id) {
     const item = document.createElement('div');
     item.setAttribute('id', item_id);
     item.classList.add('item');
-    
+
     if (list_id === 'contactsContent') {
         item.style.height = '50px';
     }
@@ -158,7 +169,7 @@ function createItem(data, item_id, list_id) {
     }
 
     listItem.addEventListener('click', (event) => {
-        const formatted = event.target.innerText.slice(1, event.target.innerText.length);
+        const formatted = (list_id === 'historyContent') ? data.slice(1, data.length) : data.number.slice(1, data.number.length);
         const url = `https://api.whatsapp.com/send/?phone=972${formatted}&text&type=phone_number&app_absent=1`;
         chrome.tabs.create({
             url: url
@@ -170,13 +181,14 @@ function createItem(data, item_id, list_id) {
     deleteIcon.classList.add('hidden');
     deleteIcon.innerHTML = `<img style='width: 16px; height: 16px;' src=${chrome.runtime.getURL('icons/deleteIcon.svg')} alt='icon' />`;
     deleteIcon.addEventListener('click', (event) => {
+        const arr = (list_id === 'historyContent') ? [...history] : [...contacts];
         let newArr = [];
-        for (let i = 0; i < history.length; i++) {
+        for (let i = 0; i < arr.length; i++) {
             if (i !== Number(event.target.parentNode.parentNode.id)) {
-                newArr.push(history[i]);
+                newArr.push(arr[i]);
             }
         }
-        chrome.storage.local.set({ whatsapp_extension: newArr });
+        chrome.storage.local.set((list_id === 'historyContent') ? { whatsapp_extension: newArr } : { contacts: newArr });
         render();
     });
 

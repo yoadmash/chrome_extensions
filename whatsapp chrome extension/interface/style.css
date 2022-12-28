@@ -104,3 +104,7 @@ legend {
 .item > .delete, .listItem {
     cursor: pointer;
 }
+
+#add {
+    cursor: pointer;
+}
