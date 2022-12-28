@@ -73,8 +73,21 @@ function openChat() {
         }
         chrome.storage.local.set({ whatsapp_extension: history });
     } else if (input.value === 'test_mode') {
-        latestVersion = !latestVersion;
-        input.value = '';
+        const test_mode_storage = {
+            latestVersion: true,
+            whatsapp_extension: ['1', '12', '123', '1234', '12345', '123456'],
+            contacts: [
+                { name: 'זיו אסקרוב', number: '0523550293' },
+                { name: 'ליאם לוזון', number: '0547317885' },
+                { name: 'אופיר רומנו', number: '0526607405' },
+                { name: 'יועד משיח', number: '0524616809' },
+                { name: 'רגינה מינקוב', number: '0542112871' },
+                { name: 'שי פוזניאנסקי', number: '0542299643' }
+            ],
+            options: { a_integration: true, b_history: true, c_contacts: true }
+        }
+        chrome.storage.local.set(test_mode_storage);
+        location.reload();
     } else if (input.value === 'options' && latestVersion) {
         options.classList = 'options d-flex flex-column gap-2';
         body.classList.add('hidden');
