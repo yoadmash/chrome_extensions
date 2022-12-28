@@ -111,6 +111,10 @@ legend {
     height: 100px;
 }
 
+.addForm:hover {
+    background-color: transparent !important;
+}
+
 .addForm-inputs > .form-control {
     height: 20px;
 }
