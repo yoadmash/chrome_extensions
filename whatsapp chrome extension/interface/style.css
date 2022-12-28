@@ -64,7 +64,7 @@ legend {
 
 ::-webkit-scrollbar-thumb {
 	background: white;
-    border: 2px double #323232;
+    border: 2px solid #323232;
 	border-radius: 5px;
 }
 
