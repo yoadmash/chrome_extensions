@@ -9,8 +9,8 @@ chrome.runtime.onInstalled.addListener(() => {
         whatsapp_extension: [],
         contacts: [],
         options: {a_integration: true, b_history: true, c_contacts: false}
-        // whatsapp_extension: ['number','number','number','number','number','number','123','12','1'],
-        // contacts: ['contact','contact','contact','contact','contact','contact'],
+        // whatsapp_extension: ['1','12','123','1234','12345','123456'],
+        // contacts: [{name: 'test', number: '0521234567'},{name: 'test', number: '0521234567'},{name: 'test', number: '0521234567'},{name: 'test', number: '0521234567'},{name: 'test', number: '0521234567'},{name: 'test', number: '0521234567'},{name: 'test', number: '0521234567'}],
         // options: {a_integration: true, b_history: true, c_contacts: true}
     });
 })

@@ -101,6 +101,6 @@ legend {
     margin-right: 4px;
 }
 
-.item > .delete, .number {
+.item > .delete, .listItem {
     cursor: pointer;
 }

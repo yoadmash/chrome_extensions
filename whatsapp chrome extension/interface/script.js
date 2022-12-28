@@ -107,7 +107,7 @@ function renderList(list_id, list_arr) {
             list.classList.add('scrollable');
         }
         list_arr.map((item, i) => {
-            list.appendChild(createItem(item, i, parent.id));
+            list.appendChild(createItem(item, i, list_id));
         })
         parent.appendChild(list);
     } else if (list_arr.length === 0) {
@@ -132,15 +132,32 @@ async function loadDB() {
     });
 }
 
-function createItem(data, id, type) {
+function createItem(data, item_id, list_id) {
     const item = document.createElement('div');
-    item.setAttribute('id', id);
+    item.setAttribute('id', item_id);
     item.classList.add('item');
+    
+    if (list_id === 'contactsContent') {
+        item.style.height = '50px';
+    }
 
-    const number = document.createElement('span');
-    number.classList.add('number');
-    number.innerText = data;
-    number.addEventListener('click', (event) => {
+    const listItem = document.createElement('span');
+    listItem.classList.add('listItem');
+
+    if (list_id === 'historyContent') {
+        listItem.innerText = data;
+    }
+
+    if (list_id === 'contactsContent') {
+        listItem.classList += ' d-flex flex-column';
+        const name = document.createElement('span');
+        name.innerText = data.name;
+        const number = document.createElement('span');
+        number.innerText = data.number;
+        listItem.append(name, number);
+    }
+
+    listItem.addEventListener('click', (event) => {
         const formatted = event.target.innerText.slice(1, event.target.innerText.length);
         const url = `https://api.whatsapp.com/send/?phone=972${formatted}&text&type=phone_number&app_absent=1`;
         chrome.tabs.create({
@@ -152,40 +169,26 @@ function createItem(data, id, type) {
     deleteIcon.classList.add('delete');
     deleteIcon.classList.add('hidden');
     deleteIcon.innerHTML = `<img style='width: 16px; height: 16px;' src=${chrome.runtime.getURL('icons/deleteIcon.svg')} alt='icon' />`;
-    if (type === 'history') {
-        deleteIcon.addEventListener('click', (event) => {
-            let newArr = [];
-            for (let i = 0; i < history.length; i++) {
-                if (i !== Number(event.target.parentNode.parentNode.id)) {
-                    newArr.push(history[i]);
-                }
+    deleteIcon.addEventListener('click', (event) => {
+        let newArr = [];
+        for (let i = 0; i < history.length; i++) {
+            if (i !== Number(event.target.parentNode.parentNode.id)) {
+                newArr.push(history[i]);
             }
-            chrome.storage.local.set({ whatsapp_extension: newArr });
-            render();
-        })
-    } else if (type === 'contacts') {
-        deleteIcon.addEventListener('click', (event) => {
-            let newArr = [];
-            for (let i = 0; i < contacts.length; i++) {
-                if (i !== Number(event.target.parentNode.parentNode.id)) {
-                    newArr.push(contacts[i]);
-                }
-            }
-            chrome.storage.local.set({ contacts: newArr });
-            render();
-        })
-    }
+        }
+        chrome.storage.local.set({ whatsapp_extension: newArr });
+        render();
+    });
 
-    item.appendChild(number);
-    item.appendChild(deleteIcon);
+    item.append(listItem, deleteIcon);
 
     item.addEventListener('mouseenter', () => {
         deleteIcon.classList.remove('hidden');
-    })
+    });
 
     item.addEventListener('mouseleave', () => {
         deleteIcon.classList.add('hidden');
-    })
+    });
 
     if (history.length <= 5) {
         item.classList.add('center');
