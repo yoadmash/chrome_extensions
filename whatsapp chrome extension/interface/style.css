@@ -36,7 +36,7 @@ input {
 input::placeholder {
     font-size: 14.5px;
     font-weight: bold !important;
-    color: #d70000 !important;
+    color: #198754 !important;
 }
 
 .list {
@@ -107,8 +107,7 @@ legend {
 .addForm {
     display: flex;
     flex-wrap: wrap;
-    gap: 10px;
-    height: 100px;
+    height: 80px;
 }
 
 .addForm:hover {
@@ -128,5 +127,5 @@ legend {
 }
 
 #add {
-    margin-top: 10px;
+    margin-top: 0px;
 }
