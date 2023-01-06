@@ -1,13 +1,13 @@
-let setting = undefined;
+let settings = undefined;
 async function retrieveSettings() {
     await chrome.storage.local.get().then((res) => {
-        setting = res.options.a_integration;
+        settings = res.options;
     });
 }
 
 retrieveSettings();
 setTimeout(async () => {
-    if (setting) {
+    if (settings.a_integration) {
 
         const body = document.body;
         const qrCode = document.getElementsByClassName("_2UwZ_")[0];
@@ -26,7 +26,7 @@ setTimeout(async () => {
                     const formatted = number.slice(1, number.length);
                     const url = `https://api.whatsapp.com/send/?phone=972${formatted}&text&type=phone_number&app_absent=1`;
                     await chrome.storage.local.get(['whatsapp_extension']).then((result) => {
-                        if (result.whatsapp_extension) {
+                        if (result.whatsapp_extension && result.whatsapp_extension.find(el => el === number) === undefined && settings.b_history) {
                             chrome.storage.local.set({ whatsapp_extension: [number, ...result.whatsapp_extension] });
                         }
                     })
