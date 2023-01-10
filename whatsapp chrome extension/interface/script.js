@@ -79,7 +79,7 @@ window.onload = async () => {
 function openChat() {
     if (input.value.length === 10 && !isNaN(input.value)) {
         const formatted = input.value.slice(1, input.value.length);
-        const url = `https://api.whatsapp.com/send/?phone=972${formatted}&text&type=phone_number&app_absent=1`;
+        const url = `https://wa.me/972${formatted}`;
         chrome.tabs.create({
             url: url
         });

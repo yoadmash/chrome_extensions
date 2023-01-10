@@ -24,7 +24,7 @@ setTimeout(async () => {
                 let number = prompt("Please type in the phone number, required format: 0521234567");
                 if (number !== null && number.length === 10 && !isNaN(number)) {
                     const formatted = number.slice(1, number.length);
-                    const url = `https://api.whatsapp.com/send/?phone=972${formatted}&text&type=phone_number&app_absent=1`;
+                    const url = `https://wa.me/972${formatted}`;
                     await chrome.storage.local.get(['whatsapp_extension']).then((result) => {
                         if (result.whatsapp_extension && result.whatsapp_extension.find(el => el === number) === undefined && settings.b_history) {
                             chrome.storage.local.set({ whatsapp_extension: [number, ...result.whatsapp_extension] });
