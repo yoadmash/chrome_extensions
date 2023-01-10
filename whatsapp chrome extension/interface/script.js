@@ -249,3 +249,14 @@ function saveOptions() {
     chrome.storage.local.set({ options: settings });
     render();
 }
+
+async function setJavaScript() {
+    let status = false;
+    await chrome.storage.local.get().then((storage) => {
+        status = storage.options.d_block_js;
+    });
+    chrome.contentSettings.javascript.set({
+        primaryPattern: '*://api.whatsapp.com/*',
+        setting: (storage) ? "block": "allow"
+    });
+}
