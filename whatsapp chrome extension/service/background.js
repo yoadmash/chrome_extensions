@@ -8,6 +8,10 @@ chrome.runtime.onInstalled.addListener(() => {
     setJavaScript();
 })
 
+chrome.runtime.onStartup.addListener(() => {
+    setJavaScript();
+})
+
 async function setJavaScript() {
     let status = false;
     await chrome.storage.local.get().then((storage) => {

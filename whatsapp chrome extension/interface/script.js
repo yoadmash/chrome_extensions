@@ -67,9 +67,6 @@ window.onload = async () => {
     })
     btn[4].addEventListener('click', () => {
         saveOptions();
-        options.classList = 'hidden';
-        body.classList.remove('hidden');
-        location.reload();
     });
 
     await render();
@@ -241,22 +238,29 @@ function createItem(data, item_id, list_id) {
 }
 
 function saveOptions() {
+    const oldSettings = settings;
     const settingsArr = Object.entries(settings);
     for (let i = 0; i < settingsArr.length; i++) {
         settingsArr[i][1] = toggles[i].checked;
     }
     settings = Object.fromEntries(settingsArr);
     chrome.storage.local.set({ options: settings });
+    console.log(oldSettings.d_blockJS === settings.d_blockJS);
+    if(oldSettings.d_blockJS !== settings.d_blockJS) {
+        setJavaScript();
+    }
+    options.classList = 'hidden';
+    body.classList.remove('hidden');
     render();
 }
 
 async function setJavaScript() {
     let status = false;
     await chrome.storage.local.get().then((storage) => {
-        status = storage.options.d_block_js;
-    });
-    chrome.contentSettings.javascript.set({
-        primaryPattern: '*://api.whatsapp.com/*',
-        setting: (storage) ? "block": "allow"
+        status = storage.options.d_blockJS;
+        chrome.contentSettings.javascript.set({
+            primaryPattern: '*://api.whatsapp.com/*',
+            setting: (status) ? "block" : "allow"
+        });
     });
 }
