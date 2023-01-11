@@ -29,6 +29,10 @@ body {
     color: white;
 }
 
+.options-form input {
+    cursor: pointer;
+}
+
 input {
     font-weight: bold !important;
 }
