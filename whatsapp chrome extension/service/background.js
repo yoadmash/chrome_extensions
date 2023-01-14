@@ -1,8 +1,10 @@
+import testData from './testData.js';
+
 chrome.runtime.onInstalled.addListener(() => {
+    const dev = false;
     chrome.storage.local.set({
-        latestVersion: true,
-        whatsapp_extension: [],
-        contacts: [],
+        whatsapp_extension: (!dev) ? [] : testData.history,
+        contacts: (!dev) ? [] : testData.contacts,
         options: {a_integration: true, b_history: true, c_contacts: true, d_blockJS: true},
     });
     setJavaScript();

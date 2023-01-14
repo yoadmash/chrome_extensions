@@ -1,21 +1,18 @@
+import options_layout from './options.js'
+
 // DOM Variables.
 const body = document.querySelector('.form');
-const options = document.querySelector('#options');
 const contactsForm = document.querySelector('#contacts');
 const input = document.querySelector('input');
 const btn = document.querySelectorAll('button');
-
-const toggles = document.querySelectorAll('.form-check-input');
 
 // Accessing extension storage and declaring global arrays & variable.
 let history = [];
 let contacts = [];
 let settings = {};
-let latestVersion = false;
 
 window.onload = async () => {
 
-    //Setting the input element to focus by default.
     input.addEventListener('keydown', (event) => {
         if (event.key === 'Enter') {
             openChat();
@@ -25,14 +22,17 @@ window.onload = async () => {
         if (input.value.length > 0) {
             if (settings.b_history && history.length > 0) {
                 let filtered = history.filter(el => el.includes(input.value));
-                renderList('historyContent', filtered);
+                renderList('historyContent_filtered', filtered);
             }
             if (settings.c_contacts && contacts.length > 0) {
                 let filtered = contacts.filter(el => (el.name.includes(input.value) || el.number.includes(input.value)));
-                renderList('contactsContent', filtered);
+                renderList('contactsContent_filtered', filtered);
             }
         } else {
             render();
+        }
+        if (event.key === 'Enter') {
+            openChat();
         }
     })
 
@@ -55,19 +55,6 @@ window.onload = async () => {
             }
         }
     });
-    btn[2].addEventListener('click', () => {
-        for (const toggle of toggles) {
-            toggle.checked = true;
-        }
-    })
-    btn[3].addEventListener('click', () => {
-        for (const toggle of toggles) {
-            toggle.checked = false;
-        }
-    })
-    btn[4].addEventListener('click', () => {
-        saveOptions();
-    });
 
     await render();
 }
@@ -84,10 +71,8 @@ function openChat() {
             history = [input.value, ...history];
         }
         chrome.storage.local.set({ whatsapp_extension: history });
-    } else if (input.value === 'options' && latestVersion) {
-        options.classList = 'options d-flex flex-column gap-2';
-        body.classList.add('hidden');
-        input.value = '';
+    } else if (input.value === 'options') {
+        renderOptions();
     } else if (input.value === 'clear history' && settings.b_history) {
         chrome.storage.local.set({ whatsapp_extension: [] });
         render();
@@ -102,8 +87,8 @@ function openChat() {
 
 //Rendering the list according the arr variable.
 async function render() {
-    input.focus();
     input.value = '';
+    input.focus();
 
     await loadDB();
 
@@ -122,21 +107,17 @@ async function render() {
     } else {
         contactsForm.classList.add('hidden');
     }
-
-    //Render options
-    for (let i = 0; i < toggles.length; i++) {
-        toggles[i].checked = Object.values(settings)[i];
-    }
 }
 
 function renderList(list_id, list_arr) {
-    let list = document.getElementById(list_id);
+    const id = (list_id.includes('_filtered')) ? list_id.slice(0,list_id.indexOf('_')) : list_id;
+    let list = document.getElementById(id);
     const parent = list.parentElement;
     if (list_arr.length > 0) {
         parent.classList.remove('hidden');
         list.remove();
         list = document.createElement('div');
-        list.setAttribute('id', list_id);
+        list.setAttribute('id', id);
         if (list_arr.length >= 5) {
             list.classList.add('scrollable');
         }
@@ -145,9 +126,9 @@ function renderList(list_id, list_arr) {
         })
         parent.appendChild(list);
     } else if (list_arr.length === 0) {
-        if (list_id === 'historyContent') {
+        if (list_id.includes('history')) {
             list.parentElement.classList.add('hidden');
-        } else if (list_id === 'contactsContent') {
+        } else if (list_id.includes('contacts')) {
             list.classList.add('hidden')
         }
     }
@@ -164,9 +145,6 @@ async function loadDB() {
         if (result.contacts) {
             contacts = [...result.contacts];
         }
-        if (result.latestVersion) {
-            latestVersion = result.latestVersion;
-        }
     });
 }
 
@@ -175,18 +153,11 @@ function createItem(data, item_id, list_id) {
     item.setAttribute('id', item_id);
     item.classList.add('item');
 
-    if (list_id === 'contactsContent') {
-        item.style.height = '50px';
-    }
-
     const listItem = document.createElement('span');
     listItem.classList.add('listItem');
 
-    if (list_id === 'historyContent') {
-        listItem.innerText = data;
-    }
-
-    if (list_id === 'contactsContent') {
+    if (list_id.includes('contacts')) {
+        item.style.height = '50px';
         listItem.classList += ' d-flex flex-column';
         const name = document.createElement('span');
         name.innerText = data.name;
@@ -195,7 +166,11 @@ function createItem(data, item_id, list_id) {
         listItem.append(name, number);
     }
 
-    listItem.addEventListener('click', (event) => {
+    if (list_id.includes('history')) {
+        listItem.innerText = data;
+    }
+
+    listItem.addEventListener('click', () => {
         const formatted = (list_id === 'historyContent') ? data.slice(1, data.length) : data.number.slice(1, data.number.length);
         const url = `https://api.whatsapp.com/send/?phone=972${formatted}&text&type=phone_number&app_absent=1`;
         chrome.tabs.create({
@@ -208,15 +183,30 @@ function createItem(data, item_id, list_id) {
     deleteIcon.classList.add('hidden');
     deleteIcon.innerHTML = `<img style='width: 16px; height: 16px;' src=${chrome.runtime.getURL('icons/deleteIcon.svg')} alt='icon' />`;
     deleteIcon.addEventListener('click', (event) => {
-        const arr = (list_id === 'historyContent') ? [...history] : [...contacts];
-        let newArr = [];
-        for (let i = 0; i < arr.length; i++) {
-            const content = (list_id === 'historyContent') ? arr[i] : arr[i].name;
-            if (content !== event.target.parentNode.parentNode.firstChild.firstChild.textContent) {
-                newArr.push(arr[i]);
+        const arr = (list_id.includes('history')) ? [...history] : [...contacts];
+        console.log(arr);
+        if(list_id.includes('_filtered')) {
+            let newArr = [];
+            let found = false;
+            for (let i = 0; i < arr.length; i++) {
+                const item = (list_id.includes('history')) ? arr[i] : arr[i].name;
+                const itemContent = event.target.parentNode.parentNode.firstChild.firstChild.textContent;
+                if(!found) {
+                    if (item !== itemContent) {
+                        newArr.push(arr[i]);
+                    } else {
+                        found = true;
+                    }
+                } else {
+                    newArr.push(arr[i]);
+                }
             }
+            chrome.storage.local.set((list_id.includes('history')) ? { whatsapp_extension: newArr } : { contacts: newArr });
+        } else {
+            const id = event.target.parentNode.parentNode.id;
+            arr.splice(id, 1);
+            chrome.storage.local.set((list_id.includes('history')) ? { whatsapp_extension: arr } : { contacts: arr });
         }
-        chrome.storage.local.set((list_id === 'historyContent') ? { whatsapp_extension: newArr } : { contacts: newArr });
         render();
     });
 
@@ -237,7 +227,41 @@ function createItem(data, item_id, list_id) {
     return item;
 }
 
-function saveOptions() {
+function renderOptions() {
+    body.classList.add('hidden');
+
+    const converted_options_layout = new DOMParser().parseFromString(options_layout, "text/html");
+    document.body.append(converted_options_layout.body.firstChild);
+
+    const options = document.querySelector('#options');
+    options.classList = 'options d-flex flex-column gap-2';
+    input.value = '';
+
+    const toggles = document.querySelectorAll('.form-check-input');
+    for (let i = 0; i < toggles.length; i++) {
+        toggles[i].checked = Object.values(settings)[i];
+    }
+
+    const btn = document.querySelectorAll('button');
+    btn[2].addEventListener('click', () => {
+        for (const toggle of toggles) {
+            toggle.checked = true;
+        }
+    })
+    btn[3].addEventListener('click', () => {
+        for (const toggle of toggles) {
+            toggle.checked = false;
+        }
+    })
+    btn[4].addEventListener('click', () => {
+        saveOptions(toggles);
+        options.remove();
+        body.classList.remove('hidden');
+        render();
+    });
+}
+
+function saveOptions(toggles) {
     const oldSettings = settings;
     const settingsArr = Object.entries(settings);
     for (let i = 0; i < settingsArr.length; i++) {
@@ -246,12 +270,9 @@ function saveOptions() {
     settings = Object.fromEntries(settingsArr);
     chrome.storage.local.set({ options: settings });
     console.log(oldSettings.d_blockJS === settings.d_blockJS);
-    if(oldSettings.d_blockJS !== settings.d_blockJS) {
+    if (oldSettings.d_blockJS !== settings.d_blockJS) {
         setJavaScript();
     }
-    options.classList = 'hidden';
-    body.classList.remove('hidden');
-    render();
 }
 
 async function setJavaScript() {

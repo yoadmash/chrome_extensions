@@ -1,2 +1,2 @@
-const useWhatsAppWeb = document.getElementsByClassName('_9vcv _9vcx')[1];
+const useWhatsAppWeb = document.querySelector('#action-button');
 useWhatsAppWeb.click();

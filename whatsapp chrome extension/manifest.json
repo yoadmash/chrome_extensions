@@ -27,7 +27,8 @@
         "resources": ["icons/injectedIcon.svg"]
     }],
     "background": {
-        "service_worker": "service/background.js"
+        "service_worker": "service/background.js",
+        "type": "module"
     },
     "permissions": [
         "contentSettings",

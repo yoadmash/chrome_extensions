@@ -10,9 +10,9 @@ setTimeout(async () => {
     if (settings.a_integration) {
 
         const body = document.body;
-        const qrCode = document.getElementsByClassName("_2UwZ_")[0];
+        const qrCode = document.getElementsByTagName("canvas")[1];
         if (!body.contains(qrCode)) {
-            const buttons = document.getElementsByClassName('_1QVfy _3UaCz')[0].getElementsByTagName('span')[0];
+            const buttons = document.getElementsByTagName('span')[7];
 
             const inputButton = document.createElement('div');
             inputButton.innerHTML = `<img style='width: 20px; height: 20px;' src=${chrome.runtime.getURL('icons/injectedIcon.svg')} alt='icon' />`;
