@@ -20,15 +20,19 @@
             <legend>History&nbsp;</legend>
             <div id="historyContent"></div>
         </fieldset>
-        <fieldset id="contacts" class="list m-2 hidden">
+        <fieldset id="contacts" class="list m-2">
             <legend>Contacts&nbsp;</legend>
-            <div id="contactsForm" class="item addForm m-1">
-                <span id="add">Add Contact</span>
-                <div class="addForm-inputs m-1">
-                    <input class="form-control" type="text" placeholder="Name">
-                    <input class="form-control" type="text" placeholder="Number">
+            <div class="row h-100 mx-1 m-2">
+                <div class="col-9">
+                    <div class="addForm d-flex flex-column gap-1">
+                        <span id="add">Add Contact</span>
+                        <input class="form-control" type="text" placeholder="Name">
+                        <input class="form-control" type="text" placeholder="Number">
+                    </div>
                 </div>
-                <button class="btn btn-success fw-bold me-3">Add</button>
+                <div class="col-3 mt-4">
+                    <button class="btn btn-success fw-bold me-3">Add</button>
+                </div>
             </div>
             <div id="contactsContent"></div>
         </fieldset>

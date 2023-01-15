@@ -99,35 +99,17 @@ legend {
     border-radius: 3px;
 }
 
-.item > .delete {
+.item .delete {
     margin-bottom: 5px;
     margin-right: 4px;
 }
 
-.item > .delete, .listItem {
+.item .delete, .listItem {
     cursor: pointer;
 }
 
-.addForm {
-    display: flex;
-    flex-wrap: wrap;
-    height: 80px;
-}
-
-.addForm:hover {
-    background-color: transparent !important;
-}
-
-.addForm-inputs > .form-control {
+.addForm .form-control{
     height: 20px;
-}
-
-.addForm > .addForm-inputs {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-    justify-content: center;
-    gap: 5px;
 }
 
 #add {
