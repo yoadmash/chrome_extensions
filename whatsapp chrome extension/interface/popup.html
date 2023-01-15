@@ -22,16 +22,18 @@
         </fieldset>
         <fieldset id="contacts" class="list m-2">
             <legend>Contacts&nbsp;</legend>
-            <div class="row h-100 m-2">
-                <div class="col-9">
-                    <div class="addForm d-flex flex-column justify-content-center gap-1">
-                        <span id="add">Add Contact</span>
-                        <input class="form-control" type="text" placeholder="Name">
-                        <input class="form-control" type="text" placeholder="Number">
+            <div class="container">
+                <div class="row addForm">
+                    <div class="col-8">
+                        <div class="inputs d-flex flex-column justify-content-center gap-1">
+                            <span>Add Contact</span>
+                            <input class="form-control" type="text" placeholder="Name">
+                            <input class="form-control" type="text" placeholder="Number">
+                        </div>
                     </div>
-                </div>
-                <div class="col-3 d-flex align-items-center justify-content-center">
-                    <button class="btn btn-success fw-bold addBtn">Add</button>
+                    <div class="col-4 d-flex justify-content-center">
+                        <button class="btn btn-success fw-bold addBtn">Add</button>
+                    </div>
                 </div>
             </div>
             <div id="contactsContent"></div>
