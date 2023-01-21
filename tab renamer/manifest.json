@@ -1,0 +1,22 @@
+{
+    "manifest_version": 3,
+    "name": "Tab Renamer",
+    "version": "1.0",
+    "description": "Change the title of every tab as you please.",
+    "icons": {
+        "16": "icons/tab_renamer16.png",
+        "32": "icons/tab_renamer32.png",
+        "48": "icons/tab_renamer48.png",
+        "128": "icons/tab_renamer128.png"
+    },
+    "action": {
+        "default_popup": "interface/popup.html"
+    },
+    "permissions": [
+        "tabs",
+        "scripting"
+    ],
+    "host_permissions": [
+        "<all_urls>"
+    ]
+}

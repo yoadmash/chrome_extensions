@@ -1,0 +1,76 @@
+body {
+    width: max-content;
+    height: max-content;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    background-color: bisque;
+}
+
+::-webkit-scrollbar {
+	width: 15px;
+}
+
+::-webkit-scrollbar-thumb {
+	background: #323232;
+    border: 3px solid bisque;
+	border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+	background: crimson;
+}
+
+.currentTabs {
+    color: #323232;
+    width: 400px;
+    padding: 5px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: flex-start;
+    gap: 5px;
+}
+
+.currentTabs input {
+    width: 365px;
+    background-color: transparent;
+    margin: 2px;
+}
+
+.currentTabs input:focus {
+    outline: none;
+}
+
+.tab {
+    width: inherit;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid crimson;
+}
+
+.tab:hover, .activeTab:hover {
+    color: crimson;
+}
+
+.tab span {
+    width: 375px;
+    font-size: 14px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.tab img {
+    cursor: pointer;
+}
+
+.activeTab {
+    color: green
+}
+
+.editIcon {
+    width: 12px;
+    height: 12px;
+}
