@@ -66,7 +66,6 @@ function setTitle(newTitle) {
 
 function scrollToActiveTab() {
     const activeTab = document.querySelector('.activeTab');
-    console.log(activeTab);
     activeTab.scrollIntoView({
         behavior: 'smooth',
         block: "center",
