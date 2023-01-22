@@ -1,4 +1,5 @@
 const currentTabsEl = document.querySelector('.currentTabs');
+const windowsListEl = document.querySelector('.windowsList');
 
 async function loadCurrentTabs() {
     let tabs = await chrome.tabs.query({
@@ -60,6 +61,17 @@ async function loadCurrentTabs() {
     })
 }
 
+async function loadWindows() {
+    const windows = await chrome.windows.getAll({
+        populate: true,
+        windowTypes: ['normal']
+    })
+    console.log(windows);
+    windows.forEach(window => {
+        
+    })
+}
+
 function setTitle(newTitle) {
     document.title = newTitle;
 }
@@ -73,6 +85,6 @@ function scrollToActiveTab() {
 }
 
 window.onload = async () => {
-    await loadCurrentTabs();
-    scrollToActiveTab();
+    await loadWindows();
+    // scrollToActiveTab();
 }
