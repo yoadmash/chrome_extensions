@@ -3,7 +3,7 @@ const currentTabsEl = document.querySelector('.currentTabs');
 async function loadCurrentTabs() {
     let tabs = await chrome.tabs.query({
         currentWindow: true
-    })
+    });
     tabs.forEach(el => {
         const tab = document.createElement('div');
         const tabTitle = document.createElement('span')
