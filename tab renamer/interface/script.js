@@ -1,17 +1,48 @@
 const windowsListEl = document.querySelector('.windowsList');
+async function loadWindows() {
+    const windows = await chrome.windows.getAll({
+        populate: true,
+        windowTypes: ['normal']
+    })
+    windows.forEach(async (window, i) => {
+        const windowEl = document.createElement('div');
+        const windowTitle = document.createElement('span');
 
-async function loadCurrentTabs(tabs) {
-    // let tabs = await chrome.tabs.query({
-    //     currentWindow: true
-    // });
+        if (i > 0) {
+            windowEl.style.marginTop = '15px';
+        }
+
+        windowEl.setAttribute('id', `window${i}`);
+        windowEl.classList.add('windowEl');
+
+        windowTitle.classList.add('windowTitle');
+        windowTitle.innerText = `[Window ${i + 1} | ${window.state}${(window.incognito) ? ' | incognito' : ''}]`;
+        if (window.focused) {
+            windowTitle.classList.add('activeWindow');
+        }
+        windowTitle.addEventListener('click', () => {
+            chrome.windows.update(window.id, {
+                focused: true
+            })
+        })
+
+        windowEl.append(windowTitle, loadCurrentTabs(window));
+        windowsListEl.append(windowEl);
+    })
+}
+
+function loadCurrentTabs(window) {
     const currentTabsEl = document.createElement('div');
-    tabs.forEach(async (el) => {
+    window.tabs.forEach((el) => {
         const tab = document.createElement('div');
         const tabTitle = document.createElement('span')
         const editIcon = document.createElement('img');
 
         tab.classList = 'tab';
         tabTitle.innerText = el.title;
+        if (el.active && window.focused) {
+            tabTitle.classList.add('activeTab');
+        }
         editIcon.classList.add('editIcon');
         editIcon.src = `${chrome.runtime.getURL('icons/edit.svg')}`;
         editIcon.alt = 'icon';
@@ -22,10 +53,6 @@ async function loadCurrentTabs(tabs) {
             tab.append(tabTitle);
         }
 
-        if (el.active) {
-            tabTitle.classList.add('activeTab');
-        }
-
         tabTitle.addEventListener('click', () => {
             if (!el.url.match('https://gx-corner.opera.com/')) {
                 chrome.windows.update(el.windowId, {
@@ -33,7 +60,6 @@ async function loadCurrentTabs(tabs) {
                 }, () => {
                     chrome.tabs.update(el.id, { active: true });
                 })
-                location.reload();
             }
         })
 
@@ -68,45 +94,12 @@ async function loadCurrentTabs(tabs) {
     return currentTabsEl;
 }
 
-async function loadWindows() {
-    const windows = await chrome.windows.getAll({
-        populate: true,
-        windowTypes: ['normal']
-    })
-    windows.forEach(async (window, i) => {
-        const windowEl = document.createElement('div');
-        const windowTitle = document.createElement('span');
-
-        if (window.focused) {
-            windowEl.classList.add('activeWindow');
-        }
-
-        if (i > 0) {
-            windowEl.style.marginTop = '15px';
-        }
-
-        windowEl.setAttribute('id', `window${i}`);
-        windowEl.classList.add('windowEl');
-
-        windowTitle.classList.add('windowTitle');
-        windowTitle.innerText = `[Window ${i + 1} | ${window.state}${(window.incognito) ? ' | incognito' : ''}]`;
-        windowTitle.addEventListener('click', () => {
-            chrome.windows.update(window.id, {
-                focused: true
-            })
-        })
-
-        windowEl.append(windowTitle, await loadCurrentTabs(window.tabs));
-        windowsListEl.append(windowEl);
-    })
-}
-
 function setTitle(newTitle) {
     document.title = newTitle;
 }
 
 function scrollToActiveTab() {
-    const activeWindow = document.querySelector('.activeWindow');
+    const activeWindow = document.querySelector('.activeWindow').parentElement;
     const activeTab = activeWindow.querySelector('.activeTab');
     activeTab.scrollIntoView({
         behavior: 'smooth',
