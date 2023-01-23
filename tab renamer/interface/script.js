@@ -23,7 +23,7 @@ async function loadWindows() {
         windowTitle.addEventListener('click', () => {
             chrome.windows.update(window.id, {
                 focused: true
-            })
+            });
         })
 
         windowEl.append(windowTitle, loadCurrentTabs(window));
@@ -59,7 +59,7 @@ function loadCurrentTabs(window) {
                     focused: true
                 }, () => {
                     chrome.tabs.update(el.id, { active: true });
-                })
+                });
             }
         })
 
@@ -79,7 +79,7 @@ function loadCurrentTabs(window) {
                             target: { tabId: el.id },
                             args: [newEl.value],
                             func: setTitle,
-                        })
+                        });
                         tabTitle.innerHTML = newEl.value;
                         tab.replaceChild(tabTitle, newEl);
                     }
