@@ -30,6 +30,10 @@ body {
     font-weight: bold;
 }
 
+.windowTitle {
+    cursor: pointer;
+}
+
 .activeWindow {
     color: green;
 }
@@ -64,7 +68,7 @@ body {
     border-bottom: 1px solid crimson;
 }
 
-.tab:hover, .activeTab:hover {
+.windowTitle:hover, .tab:hover, .activeTab:hover {
     color: crimson;
 }
 

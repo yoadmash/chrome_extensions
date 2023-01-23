@@ -1,4 +1,3 @@
-// const currentTabsEl = document.querySelector('.currentTabs');
 const windowsListEl = document.querySelector('.windowsList');
 
 async function loadCurrentTabs(tabs) {
@@ -29,7 +28,12 @@ async function loadCurrentTabs(tabs) {
 
         tabTitle.addEventListener('click', () => {
             if (!el.url.match('https://gx-corner.opera.com/')) {
-                chrome.tabs.update(el.id, { active: true });
+                chrome.windows.update(el.windowId, {
+                    focused: true
+                }, () => {
+                    chrome.tabs.update(el.id, { active: true });
+                })
+                location.reload();
             }
         })
 
@@ -69,7 +73,6 @@ async function loadWindows() {
         populate: true,
         windowTypes: ['normal']
     })
-    console.log(windows);
     windows.forEach(async (window, i) => {
         const windowEl = document.createElement('div');
         const windowTitle = document.createElement('span');
@@ -82,9 +85,16 @@ async function loadWindows() {
             windowEl.style.marginTop = '15px';
         }
 
-        windowEl.classList.add('windowEl');
         windowEl.setAttribute('id', `window${i}`);
+        windowEl.classList.add('windowEl');
+
+        windowTitle.classList.add('windowTitle');
         windowTitle.innerText = `[Window ${i + 1} | ${window.state}${(window.incognito) ? ' | incognito' : ''}]`;
+        windowTitle.addEventListener('click', () => {
+            chrome.windows.update(window.id, {
+                focused: true
+            })
+        })
 
         windowEl.append(windowTitle, await loadCurrentTabs(window.tabs));
         windowsListEl.append(windowEl);
