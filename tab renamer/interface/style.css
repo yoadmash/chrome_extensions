@@ -1,5 +1,4 @@
 body {
-    width: max-content;
     height: max-content;
     display: flex;
     flex-direction: column;
@@ -23,11 +22,22 @@ body {
 }
 
 .windowsList {
+    width: 500px;
+}
+
+.windowEl {
+    font-size: 14px;
+    font-weight: bold;
+}
+
+.activeWindow {
+    color: green;
 }
 
 .currentTabs {
+    margin-left: 20px;
+    width: inherit;
     color: #323232;
-    width: 400px;
     padding: 5px;
     display: flex;
     flex-direction: column;
@@ -37,7 +47,7 @@ body {
 }
 
 .currentTabs input {
-    width: 365px;
+    width: 90%;
     background-color: transparent;
     margin: 2px;
 }
@@ -47,7 +57,7 @@ body {
 }
 
 .tab {
-    width: inherit;
+    width: 100%;
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -60,9 +70,6 @@ body {
 
 .tab span {
     overflow-wrap: break-word;
-    width: 375px;
-    font-size: 14px;
-    font-weight: bold;
     cursor: pointer;
 }
 

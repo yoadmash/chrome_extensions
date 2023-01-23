@@ -1,11 +1,12 @@
-const currentTabsEl = document.querySelector('.currentTabs');
+// const currentTabsEl = document.querySelector('.currentTabs');
 const windowsListEl = document.querySelector('.windowsList');
 
-async function loadCurrentTabs() {
-    let tabs = await chrome.tabs.query({
-        currentWindow: true
-    });
-    tabs.forEach(el => {
+async function loadCurrentTabs(tabs) {
+    // let tabs = await chrome.tabs.query({
+    //     currentWindow: true
+    // });
+    const currentTabsEl = document.createElement('div');
+    tabs.forEach(async (el) => {
         const tab = document.createElement('div');
         const tabTitle = document.createElement('span')
         const editIcon = document.createElement('img');
@@ -57,8 +58,10 @@ async function loadCurrentTabs() {
                 tab.replaceChild(tabTitle, newEl);
             }
         })
-        currentTabsEl.appendChild(tab);
+        currentTabsEl.classList.add('currentTabs');
+        currentTabsEl.append(tab);
     })
+    return currentTabsEl;
 }
 
 async function loadWindows() {
@@ -67,8 +70,24 @@ async function loadWindows() {
         windowTypes: ['normal']
     })
     console.log(windows);
-    windows.forEach(window => {
-        
+    windows.forEach(async (window, i) => {
+        const windowEl = document.createElement('div');
+        const windowTitle = document.createElement('span');
+
+        if (window.focused) {
+            windowEl.classList.add('activeWindow');
+        }
+
+        if (i > 0) {
+            windowEl.style.marginTop = '15px';
+        }
+
+        windowEl.classList.add('windowEl');
+        windowEl.setAttribute('id', `window${i}`);
+        windowTitle.innerText = `[Window ${i + 1} | ${window.state}${(window.incognito) ? ' | incognito' : ''}]`;
+
+        windowEl.append(windowTitle, await loadCurrentTabs(window.tabs));
+        windowsListEl.append(windowEl);
     })
 }
 
@@ -77,7 +96,8 @@ function setTitle(newTitle) {
 }
 
 function scrollToActiveTab() {
-    const activeTab = document.querySelector('.activeTab');
+    const activeWindow = document.querySelector('.activeWindow');
+    const activeTab = activeWindow.querySelector('.activeTab');
     activeTab.scrollIntoView({
         behavior: 'smooth',
         block: "center",
@@ -86,5 +106,5 @@ function scrollToActiveTab() {
 
 window.onload = async () => {
     await loadWindows();
-    // scrollToActiveTab();
+    scrollToActiveTab();
 }
