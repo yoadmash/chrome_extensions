@@ -1,4 +1,5 @@
 const windowsListEl = document.querySelector('.windowsList');
+
 async function loadWindows() {
     const windows = await chrome.windows.getAll({
         populate: true,
@@ -24,6 +25,7 @@ async function loadWindows() {
             chrome.windows.update(window.id, {
                 focused: true
             });
+            close();
         })
 
         windowEl.append(windowTitle, loadCurrentTabs(window));
@@ -55,10 +57,11 @@ function loadCurrentTabs(window) {
 
         tabTitle.addEventListener('click', () => {
             if (!el.url.match('https://gx-corner.opera.com/')) {
-                chrome.windows.update(el.windowId, {
+                chrome.windows.update(window.id, {
                     focused: true
                 }, () => {
                     chrome.tabs.update(el.id, { active: true });
+                    location.reload();
                 });
             }
         })
