@@ -111,7 +111,14 @@ function scrollToActiveTab() {
     })
 }
 
+function loadSettings() {
+    const settingsLine = document.createElement('div');
+    settingsLine.innerText = 'Test';
+    document.body.prepend(settingsLine);
+}
+
 window.onload = async () => {
+    // loadSettings();
     await loadWindows();
     scrollToActiveTab();
 }
