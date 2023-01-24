@@ -73,6 +73,7 @@ function loadCurrentTabs(window) {
                 newEl.value = tabTitle.innerText;
                 tab.replaceChild(newEl, tabTitle);
                 newEl.focus();
+                newEl.setSelectionRange(0, newEl.value.length);
                 newEl.addEventListener('keypress', (event) => {
                     if (event.key === 'Enter') {
                         chrome.scripting.executeScript({
