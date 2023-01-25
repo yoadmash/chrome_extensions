@@ -1,10 +1,11 @@
 const windowsListEl = document.querySelector('.windowsList');
 
 async function loadWindows() {
-    const windows = await chrome.windows.getAll({
+    let windows = await chrome.windows.getAll({
         populate: true,
         windowTypes: ['normal']
     })
+    windows = windows.filter(window => !window.incognito);
     windows.forEach(async (window, i) => {
         const windowEl = document.createElement('div');
         const windowTitle = document.createElement('span');
