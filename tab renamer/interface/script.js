@@ -5,7 +5,6 @@ async function loadWindows() {
         populate: true,
         windowTypes: ['normal']
     })
-    windows = windows.filter(window => !window.incognito);
     windows.forEach(async (window, i) => {
         const windowEl = document.createElement('div');
         const windowTitle = document.createElement('span');
