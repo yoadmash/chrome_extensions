@@ -12,8 +12,13 @@
     "action": {
         "default_popup": "interface/popup.html"
     },
+    "background": {
+        "service_worker": "service/background.js",
+        "type": "module"
+    },
     "permissions": [
         "tabs",
+        "storage",
         "scripting"
     ],
     "host_permissions": [

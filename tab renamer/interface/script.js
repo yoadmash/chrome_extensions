@@ -1,10 +1,10 @@
 const windowsListEl = document.querySelector('.windowsList');
 
 async function loadWindows() {
-    let windows = await chrome.windows.getAll({
+    const windows = await chrome.windows.getAll({
         populate: true,
         windowTypes: ['normal']
-    })
+    });
     windows.forEach(async (window, i) => {
         const windowEl = document.createElement('div');
         const windowTitle = document.createElement('span');
@@ -111,14 +111,7 @@ function scrollToActiveTab() {
     })
 }
 
-function loadSettings() {
-    const settingsLine = document.createElement('div');
-    settingsLine.innerText = 'Test';
-    document.body.prepend(settingsLine);
-}
-
 window.onload = async () => {
-    // loadSettings();
     await loadWindows();
     scrollToActiveTab();
 }
