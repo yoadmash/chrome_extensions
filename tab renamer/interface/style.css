@@ -1,5 +1,4 @@
 body {
-    width: max-content;
     height: max-content;
     display: flex;
     flex-direction: column;
@@ -22,9 +21,42 @@ body {
 	background: crimson;
 }
 
-.currentTabs {
+#root {
+    width: 500px;
+}
+
+.search {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 5px;
+}
+
+.searchInput {
+    width: 99%;
+}
+
+.list {
+    width: inherit;
+}
+
+.window, .searchEl {
+    font-size: 14px;
+    font-weight: bold;
+    cursor: default;
+}
+
+.title {
+    cursor: pointer;
+}
+
+.active {
+    color: green;
+}
+
+.currentTabs, .searchedTabs {
+    margin-left: 20px;
+    width: inherit;
     color: #323232;
-    width: 400px;
     padding: 5px;
     display: flex;
     flex-direction: column;
@@ -34,7 +66,7 @@ body {
 }
 
 .currentTabs input {
-    width: 365px;
+    width: 90%;
     background-color: transparent;
     margin: 2px;
 }
@@ -44,22 +76,20 @@ body {
 }
 
 .tab {
-    width: inherit;
+    width: 99%;
     display: flex;
     justify-content: space-between;
     align-items: center;
     border-bottom: 1px solid crimson;
 }
 
-.tab:hover, .activeTab:hover {
+.title:hover, .tab:hover, .active:hover {
     color: crimson;
 }
 
 .tab span {
+    width: 95%;
     overflow-wrap: break-word;
-    width: 375px;
-    font-size: 14px;
-    font-weight: bold;
     cursor: pointer;
 }
 
