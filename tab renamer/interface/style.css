@@ -21,24 +21,39 @@ body {
 	background: crimson;
 }
 
-.windowsList {
+#root {
     width: 500px;
 }
 
-.windowEl {
-    font-size: 14px;
-    font-weight: bold;
+.search {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 5px;
 }
 
-.windowTitle {
+.searchInput {
+    width: 99%;
+}
+
+.list {
+    width: inherit;
+}
+
+.window, .searchEl {
+    font-size: 14px;
+    font-weight: bold;
+    cursor: default;
+}
+
+.title {
     cursor: pointer;
 }
 
-.activeWindow {
+.active {
     color: green;
 }
 
-.currentTabs {
+.currentTabs, .searchedTabs {
     margin-left: 20px;
     width: inherit;
     color: #323232;
@@ -61,18 +76,19 @@ body {
 }
 
 .tab {
-    width: 100%;
+    width: 99%;
     display: flex;
     justify-content: space-between;
     align-items: center;
     border-bottom: 1px solid crimson;
 }
 
-.windowTitle:hover, .tab:hover, .activeTab:hover {
+.title:hover, .tab:hover, .active:hover {
     color: crimson;
 }
 
 .tab span {
+    width: 95%;
     overflow-wrap: break-word;
     cursor: pointer;
 }
