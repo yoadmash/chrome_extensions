@@ -77,6 +77,7 @@ function renderWindowTabs(window) {
                     chrome.tabs.update(el.id, { active: true });
                     location.reload();
                 });
+                close();
             }
         });
 
