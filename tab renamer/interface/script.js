@@ -84,7 +84,6 @@ function renderWindowTabs(window) {
         editIcon.addEventListener('click', () => {
             const editMode = (tab.firstElementChild.nodeName.toLocaleLowerCase() === 'span');
             let newEl = tab.firstElementChild;
-            console.log(editMode);
             if (editMode) {
                 newEl = document.createElement('input');
                 newEl.type = 'text';
@@ -94,6 +93,7 @@ function renderWindowTabs(window) {
                 newEl.setSelectionRange(0, newEl.value.length);
                 newEl.addEventListener('keypress', (event) => {
                     if (event.key === 'Enter') {
+                        console.log('changed title');
                         chrome.scripting.executeScript({
                             target: { tabId: el.id },
                             args: [newEl.value],
