@@ -13,12 +13,13 @@ function defaultTitle() {
 }
 
 chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
-    if (changeInfo.status === 'complete') {
+    if (changeInfo.url) {
         if (tab.url.match('https://crm.corecrm.co/companies/*') && tab.title === 'Pay Plus Admin') {
             chrome.scripting.executeScript({
                 target: { tabId: tab.id },
                 func: setTitle,
             });
+            console.log('test');
         }
     }
 });
