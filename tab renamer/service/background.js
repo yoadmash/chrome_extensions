@@ -19,13 +19,6 @@ chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
                 target: { tabId: tab.id },
                 func: setTitle,
             });
-        } else if(!tab.url.match('https://crm.corecrm.co/companies/*')) {
-            if(tab.title !== 'Pay Plus Admin') {
-                chrome.scripting.executeScript({
-                    target: { tabId: tab.id },
-                    func: defaultTitle,
-                });
-            }
         }
     }
 });
