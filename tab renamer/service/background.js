@@ -1,20 +1,31 @@
-// function setTitle() {
-//     const checkField = setInterval(() => {
-//         let input = Array.from(document.querySelectorAll('input')).find(element => element.placeholder === 'שם העסק');
-//         if (input) {
-//             document.title = input.value;
-//             clearInterval(checkField);
-//         }
-//     }, 250);
-// }
+function setTitle() {
+    const checkField = setInterval(() => {
+        let input = Array.from(document.querySelectorAll('input')).find(element => element.placeholder === 'שם העסק');
+        if (input && input.value.length > 0) {
+            document.title = input.value;
+            clearInterval(checkField);
+        }
+    }, 250);
+}
 
-// chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
-//     if (changeInfo.status) {
-//         if (tab.url.match('#### CHANGE ME ####') && tab.status.toLocaleLowerCase() === 'complete') {
-//             chrome.scripting.executeScript({
-//                 target: { tabId: tab.id },
-//                 func: setTitle,
-//             });
-//         }
-//     }
-// });
+function defaultTitle() {
+    document.title = 'Pay Plus Admin';
+}
+
+chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
+    if (changeInfo.status === 'complete') {
+        if (tab.url.match('https://crm.corecrm.co/companies/*') && tab.title === 'Pay Plus Admin') {
+            chrome.scripting.executeScript({
+                target: { tabId: tab.id },
+                func: setTitle,
+            });
+        } else if(!tab.url.match('https://crm.corecrm.co/companies/*')) {
+            if(tab.title !== 'Pay Plus Admin') {
+                chrome.scripting.executeScript({
+                    target: { tabId: tab.id },
+                    func: defaultTitle,
+                });
+            }
+        }
+    }
+});
