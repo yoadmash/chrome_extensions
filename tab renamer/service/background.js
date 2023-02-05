@@ -15,16 +15,18 @@ function setTitle() {
         } else {
             document.title = 'Pay Plus Admin';
         }
-    } else {
+    } else if(document.URL.match('https://crm.corecrm.co/*')) {
         document.title = 'Pay Plus Admin';
     }
 }
 
 chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
     if (changeInfo.url) {
-        chrome.scripting.executeScript({
-            target: { tabId: tab.id },
-            func: setTitle,
-        });
+        if(!tab.url.match('https://gx-corner.opera.com/') && !tab.url.match('chrome://*/')) {
+            chrome.scripting.executeScript({
+                target: { tabId: tab.id },
+                func: setTitle,
+            });
+        }
     }
 });
