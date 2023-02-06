@@ -129,7 +129,7 @@ function search(windows) {
     searchInput.type = 'text';
     searchInput.placeholder = 'search tabs';
     searchInput.addEventListener('input', async () => {
-        const filteredWindows = windows.filter(window => window.tabs.find(tab => tab.title.toLocaleLowerCase().startsWith(searchInput.value.toLocaleLowerCase())));
+        const filteredWindows = windows.filter(window => window.tabs.find(tab => tab.title.toLocaleLowerCase().includes(searchInput.value.toLocaleLowerCase())));
         chrome.windows.getCurrent({
             populate: true,
             windowTypes: ['normal']
@@ -137,7 +137,7 @@ function search(windows) {
             const search = {windowId: window.id, tabs: []};
             for(const window of filteredWindows) {
                 for(const tab of window.tabs) {
-                    if(tab.title.toLocaleLowerCase().startsWith(searchInput.value.toLocaleLowerCase()) && !tab.url.match('https://gx-corner.opera.com/')) {
+                    if(tab.title.toLocaleLowerCase().includes(searchInput.value.toLocaleLowerCase()) && !tab.url.match('https://gx-corner.opera.com/')) {
                         search.tabs.push(tab);
                     }
                 }
