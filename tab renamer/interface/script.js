@@ -155,7 +155,7 @@ function search(windows) {
     root.append(search);
 }
 
-function renderSearch(search, searchQuery) {
+function renderSearch(search) {
     const list = document.querySelector('.list'); // main list div
     const searchEl = document.createElement('div'); // injected search element
     const searchTitle = document.createElement('span'); // title
@@ -197,6 +197,14 @@ function renderSearch(search, searchQuery) {
 
     searchEl.append(searchTitle, tabs);
     list.append(searchEl);
+}
+
+function options() {
+
+}
+
+function renderOptions() {
+    
 }
 
 function scrollToActiveTab() {
