@@ -1,4 +1,5 @@
 const root = document.querySelector('#root');
+let storage = undefined;
 
 async function loadAssets() {
     const windows = await chrome.windows.getAll({
@@ -6,8 +7,8 @@ async function loadAssets() {
         windowTypes: ['normal']
     });
 
-    await options();
     search(windows);
+    await options();
     renderWindows(windows);
 }
 
@@ -135,15 +136,15 @@ function search(windows) {
             populate: true,
             windowTypes: ['normal']
         }).then(window => {
-            const search = {windowId: window.id, tabs: []};
-            for(const window of filteredWindows) {
-                for(const tab of window.tabs) {
-                    if(tab.title.toLocaleLowerCase().includes(searchInput.value.toLocaleLowerCase()) && !tab.url.match('https://gx-corner.opera.com/')) {
+            const search = { windowId: window.id, tabs: [] };
+            for (const window of filteredWindows) {
+                for (const tab of window.tabs) {
+                    if (tab.title.toLocaleLowerCase().includes(searchInput.value.toLocaleLowerCase()) && !tab.url.match('https://gx-corner.opera.com/')) {
                         search.tabs.push(tab);
                     }
                 }
             }
-            if(searchInput.value.length > 0) {
+            if (searchInput.value.length > 0) {
                 renderSearch(search, searchInput.value);
             } else {
                 document.querySelector('.list').remove();
@@ -161,20 +162,20 @@ function renderSearch(search) {
     const searchEl = document.createElement('div'); // injected search element
     const searchTitle = document.createElement('span'); // title
     const tabs = document.createElement('div'); // tabs list inside of search list
-    
+
     list.innerHTML = '';
 
     searchEl.classList.add('searchEl');
     tabs.classList.add('searchedTabs');
-    
+
     searchTitle.innerText = `[Search]`;
-    
+
     search.tabs.forEach(el => {
         const tab = document.createElement('div');
         const tabTitle = document.createElement('span')
 
         tab.classList = 'tab';
-    
+
         tabTitle.innerText = el.title;
         if (el.active && el.windowId === search.windowId) {
             tabTitle.classList.add('activeTab');
@@ -201,7 +202,7 @@ function renderSearch(search) {
 }
 
 async function options() {
-    const storage = await chrome.storage.local.get();
+    storage = await chrome.storage.local.get();
     renderOptions(storage.options);
 }
 
@@ -209,29 +210,39 @@ function renderOptions(options) {
     const optionsEl = document.createElement('div');
     optionsEl.classList.add('options');
     const optionsMap = [
-        {id: 'auto_scroll', label: 'Auto-Scroll to Active Tab', element_type: ['input', 'checkbox']}
+        { id: 'auto_scroll', label: 'Auto-Scroll to Active Tab', element_type: ['input', 'checkbox'] }
     ]
-    for(const option of optionsMap) {
+    for (const option of optionsMap) {
         const label = document.createElement('label');
         label.setAttribute('id', option.id);
+
         const element = document.createElement(option.element_type[0]);
         element.type = option.element_type[1];
-        label.append(element, option.id);
+        element.checked = options[option.id];
+
+        element.addEventListener('click', (event) => {
+            const options_str = `{"${option.id}":${event.target.checked}}`;
+            chrome.storage.local.set({ options: JSON.parse(options_str) });
+        });
+
+        label.append(element, option.label);
         optionsEl.append(label);
     }
     root.append(optionsEl);
 }
 
-function scrollToActiveTab() {
-    const activeWindow = document.querySelector('.active').parentElement;
-    const activeTab = activeWindow.querySelector('.activeTab');
-    activeTab.scrollIntoView({
-        behavior: 'smooth',
-        block: "center",
-    });
+async function scrollToActiveTab(auto_scroll) {
+    if(auto_scroll) {
+        const activeWindow = document.querySelector('.active').parentElement;
+        const activeTab = activeWindow.querySelector('.activeTab');
+        activeTab.scrollIntoView({
+            behavior: 'smooth',
+            block: "center",
+        });
+    }
 }
 
 window.onload = async () => {
     await loadAssets();
-    scrollToActiveTab();
+    scrollToActiveTab(storage.options.auto_scroll);
 }
