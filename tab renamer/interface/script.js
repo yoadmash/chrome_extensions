@@ -204,7 +204,16 @@ function options() {
 }
 
 function renderOptions() {
-    
+    const optionsEl = document.createElement('div');
+    const checkboxes = [
+        {label: 'auto-scroll', element: document.createElement('input'), type: 'checkbox'}
+    ]
+    for(const item of checkboxes) {
+        const el = document.createElement('label');
+        el.innerHTML = item.label;
+        el.append(item.element);
+    }
+    root.append(optionsEl);
 }
 
 function scrollToActiveTab() {
