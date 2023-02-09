@@ -25,6 +25,17 @@ body {
     width: 500px;
 }
 
+.options {
+    display: flex;
+    flex-direction: row;
+    gap: 10px;
+}
+
+label {
+    display: flex;
+    flex-direction: row;
+}
+
 .search {
     display: flex;
     justify-content: center;

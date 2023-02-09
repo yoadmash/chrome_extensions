@@ -6,6 +6,7 @@ async function loadAssets() {
         windowTypes: ['normal']
     });
 
+    await options();
     search(windows);
     renderWindows(windows);
 }
@@ -199,19 +200,24 @@ function renderSearch(search) {
     list.append(searchEl);
 }
 
-function options() {
-
+async function options() {
+    const storage = await chrome.storage.local.get();
+    renderOptions(storage.options);
 }
 
-function renderOptions() {
+function renderOptions(options) {
     const optionsEl = document.createElement('div');
-    const checkboxes = [
-        {label: 'auto-scroll', element: document.createElement('input'), type: 'checkbox'}
+    optionsEl.classList.add('options');
+    const optionsMap = [
+        {id: 'auto_scroll', label: 'Auto-Scroll to Active Tab', element_type: ['input', 'checkbox']}
     ]
-    for(const item of checkboxes) {
-        const el = document.createElement('label');
-        el.innerHTML = item.label;
-        el.append(item.element);
+    for(const option of optionsMap) {
+        const label = document.createElement('label');
+        label.setAttribute('id', option.id);
+        const element = document.createElement(option.element_type[0]);
+        element.type = option.element_type[1];
+        label.append(element, option.id);
+        optionsEl.append(label);
     }
     root.append(optionsEl);
 }
