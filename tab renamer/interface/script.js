@@ -34,7 +34,7 @@ function renderWindows(windows) {
         windowEl.classList.add('window');
 
         windowTitle.classList.add('title');
-        windowTitle.innerText = `[Window ${i + 1} | ${window.state}${(window.incognito) ? ' | incognito' : ''}]`;
+        windowTitle.innerText = `[Window ${i + 1} | ${window.state}${(window.incognito) ? ' | incognito' : ''} | ${window.tabs.length} tabs]`;
         if (window.focused) {
             windowTitle.classList.add('active');
         }
@@ -175,7 +175,7 @@ function renderSearch(search) {
     searchEl.classList.add('searchEl');
     tabs.classList.add('searchedTabs');
 
-    searchTitle.innerText = `[Search]`;
+    searchTitle.innerText = `[Search (${search.tabs.length})]`;
 
     search.tabs.forEach(el => {
         const tab = document.createElement('div');
