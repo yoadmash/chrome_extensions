@@ -161,6 +161,7 @@ function search(windows) {
 
     search.append(searchInput);
     root.append(search);
+    searchInput.focus();
 }
 
 function renderSearch(search) {
