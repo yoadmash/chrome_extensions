@@ -34,7 +34,7 @@ function renderWindows(windows) {
         windowEl.classList.add('window');
 
         windowTitle.classList.add('title');
-        windowTitle.innerText = `[Window ${i + 1} | ${window.state}${(window.incognito) ? ' | incognito' : ''} | ${window.tabs.length} tabs]`;
+        windowTitle.innerText = `[Window ${i + 1}${(window.incognito) ? ' - incognito' : ''} | ${window.state} | ${window.tabs.length} tabs]`;
         if (window.focused) {
             windowTitle.classList.add('active');
         }
