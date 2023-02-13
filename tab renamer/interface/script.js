@@ -9,7 +9,7 @@ async function loadAssets() {
     });
 
     storage = await chrome.storage.local.get();
-    if(!storage.options.incognito_windows) {
+    if (!storage.options.incognito_windows) {
         windows = windows.filter(window => !window.incognito);
     }
 
@@ -30,7 +30,7 @@ function renderWindows(windows) {
             windowEl.style.marginTop = '15px';
         }
 
-        windowEl.setAttribute('id', `window${i}`);
+        windowEl.setAttribute('id', window.id);
         windowEl.classList.add('window');
 
         windowTitle.classList.add('title');
@@ -61,6 +61,7 @@ function renderWindowTabs(window) {
         const editIcon = document.createElement('img');
 
         tab.classList = 'tab';
+        tab.setAttribute('id', el.id);
 
         tabTitle.innerText = el.title;
         if (el.active && window.focused) {
@@ -101,7 +102,6 @@ function renderWindowTabs(window) {
                 newEl.setSelectionRange(0, newEl.value.length);
                 newEl.addEventListener('keypress', (event) => {
                     if (event.key === 'Enter') {
-                        console.log('changed title');
                         chrome.scripting.executeScript({
                             target: { tabId: el.id },
                             args: [newEl.value],

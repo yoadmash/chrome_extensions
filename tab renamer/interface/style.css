@@ -95,7 +95,7 @@ label {
     border-bottom: 1px solid crimson;
 }
 
-.title:hover, .tab:hover, .active:hover {
+.title:hover, .tab:hover, .active:hover, .activeTab:hover {
     color: crimson;
 }
 
