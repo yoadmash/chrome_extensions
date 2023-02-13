@@ -90,14 +90,26 @@ function renderWindowTabs(window) {
             }
         });
 
-        editIcon.addEventListener('click', () => {
+        editIcon.addEventListener('click', async () => {
             const editMode = (tab.firstElementChild.nodeName.toLocaleLowerCase() === 'span');
             let newEl = tab.firstElementChild;
             if (editMode) {
+                let alreadyEditing = (document.querySelector('.list').querySelector('input'));
+                if(alreadyEditing) {
+                    const alreadyEditingTab = await chrome.tabs.get(Number(alreadyEditing?.parentElement.id));
+                    const element = document.getElementById(alreadyEditingTab.id);
+                    const oldTitle = document.createElement('span');
+                    oldTitle.innerHTML = alreadyEditingTab.title;
+                    if(alreadyEditingTab.active) {
+                        oldTitle.classList.add('activeTab');
+                    }
+                    element.replaceChild(oldTitle, element.firstElementChild);
+                }
                 newEl = document.createElement('input');
                 newEl.type = 'text';
+                newEl.placeholder = 'Current Title: ' + tabTitle.innerText;
                 newEl.value = tabTitle.innerText;
-                tab.replaceChild(newEl, tabTitle);
+                tab.replaceChild(newEl, tab.firstElementChild);
                 newEl.focus();
                 newEl.setSelectionRange(0, newEl.value.length);
                 newEl.addEventListener('keypress', (event) => {
