@@ -70,6 +70,7 @@ function renderWindowTabs(window) {
 
         editIcon.classList.add('editIcon');
         editIcon.src = `${chrome.runtime.getURL('icons/edit.svg')}`;
+        editIcon.title = 'Edit title';
         editIcon.alt = 'icon';
 
         if (!el.url.match('https://gx-corner.opera.com/') && !el.url.match('chrome://*/')) {
