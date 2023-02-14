@@ -54,6 +54,11 @@ function renderWindows(windows) {
         reloadIcon.src = `${chrome.runtime.getURL('icons/reload.svg')}`;
         reloadIcon.title = 'Reload all the tabs of this window';
         reloadIcon.alt = 'icon';
+        reloadIcon.addEventListener('click', () => {
+            window.tabs.forEach(tab => {
+                chrome.tabs.reload(tab.id);
+            })
+        });
 
         icons.append(reloadIcon);
 
