@@ -57,6 +57,15 @@ label {
     cursor: default;
 }
 
+.windowTitle {
+    display: flex;
+    gap: 10px;
+}
+
+.windowTitle .icon {
+    margin-top: 5px;
+}
+
 .title {
     cursor: pointer;
 }
@@ -105,15 +114,12 @@ label {
     cursor: pointer;
 }
 
-.tab img {
-    cursor: pointer;
-}
-
 .activeTab {
     color: green
 }
 
-.editIcon {
+.icon {
     width: 12px;
     height: 12px;
+    cursor: pointer;
 }

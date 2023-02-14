@@ -24,7 +24,10 @@ function renderWindows(windows) {
 
     windows.forEach(async (window, i) => {
         const windowEl = document.createElement('div');
-        const windowTitle = document.createElement('span');
+        const windowTitle = document.createElement('div');
+        const title = document.createElement('span');
+        const icons = document.createElement('div');
+        const reloadIcon = document.createElement('img');
 
         if (i > 0) {
             windowEl.style.marginTop = '15px';
@@ -33,18 +36,28 @@ function renderWindows(windows) {
         windowEl.setAttribute('id', window.id);
         windowEl.classList.add('window');
 
-        windowTitle.classList.add('title');
-        windowTitle.innerText = `[Window ${i + 1}${(window.incognito) ? ' - incognito' : ''} | ${window.state} | ${window.tabs.length} tabs]`;
+        windowTitle.classList.add('windowTitle');
+
+        title.classList.add('title');
+        title.innerText = `[Window ${i + 1}${(window.incognito) ? ' - incognito' : ''} | ${window.state} | ${window.tabs.length} tabs]`;
         if (window.focused) {
-            windowTitle.classList.add('active');
+            title.classList.add('active');
         }
-        windowTitle.addEventListener('click', () => {
+        title.addEventListener('click', () => {
             chrome.windows.update(window.id, {
                 focused: true
             });
             close();
         });
 
+        reloadIcon.classList.add('icon');
+        reloadIcon.src = `${chrome.runtime.getURL('icons/reload.svg')}`;
+        reloadIcon.title = 'Reload all the tabs of this window';
+        reloadIcon.alt = 'icon';
+
+        icons.append(reloadIcon);
+
+        windowTitle.append(title, icons);
         windowEl.append(windowTitle, renderWindowTabs(window));
         windowsListEl.append(windowEl);
     })
@@ -68,7 +81,7 @@ function renderWindowTabs(window) {
             tabTitle.classList.add('activeTab');
         }
 
-        editIcon.classList.add('editIcon');
+        editIcon.classList.add('icon');
         editIcon.src = `${chrome.runtime.getURL('icons/edit.svg')}`;
         editIcon.title = 'Edit title';
         editIcon.alt = 'icon';
