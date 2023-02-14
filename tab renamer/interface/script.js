@@ -28,6 +28,7 @@ function renderWindows(windows) {
         const title = document.createElement('span');
         const icons = document.createElement('div');
         const reloadIcon = document.createElement('img');
+        const closeIcon = document.createElement('img');
 
         if (i > 0) {
             windowEl.style.marginTop = '15px';
@@ -50,6 +51,8 @@ function renderWindows(windows) {
             close();
         });
 
+        icons.classList.add('icons');
+
         reloadIcon.classList.add('icon');
         reloadIcon.src = `${chrome.runtime.getURL('icons/reload.svg')}`;
         reloadIcon.title = 'Reload all the tabs of this window';
@@ -57,8 +60,16 @@ function renderWindows(windows) {
         reloadIcon.addEventListener('click', () => {
             window.tabs.forEach(tab => {
                 chrome.tabs.reload(tab.id);
-            })
+            });
         });
+
+        // closeIcon.classList.add('icon');
+        // closeIcon.src = `${chrome.runtime.getURL('icons/close.svg')}`;
+        // closeIcon.title = 'Close';
+        // closeIcon.alt = 'icon';
+        // closeIcon.addEventListener('click', () => {
+        //     chrome.windows.remove(window.id);
+        // });
 
         icons.append(reloadIcon);
 
@@ -114,12 +125,12 @@ function renderWindowTabs(window) {
             let newEl = tab.firstElementChild;
             if (editMode) {
                 let alreadyEditing = (document.querySelector('.list').querySelector('input'));
-                if(alreadyEditing) {
+                if (alreadyEditing) {
                     const alreadyEditingTab = await chrome.tabs.get(Number(alreadyEditing?.parentElement.id));
                     const element = document.getElementById(alreadyEditingTab.id);
                     const oldTitle = document.createElement('span');
                     oldTitle.innerHTML = alreadyEditingTab.title;
-                    if(alreadyEditingTab.active) {
+                    if (alreadyEditingTab.active) {
                         oldTitle.classList.add('activeTab');
                     }
                     element.replaceChild(oldTitle, element.firstElementChild);

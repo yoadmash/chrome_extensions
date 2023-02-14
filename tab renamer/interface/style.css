@@ -70,6 +70,11 @@ label {
     cursor: pointer;
 }
 
+.icons {
+    display: flex;
+    gap: 10px;
+}
+
 .active {
     color: green;
 }
