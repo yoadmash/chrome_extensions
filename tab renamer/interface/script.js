@@ -63,15 +63,17 @@ function renderWindows(windows) {
             });
         });
 
-        // closeIcon.classList.add('icon');
-        // closeIcon.src = `${chrome.runtime.getURL('icons/close.svg')}`;
-        // closeIcon.title = 'Close';
-        // closeIcon.alt = 'icon';
-        // closeIcon.addEventListener('click', () => {
-        //     chrome.windows.remove(window.id);
-        // });
+        closeIcon.classList.add('icon');
+        closeIcon.src = `${chrome.runtime.getURL('icons/close.svg')}`;
+        closeIcon.title = 'Close Window';
+        closeIcon.alt = 'icon';
+        closeIcon.addEventListener('click', () => {
+            chrome.windows.remove(window.id);
+            document.getElementById(window.id).remove();
+            reorderWindows();
+        });
 
-        icons.append(reloadIcon);
+        icons.append(closeIcon, reloadIcon);
 
         windowTitle.append(title, icons);
         windowEl.append(windowTitle, renderWindowTabs(window));
@@ -79,6 +81,13 @@ function renderWindows(windows) {
     })
 
     root.append(windowsListEl);
+}
+
+function reorderWindows() {
+    const arr = document.getElementsByClassName('title');
+    for (let i = 0; i < arr.length; i++) {
+        arr[i].innerHTML = arr[i].innerHTML.replace(arr[i].innerHTML.charAt(8), (i + 1));
+    }
 }
 
 function renderWindowTabs(window) {
