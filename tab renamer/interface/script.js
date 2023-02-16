@@ -105,8 +105,7 @@ function renderWindowTabs(window) {
         icons.classList = 'icons';
 
         favicon.classList = 'favicon';
-        favicon.src = (!el.url.match('https://gx-corner.opera.com/') && !el.url.match('chrome://*/')) ? el.favIconUrl : chrome.runtime.getURL('icons/generic_tab.svg');
-        // favicon.src = el.favIconUrl;
+        favicon.src = (el.favIconUrl.length !== 0) ? el.favIconUrl : chrome.runtime.getURL('icons/generic_tab.svg');
         favicon.alt = 'favicon';
 
         tabTitle.innerText = el.title;
