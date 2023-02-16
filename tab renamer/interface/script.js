@@ -100,13 +100,13 @@ function renderWindowTabs(window) {
 
         tab.classList = 'tab';
         tab.setAttribute('id', el.id);
-        tab.append(favicon ,tabTitle, icons);
-        
+        tab.append(favicon, tabTitle, icons);
+
         icons.classList = 'icons';
 
         favicon.classList = 'favicon';
         favicon.alt = 'favicon';
-        if(el.status === 'complete') {
+        if (el.status === 'complete') {
             favicon.src = (el.favIconUrl.length !== 0) ? el.favIconUrl : chrome.runtime.getURL('icons/generic_tab.svg');
         } else {
             favicon.src = chrome.runtime.getURL('icons/generic_tab.svg');
@@ -141,8 +141,10 @@ function renderWindowTabs(window) {
 
         if (!el.url.match('https://gx-corner.opera.com/') && !el.url.match('chrome://*/')) {
             icons.append(editIcon, reloadIcon, closeIcon);
-        } else {
+        } else if (el.url.match('chrome://*/')) {
             icons.append(reloadIcon, closeIcon)
+        } else if (el.url.match('https://gx-corner.opera.com/')) {
+            icons.append(reloadIcon);
         }
 
         tabTitle.addEventListener('click', () => {
