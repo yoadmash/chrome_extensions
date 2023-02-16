@@ -105,8 +105,12 @@ function renderWindowTabs(window) {
         icons.classList = 'icons';
 
         favicon.classList = 'favicon';
-        favicon.src = (el.favIconUrl.length !== 0) ? el.favIconUrl : chrome.runtime.getURL('icons/generic_tab.svg');
         favicon.alt = 'favicon';
+        if(el.status === 'complete') {
+            favicon.src = (el.favIconUrl.length !== 0) ? el.favIconUrl : chrome.runtime.getURL('icons/generic_tab.svg');
+        } else {
+            favicon.src = chrome.runtime.getURL('icons/generic_tab.svg');
+        }
 
         tabTitle.innerText = el.title;
         if (el.active && window.focused) {
