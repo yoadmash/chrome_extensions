@@ -30,10 +30,6 @@ function renderWindows(windows) {
         const reloadIcon = document.createElement('img');
         const closeIcon = document.createElement('img');
 
-        if (i > 0) {
-            windowEl.style.marginTop = '15px';
-        }
-
         windowEl.setAttribute('id', window.id);
         windowEl.classList.add('window');
 
