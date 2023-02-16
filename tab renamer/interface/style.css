@@ -109,6 +109,7 @@ label {
     display: flex;
     justify-content: space-between;
     align-items: center;
+    gap: 5px;
     border-bottom: 1px solid crimson;
 }
 
@@ -117,9 +118,14 @@ label {
 }
 
 .tab span {
-    width: 95%;
+    width: 85%;
+    margin-right: 10px;
     overflow-wrap: break-word;
     cursor: pointer;
+}
+
+.tab input {
+    width: 84%;
 }
 
 .activeTab {
@@ -130,4 +136,9 @@ label {
     width: 12px;
     height: 12px;
     cursor: pointer;
+}
+
+.favicon {
+    width: 16px;
+    height: 16px;
 }

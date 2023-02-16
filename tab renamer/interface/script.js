@@ -91,11 +91,23 @@ function renderWindowTabs(window) {
 
     window.tabs.forEach((el) => {
         const tab = document.createElement('div');
+        const favicon = document.createElement('img');
         const tabTitle = document.createElement('span')
+        const icons = document.createElement('div');
+        const closeIcon = document.createElement('img');
+        const reloadIcon = document.createElement('img');
         const editIcon = document.createElement('img');
 
         tab.classList = 'tab';
         tab.setAttribute('id', el.id);
+        tab.append(favicon ,tabTitle, icons);
+        
+        icons.classList = 'icons';
+
+        favicon.classList = 'favicon';
+        favicon.src = (!el.url.match('https://gx-corner.opera.com/') && !el.url.match('chrome://*/')) ? el.favIconUrl : chrome.runtime.getURL('icons/generic_tab.svg');
+        // favicon.src = el.favIconUrl;
+        favicon.alt = 'favicon';
 
         tabTitle.innerText = el.title;
         if (el.active && window.focused) {
@@ -107,10 +119,27 @@ function renderWindowTabs(window) {
         editIcon.title = 'Edit title';
         editIcon.alt = 'icon';
 
+        reloadIcon.classList.add('icon');
+        reloadIcon.src = `${chrome.runtime.getURL('icons/reload.svg')}`;
+        reloadIcon.title = 'Reload Tab';
+        reloadIcon.alt = 'icon';
+        reloadIcon.addEventListener('click', () => {
+            chrome.tabs.reload(el.id);
+        });
+
+        closeIcon.classList.add('icon');
+        closeIcon.src = `${chrome.runtime.getURL('icons/close.svg')}`;
+        closeIcon.title = 'Close Tab';
+        closeIcon.alt = 'icon';
+        closeIcon.addEventListener('click', () => {
+            chrome.tabs.remove(el.id);
+            document.getElementById(el.id).remove();
+        });
+
         if (!el.url.match('https://gx-corner.opera.com/') && !el.url.match('chrome://*/')) {
-            tab.append(tabTitle, editIcon);
+            icons.append(editIcon, reloadIcon, closeIcon);
         } else {
-            tab.append(tabTitle);
+            icons.append(reloadIcon, closeIcon)
         }
 
         tabTitle.addEventListener('click', () => {
@@ -126,8 +155,8 @@ function renderWindowTabs(window) {
         });
 
         editIcon.addEventListener('click', async () => {
-            const editMode = (tab.firstElementChild.nodeName.toLocaleLowerCase() === 'span');
-            let newEl = tab.firstElementChild;
+            const editMode = (tab.childNodes[1].nodeName.toLocaleLowerCase() === 'span');
+            let newEl = tab.children[1];
             if (editMode) {
                 let alreadyEditing = (document.querySelector('.list').querySelector('input'));
                 if (alreadyEditing) {
@@ -138,13 +167,13 @@ function renderWindowTabs(window) {
                     if (alreadyEditingTab.active) {
                         oldTitle.classList.add('activeTab');
                     }
-                    element.replaceChild(oldTitle, element.firstElementChild);
+                    element.replaceChild(oldTitle, element.children[1]);
                 }
                 newEl = document.createElement('input');
                 newEl.type = 'text';
                 newEl.placeholder = 'Current Title: ' + tabTitle.innerText;
                 newEl.value = tabTitle.innerText;
-                tab.replaceChild(newEl, tab.firstElementChild);
+                tab.replaceChild(newEl, tab.children[1]);
                 newEl.focus();
                 newEl.setSelectionRange(0, newEl.value.length);
                 newEl.addEventListener('keypress', (event) => {
