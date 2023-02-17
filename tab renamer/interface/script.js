@@ -348,9 +348,8 @@ function renderOptions(options) {
 
 async function scrollToActiveTab(auto_scroll) {
     if (auto_scroll) {
-        const activeWindow = document.querySelector('.active')?.parentElement;
-        const activeTab = activeWindow?.querySelector('.activeTab');
-        activeTab?.scrollIntoView({
+        const activeTab = document.querySelector('.activeTab');
+        activeTab.scrollIntoView({
             behavior: 'smooth',
             block: "center",
         });
