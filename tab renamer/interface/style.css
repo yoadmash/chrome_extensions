@@ -122,6 +122,7 @@ label {
     margin-right: 10px;
     overflow: hidden;
     text-overflow: ellipsis;
+    white-space: nowrap;
     cursor: pointer;
 }
 
