@@ -77,7 +77,7 @@ function renderWindows(windows) {
         windowsListEl.append(windowEl);
     })
 
-    if(!root.querySelector('.list')) {
+    if (!root.querySelector('.list')) {
         root.append(windowsListEl);
     }
 }
@@ -318,12 +318,16 @@ function renderOptions(options) {
         element.addEventListener('click', async (event) => {
             options[option.id] = event.target.checked;
             chrome.storage.local.set({ options: options });
-            if(option.id === 'incognito_windows') {
-                if(!options[option.id]) {
+            if (option.id === 'auto_scroll') {
+                if (options[option.id]) {
+                    scrollToActiveTab(true);
+                }
+            } else if (option.id === 'incognito_windows') {
+                if (!options[option.id]) {
                     const arr = document.getElementsByClassName('window');
-                    for(let i = arr.length - 1; i >= 0; i--) {
+                    for (let i = arr.length - 1; i >= 0; i--) {
                         const window = await chrome.windows.get(Number(arr[i].id));
-                        if(window.incognito) {
+                        if (window.incognito) {
                             arr[i].remove();
                         }
                     }
