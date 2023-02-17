@@ -65,8 +65,9 @@ function renderWindows(windows) {
         closeIcon.alt = 'icon';
         closeIcon.addEventListener('click', () => {
             chrome.windows.remove(window.id);
+            const windowIndex = Number(title.innerHTML.charAt(8));
             document.getElementById(window.id).remove();
-            reorderWindows();
+            reorderWindows(windowIndex - 1);
         });
 
         icons.append(closeIcon, reloadIcon);
@@ -79,9 +80,9 @@ function renderWindows(windows) {
     root.append(windowsListEl);
 }
 
-function reorderWindows() {
+function reorderWindows(windowIndex) {
     const arr = document.getElementsByClassName('title');
-    for (let i = 0; i < arr.length; i++) {
+    for (let i = windowIndex; i < arr.length; i++) {
         arr[i].innerHTML = arr[i].innerHTML.replace(arr[i].innerHTML.charAt(8), (i + 1));
     }
 }
