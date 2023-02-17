@@ -19,8 +19,8 @@ async function loadAssets() {
 }
 
 function renderWindows(windows) {
-    const windowsListEl = document.createElement('div');
-    windowsListEl.classList.add('list');
+    const windowsListEl = (root.querySelector('.list')) ? root.querySelector('.list') : document.createElement('div');
+    windowsListEl.classList = 'list';
 
     windows.forEach(async (window, i) => {
         const windowEl = document.createElement('div');
@@ -77,7 +77,9 @@ function renderWindows(windows) {
         windowsListEl.append(windowEl);
     })
 
-    root.append(windowsListEl);
+    if(!root.querySelector('.list')) {
+        root.append(windowsListEl);
+    }
 }
 
 function reorderWindows(windowIndex) {
@@ -316,15 +318,26 @@ function renderOptions(options) {
         element.addEventListener('click', async (event) => {
             options[option.id] = event.target.checked;
             chrome.storage.local.set({ options: options });
-            // if (option.id === 'incognito_windows') {
-            //     const currentWindow = await chrome.windows.getCurrent();
-            //     chrome.windows.update(currentWindow.id, {
-            //         focused: true
-            //     }, async () => {
-            //         root.innerHTML = '';
-            //         await loadAssets();
-            //     })
-            // }
+            if(option.id === 'incognito_windows') {
+                if(!options[option.id]) {
+                    const arr = document.getElementsByClassName('window');
+                    for(let i = arr.length - 1; i >= 0; i--) {
+                        const window = await chrome.windows.get(Number(arr[i].id));
+                        if(window.incognito) {
+                            arr[i].remove();
+                        }
+                    }
+                    reorderWindows(0);
+                } else {
+                    let incognitoWindows = await chrome.windows.getAll({
+                        populate: true,
+                        windowTypes: ['normal']
+                    });
+                    incognitoWindows = incognitoWindows.filter(window => window.incognito);
+                    renderWindows(incognitoWindows);
+                    reorderWindows(0);
+                }
+            }
         });
 
         label.append(element, option.label);
