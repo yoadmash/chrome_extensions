@@ -118,7 +118,10 @@ label {
 }
 
 .tab span {
+    display: flex;
+    align-items: center;
     width: 90%;
+    height: 30px;
     margin-right: 10px;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -143,4 +146,8 @@ label {
 .favicon {
     width: 16px;
     height: 16px;
+}
+
+.checkTab {
+    width: 3% !important;
 }

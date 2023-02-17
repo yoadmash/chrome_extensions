@@ -29,6 +29,7 @@ function renderWindows(windows) {
         const icons = document.createElement('div');
         const reloadIcon = document.createElement('img');
         const closeIcon = document.createElement('img');
+        const closeSelectedIcon = document.createElement('img');
 
         windowEl.setAttribute('id', window.id);
         windowEl.classList.add('window');
@@ -70,7 +71,12 @@ function renderWindows(windows) {
             reorderWindows(windowIndex - 1);
         });
 
-        icons.append(closeIcon, reloadIcon);
+        closeSelectedIcon.classList.add('icon');
+        closeSelectedIcon.src = `${chrome.runtime.getURL('icons/close_selected.svg')}`;
+        closeSelectedIcon.title = 'Close selected tabs';
+        closeSelectedIcon.alt = 'icon';
+
+        icons.append(closeIcon, closeSelectedIcon, reloadIcon);
 
         windowTitle.append(title, icons);
         windowEl.append(windowTitle, renderWindowTabs(window));
@@ -94,6 +100,7 @@ function renderWindowTabs(window) {
 
     window.tabs.forEach((el) => {
         const tab = document.createElement('div');
+        const checkTab = document.createElement('input');
         const favicon = document.createElement('img');
         const tabTitle = document.createElement('span')
         const icons = document.createElement('div');
@@ -107,6 +114,9 @@ function renderWindowTabs(window) {
 
         icons.classList = 'icons';
 
+        checkTab.classList = 'checkTab';
+        checkTab.type = 'checkbox';
+
         favicon.classList = 'favicon';
         favicon.alt = 'favicon';
         if (el.status === 'complete') {
@@ -114,6 +124,18 @@ function renderWindowTabs(window) {
         } else {
             favicon.src = chrome.runtime.getURL('icons/generic_tab.svg');
         }
+
+        tab.addEventListener('mouseenter', () => {
+            if(!checkTab.checked) {
+                favicon.replaceWith(checkTab);
+            }
+        });
+
+        tab.addEventListener('mouseleave', () => {
+            if(!checkTab.checked) {
+                checkTab.replaceWith(favicon);
+            }
+        })
 
         tabTitle.innerText = el.title;
         tabTitle.title = el.title;
