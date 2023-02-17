@@ -116,6 +116,7 @@ function renderWindowTabs(window) {
         }
 
         tabTitle.innerText = el.title;
+        tabTitle.title = el.title;
         if (el.active && window.focused) {
             tabTitle.classList.add('activeTab');
         }
@@ -192,6 +193,7 @@ function renderWindowTabs(window) {
                             func: setTitle,
                         });
                         tabTitle.innerHTML = newEl.value;
+                        tabTitle.title = newEl.value;
                         tab.replaceChild(tabTitle, newEl);
                     }
                 })

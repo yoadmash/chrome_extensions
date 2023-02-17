@@ -120,7 +120,8 @@ label {
 .tab span {
     width: 90%;
     margin-right: 10px;
-    overflow-wrap: break-word;
+    overflow: hidden;
+    text-overflow: ellipsis;
     cursor: pointer;
 }
 
