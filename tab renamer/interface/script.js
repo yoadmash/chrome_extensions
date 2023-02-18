@@ -29,7 +29,6 @@ function renderWindows(windows) {
         const icons = document.createElement('div');
         const reloadIcon = document.createElement('img');
         const closeIcon = document.createElement('img');
-        const closeSelectedIcon = document.createElement('img');
 
         windowEl.setAttribute('id', window.id);
         windowEl.classList.add('window');
@@ -53,7 +52,7 @@ function renderWindows(windows) {
         reloadIcon.classList.add('icon');
         reloadIcon.src = `${chrome.runtime.getURL('icons/reload.svg')}`;
         reloadIcon.title = 'Reload all the tabs of this window';
-        reloadIcon.alt = 'icon';
+        reloadIcon.alt = 'reload';
         reloadIcon.addEventListener('click', () => {
             window.tabs.forEach(tab => {
                 chrome.tabs.reload(tab.id);
@@ -62,21 +61,28 @@ function renderWindows(windows) {
 
         closeIcon.classList.add('icon');
         closeIcon.src = `${chrome.runtime.getURL('icons/close.svg')}`;
-        closeIcon.title = 'Close Window';
-        closeIcon.alt = 'icon';
-        closeIcon.addEventListener('click', () => {
-            chrome.windows.remove(window.id);
-            const windowIndex = Number(title.innerHTML.charAt(8));
-            document.getElementById(window.id).remove();
-            reorderWindows(windowIndex - 1);
+        closeIcon.title = 'Close Window \\ Selected Tabs';
+        closeIcon.alt = 'close';
+        closeIcon.addEventListener('click', async () => {
+            const selectedTabs = windowEl.querySelector('.currentTabs').contains(document.querySelector('.checkTab'));
+            if(!selectedTabs) {
+                chrome.windows.remove(window.id);
+                const windowIndex = Number(title.innerHTML.charAt(8));
+                document.getElementById(window.id).remove();
+                reorderWindows(windowIndex - 1);
+            } else {
+                const arr = windowEl.querySelector('.currentTabs').querySelectorAll('.checkTab');
+                for(let i = arr.length - 1; i >= 0; i--) {
+                    const tabToClose = await chrome.tabs.get(Number(arr[i].parentElement.id));
+                    if(!tabToClose.url.match('https://gx-corner.opera.com/')) {
+                        chrome.tabs.remove(tabToClose.id);
+                        document.getElementById(tabToClose.id).remove();
+                    }
+                }
+            }
         });
 
-        closeSelectedIcon.classList.add('icon');
-        closeSelectedIcon.src = `${chrome.runtime.getURL('icons/close_selected.svg')}`;
-        closeSelectedIcon.title = 'Close selected tabs';
-        closeSelectedIcon.alt = 'icon';
-
-        icons.append(closeIcon, closeSelectedIcon, reloadIcon);
+        icons.append(closeIcon, reloadIcon);
 
         windowTitle.append(title, icons);
         windowEl.append(windowTitle, renderWindowTabs(window));
@@ -97,6 +103,7 @@ function reorderWindows(windowIndex) {
 
 function renderWindowTabs(window) {
     const currentTabsEl = document.createElement('div');
+    let counter = 0;
 
     window.tabs.forEach((el) => {
         const tab = document.createElement('div');
@@ -135,7 +142,15 @@ function renderWindowTabs(window) {
             if(!checkTab.checked) {
                 checkTab.replaceWith(favicon);
             }
-        })
+        });
+
+        checkTab.addEventListener('input', (event) => {
+            if(event.target.checked) {
+                counter++;
+            } else {
+                counter--;
+            }
+        });
 
         tabTitle.innerText = el.title;
         tabTitle.title = el.title;
@@ -146,12 +161,12 @@ function renderWindowTabs(window) {
         editIcon.classList.add('icon');
         editIcon.src = `${chrome.runtime.getURL('icons/edit.svg')}`;
         editIcon.title = 'Edit title';
-        editIcon.alt = 'icon';
+        editIcon.alt = 'edit';
 
         reloadIcon.classList.add('icon');
         reloadIcon.src = `${chrome.runtime.getURL('icons/reload.svg')}`;
         reloadIcon.title = 'Reload Tab';
-        reloadIcon.alt = 'icon';
+        reloadIcon.alt = 'reload';
         reloadIcon.addEventListener('click', () => {
             chrome.tabs.reload(el.id);
         });
@@ -159,7 +174,7 @@ function renderWindowTabs(window) {
         closeIcon.classList.add('icon');
         closeIcon.src = `${chrome.runtime.getURL('icons/close.svg')}`;
         closeIcon.title = 'Close Tab';
-        closeIcon.alt = 'icon';
+        closeIcon.alt = 'close';
         closeIcon.addEventListener('click', () => {
             chrome.tabs.remove(el.id);
             document.getElementById(el.id).remove();
