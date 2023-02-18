@@ -72,11 +72,12 @@ function renderWindows(windows) {
                 reorderWindows(windowIndex - 1);
             } else {
                 const arr = windowEl.querySelector('.currentTabs').querySelectorAll('.checkTab');
-                for(let i = arr.length - 1; i >= 0; i--) {
-                    const tabToClose = await chrome.tabs.get(Number(arr[i].parentElement.id));
+                for(let j = arr.length - 1; j >= 0; j--) {
+                    const tabToClose = await chrome.tabs.get(Number(arr[j].parentElement.id));
                     if(!tabToClose.url.match('https://gx-corner.opera.com/')) {
                         chrome.tabs.remove(tabToClose.id);
                         document.getElementById(tabToClose.id).remove();
+                        title.innerText = `[Window ${i + 1}${(window.incognito) ? ' - incognito' : ''} | ${window.state} | ${windowEl.querySelector('.currentTabs').children.length} tabs]`;
                     }
                 }
             }
