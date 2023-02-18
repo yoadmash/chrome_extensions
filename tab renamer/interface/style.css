@@ -63,11 +63,8 @@ label {
 
 .windowTitle {
     display: flex;
+    align-items: center;
     gap: 10px;
-}
-
-.windowTitle .icon {
-    margin-top: 5px;
 }
 
 .title {
