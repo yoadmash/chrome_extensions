@@ -133,11 +133,13 @@ function renderWindowTabs(window) {
             favicon.src = chrome.runtime.getURL('icons/generic_tab.svg');
         }
 
-        tab.addEventListener('mouseenter', () => {
-            if(!checkTab.checked) {
-                favicon.replaceWith(checkTab);
-            }
-        });
+        if(window.tabs.length > 1) {
+            tab.addEventListener('mouseenter', () => {
+                if(!checkTab.checked) {
+                    favicon.replaceWith(checkTab);
+                }
+            });
+        }
 
         tab.addEventListener('mouseleave', () => {
             if(!checkTab.checked) {
