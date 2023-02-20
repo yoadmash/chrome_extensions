@@ -29,6 +29,7 @@ function renderWindows(windows) {
         const icons = document.createElement('div');
         const reloadIcon = document.createElement('img');
         const closeIcon = document.createElement('img');
+        const checkTabs = document.createElement('img');
 
         windowEl.setAttribute('id', window.id);
         windowEl.classList.add('window');
@@ -80,10 +81,40 @@ function renderWindows(windows) {
                         title.innerText = `[Window ${i + 1}${(window.incognito) ? ' - incognito' : ''} | ${window.state} | ${windowEl.querySelector('.currentTabs').children.length} tabs]`;
                     }
                 }
+                if (windowEl.querySelector('.currentTabs').children.length === 0) {
+                    windowEl.remove();
+                }
             }
         });
 
+        // checkTabs.classList.add('icon');
+        // checkTabs.src = `${chrome.runtime.getURL('icons/check_tabs.svg')}`;
+        // checkTabs.title = 'Check \\ Uncheck All Tabs';
+        // checkTabs.alt = 'check tabs';
+        // checkTabs.addEventListener('click', async () => {
+        //     const currentTabs = windowEl.querySelector('.currentTabs');
+        //     if (currentTabs.contains(currentTabs.querySelector('.favicon'))) {
+        //         for (const tab of currentTabs.children) {
+        //             const favicon = tab.querySelector('.favicon');
+        //             const checkTab = document.createElement('input');
+        //             checkTab.classList = 'checkTab';
+        //             checkTab.type = 'checkbox';
+        //             checkTab.checked = true;
+        //             favicon.replaceWith(checkTab);
+        //             checkTab.addEventListener('input', (event) => {
+        //                 if (!event.target.checked) {
+        //                     checkTab.replaceWith(favicon);
+        //                 }
+        //             });
+        //         }
+        //     }
+        // });
+
         icons.append(closeIcon, reloadIcon);
+
+        // if (window.tabs.length > 1) {
+        //     icons.append(checkTabs);
+        // }
 
         windowTitle.append(title, icons);
         windowEl.append(windowTitle, renderWindowTabs(window));
@@ -104,7 +135,6 @@ function reorderWindows(windowIndex) {
 
 function renderWindowTabs(window) {
     const currentTabsEl = document.createElement('div');
-    let counter = 0;
 
     window.tabs.forEach((el) => {
         const tab = document.createElement('div');
@@ -147,14 +177,6 @@ function renderWindowTabs(window) {
             }
         });
 
-        checkTab.addEventListener('input', (event) => {
-            if (event.target.checked) {
-                counter++;
-            } else {
-                counter--;
-            }
-        });
-
         tabTitle.innerText = el.title;
         tabTitle.title = el.title;
         if (el.active && window.focused) {
@@ -182,7 +204,7 @@ function renderWindowTabs(window) {
             const windowIndex = Array.from(document.querySelector('.list').children).indexOf(currentTabsEl.parentElement);
             const currentWindowTitle = currentTabsEl.parentElement.querySelector('.windowTitle').querySelector('.title');
             currentWindowTitle.innerHTML = `[Window ${windowIndex + 1}${(window.incognito) ? ' - incognito' : ''} | ${window.state} | ${currentTabsEl.children.length - 1} tabs]`;
-            if(currentTabsEl.children.length > 1) {
+            if (currentTabsEl.children.length > 1) {
                 chrome.tabs.remove(el.id);
                 document.getElementById(el.id).remove();
             } else {
