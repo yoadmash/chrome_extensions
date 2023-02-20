@@ -65,16 +65,16 @@ function renderWindows(windows) {
         closeIcon.alt = 'close';
         closeIcon.addEventListener('click', async () => {
             const selectedTabs = windowEl.querySelector('.currentTabs').contains(document.querySelector('.checkTab'));
-            if(!selectedTabs) {
+            if (!selectedTabs) {
                 chrome.windows.remove(window.id);
                 const windowIndex = Number(title.innerHTML.charAt(8));
                 document.getElementById(window.id).remove();
                 reorderWindows(windowIndex - 1);
             } else {
                 const arr = windowEl.querySelector('.currentTabs').querySelectorAll('.checkTab');
-                for(let j = arr.length - 1; j >= 0; j--) {
+                for (let j = arr.length - 1; j >= 0; j--) {
                     const tabToClose = await chrome.tabs.get(Number(arr[j].parentElement.id));
-                    if(!tabToClose.url.match('https://gx-corner.opera.com/')) {
+                    if (!tabToClose.url.match('https://gx-corner.opera.com/')) {
                         chrome.tabs.remove(tabToClose.id);
                         document.getElementById(tabToClose.id).remove();
                         title.innerText = `[Window ${i + 1}${(window.incognito) ? ' - incognito' : ''} | ${window.state} | ${windowEl.querySelector('.currentTabs').children.length} tabs]`;
@@ -133,22 +133,22 @@ function renderWindowTabs(window) {
             favicon.src = chrome.runtime.getURL('icons/generic_tab.svg');
         }
 
-        if(window.tabs.length > 1) {
+        if (window.tabs.length > 1) {
             tab.addEventListener('mouseenter', () => {
-                if(!checkTab.checked) {
+                if (!checkTab.checked) {
                     favicon.replaceWith(checkTab);
                 }
             });
         }
 
         tab.addEventListener('mouseleave', () => {
-            if(!checkTab.checked) {
+            if (!checkTab.checked) {
                 checkTab.replaceWith(favicon);
             }
         });
 
         checkTab.addEventListener('input', (event) => {
-            if(event.target.checked) {
+            if (event.target.checked) {
                 counter++;
             } else {
                 counter--;
@@ -179,8 +179,16 @@ function renderWindowTabs(window) {
         closeIcon.title = 'Close Tab';
         closeIcon.alt = 'close';
         closeIcon.addEventListener('click', () => {
-            chrome.tabs.remove(el.id);
-            document.getElementById(el.id).remove();
+            const windowNumber = Array.from(document.querySelector('.list').children).indexOf(currentTabsEl.parentElement) + 1;
+            const currentWindowTitle = currentTabsEl.parentElement.querySelector('.windowTitle').querySelector('.title');
+            currentWindowTitle.innerHTML = `[Window ${windowNumber}${(window.incognito) ? ' - incognito' : ''} | ${window.state} | ${currentTabsEl.children.length - 1} tabs]`;
+            if(currentTabsEl.children.length > 1) {
+                chrome.tabs.remove(el.id);
+                document.getElementById(el.id).remove();
+            } else {
+                chrome.windows.remove(el.windowId);
+                document.getElementById(el.windowId).remove();
+            }
         });
 
         if (!el.url.match('https://gx-corner.opera.com/') && !el.url.match('chrome://*/')) {
