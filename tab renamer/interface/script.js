@@ -179,15 +179,16 @@ function renderWindowTabs(window) {
         closeIcon.title = 'Close Tab';
         closeIcon.alt = 'close';
         closeIcon.addEventListener('click', () => {
-            const windowNumber = Array.from(document.querySelector('.list').children).indexOf(currentTabsEl.parentElement) + 1;
+            const windowIndex = Array.from(document.querySelector('.list').children).indexOf(currentTabsEl.parentElement);
             const currentWindowTitle = currentTabsEl.parentElement.querySelector('.windowTitle').querySelector('.title');
-            currentWindowTitle.innerHTML = `[Window ${windowNumber}${(window.incognito) ? ' - incognito' : ''} | ${window.state} | ${currentTabsEl.children.length - 1} tabs]`;
+            currentWindowTitle.innerHTML = `[Window ${windowIndex + 1}${(window.incognito) ? ' - incognito' : ''} | ${window.state} | ${currentTabsEl.children.length - 1} tabs]`;
             if(currentTabsEl.children.length > 1) {
                 chrome.tabs.remove(el.id);
                 document.getElementById(el.id).remove();
             } else {
                 chrome.windows.remove(el.windowId);
                 document.getElementById(el.windowId).remove();
+                reorderWindows(windowIndex);
             }
         });
 
