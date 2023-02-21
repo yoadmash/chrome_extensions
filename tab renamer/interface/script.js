@@ -161,10 +161,11 @@ function renderWindowTabs(window) {
         favicon.classList = 'favicon';
         favicon.alt = 'favicon';
         if (el.status === 'complete') {
-            favicon.src = (el.favIconUrl.length !== 0) ? el.favIconUrl : chrome.runtime.getURL('icons/generic_tab.svg');
+            favicon.src = (el.favIconUrl?.length !== 0 && el.favIconUrl) ? el.favIconUrl : chrome.runtime.getURL('icons/generic_tab.svg');
         } else {
             favicon.src = chrome.runtime.getURL('icons/generic_tab.svg');
         }
+        console.log(el);
 
         if (window.tabs.length > 1) {
             tab.addEventListener('mouseenter', () => {
