@@ -165,7 +165,6 @@ function renderWindowTabs(window) {
         } else {
             favicon.src = chrome.runtime.getURL('icons/generic_tab.svg');
         }
-        console.log(el);
 
         if (window.tabs.length > 1) {
             tab.addEventListener('mouseenter', () => {
