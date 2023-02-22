@@ -101,7 +101,7 @@ function renderWindows(windows) {
                     checkTab.classList = 'checkTab';
                     checkTab.type = 'checkbox';
                     checkTab.checked = true;
-                    favicon.replaceWith(checkTab);
+                    favicon?.replaceWith(checkTab);
                     checkTab.addEventListener('input', (event) => {
                         if (!event.target.checked) {
                             checkTab.replaceWith(favicon);
@@ -430,7 +430,7 @@ function renderOptions(options) {
 async function scrollToActiveTab(auto_scroll) {
     if (auto_scroll) {
         const activeTab = document.querySelector('.activeTab');
-        activeTab.scrollIntoView({
+        activeTab?.scrollIntoView({
             behavior: 'smooth',
             block: "center",
         });
