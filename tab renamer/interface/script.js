@@ -1,3 +1,6 @@
+import { assets } from "./assets.js";
+console.log(assets);
+
 const root = document.querySelector('#root');
 let allowedIncognito = false;
 let storage = undefined;
