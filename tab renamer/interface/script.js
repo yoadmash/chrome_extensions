@@ -122,11 +122,36 @@ function renderWindows(windows) {
         windowTitle.append(title, icons);
         windowEl.append(windowTitle, renderWindowTabs(window));
         windowsListEl.append(windowEl);
+        renderWindow(window, i + 1, renderWindowTabs(window));
     })
 
     if (!root.querySelector('.list')) {
         root.append(windowsListEl);
     }
+}
+
+function renderWindow(windowObj, windowIndex, tabsElement) {
+    const windowElement = document.createElement('div');
+    windowElement.setAttribute('id', windowObj.id);
+    windowElement.classList.add('window');
+
+    const windowTitleElement = document.createElement('div');
+    const title = document.createElement('span');
+    const icons = document.createElement('div');
+    windowTitleElement.classList.add('windowTitle');
+    title.classList.add('title');
+    icons.classList.add('icons');
+
+    windowTitleElement.append(title, icons);
+
+    windowElement.append(windowTitleElement, tabsElement);
+
+    title.innerText = `[Window ${windowIndex}${(windowObj.incognito) ? ' - incognito' : ''} | ${windowObj.state} | ${windowObj.tabs.length} tabs]`;
+    if (windowObj.focused) {
+        title.classList.add('active');
+    }
+
+    console.log(windowElement);
 }
 
 function reorderWindows(windowIndex) {
