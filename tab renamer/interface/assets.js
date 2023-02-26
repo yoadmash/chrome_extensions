@@ -6,7 +6,6 @@ export const assets = {
 }
 
 for(const key in assets) {
-    console.log(key);
     assets[key].src = `${chrome.runtime.getURL(`icons/${key}.svg`)}`;
     assets[key].classList.add('icon');
     assets[key].alt = 'action_icon';

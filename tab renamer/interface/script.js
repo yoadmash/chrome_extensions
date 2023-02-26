@@ -91,7 +91,7 @@ function renderWindows(windows) {
         });
 
         checkTabs.classList.add('icon');
-        checkTabs.src = `${chrome.runtime.getURL('icons/check_tabs.svg')}`;
+        checkTabs.src = `${chrome.runtime.getURL('icons/checkTabs.svg')}`;
         checkTabs.title = 'Check \\ Uncheck All Tabs';
         checkTabs.alt = 'check tabs';
         checkTabs.addEventListener('click', async () => {
