@@ -154,7 +154,7 @@ function renderWindow(windowObj, windowIndex, tabsElement) {
         title.classList.add('active');
     }
     title.addEventListener('click', () => {
-        chrome.windows.update(window.id, {
+        chrome.windows.update(windowObj.id, {
             focused: true
         });
         close();
