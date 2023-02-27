@@ -97,7 +97,7 @@ function renderWindows(windows) {
         //     const currentTabs = windowEl.querySelector('.currentTabs');
         //     if (currentTabs.contains(currentTabs.querySelector('.favicon'))) {
         //         for (const tab of currentTabs.children) {
-        //             tab.removeEventListener('mouseenter', this);
+        //             // tab.removeEventListener('mouseenter', this);
         //             const favicon = tab.querySelector('.favicon');
         //             const checkTab = document.createElement('input');
         //             checkTab.classList = 'checkTab';
@@ -123,6 +123,7 @@ function renderWindows(windows) {
 
         // windowTitle.append(title, icons);
         // windowEl.append(windowTitle, renderWindowTabs(window));
+        // windowsListEl.append(windowEl);
         windowsListEl.append(renderWindow(window, (i + 1), renderWindowTabs(window))); 
     })
 
@@ -132,7 +133,7 @@ function renderWindows(windows) {
 
 }
 
-function renderWindow(windowObj, windowIndex, tabsElement) {
+export function renderWindow(windowObj, windowIndex, tabsElement) {
     const windowElement = document.createElement('div');
     windowElement.setAttribute('id', windowObj.id);
     windowElement.setAttribute('index', windowIndex);
@@ -175,7 +176,7 @@ function renderWindow(windowObj, windowIndex, tabsElement) {
                             assets[key].windowEvent(windowObj);
                             break;
                         case 'checkTabs':
-                            assets[key].windowEvent(tabsElement);
+                            assets[key].windowEvent(window, windowIndex, tabsElement);
                             break;
                     }
                 });

@@ -1,3 +1,5 @@
+import { renderWindow } from "./script.js";
+
 export const assets = {
     close: {
         title: 'Close',
@@ -25,8 +27,24 @@ export const assets = {
     checkTabs: {
         title: 'Check \\ Uncheck All Tabs',
         src: `${chrome.runtime.getURL(`icons/checkTabs.svg`)}`,
-        windowEvent: (tabsElement) => {
-            console.log(tabsElement);
+        windowEvent: (window, windowIndex, tabsElement) => {
+            if(tabsElement.contains(tabsElement.querySelector('.favicon'))) {
+                for(const tab of tabsElement.children) {
+                    const favicon = tab.querySelector('.favicon');
+                    const checkTab = document.createElement('input');
+                    checkTab.classList = 'checkTab';
+                    checkTab.type = 'checkbox';
+                    checkTab.checked = true;
+                    favicon?.replaceWith(checkTab);
+                    checkTab.addEventListener('input', (event) => {
+                        if (!event.target.checked) {
+                            checkTab.replaceWith(favicon);
+                        }
+                    });
+                }
+            } else {
+                console.log(renderWindow(window, windowIndex - 1, tabsElement));
+            }
         }
     }
 }
