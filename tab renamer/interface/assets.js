@@ -1,12 +1,32 @@
 export const assets = {
-    close: document.createElement('img'),
-    reload: document.createElement('img'),
-    edit: document.createElement('img'),
-    checkTabs: document.createElement('img')
-}
-
-for(const key in assets) {
-    assets[key].src = `${chrome.runtime.getURL(`icons/${key}.svg`)}`;
-    assets[key].classList.add('icon');
-    assets[key].alt = 'action_icon';
+    close: {
+        title: 'Close',
+        src: `${chrome.runtime.getURL('icons/close.svg')}`,
+        windowEvent: (window) => {
+            console.log(window);
+        }
+    },
+    reload: {
+        title: 'Reload',
+        src: `${chrome.runtime.getURL(`icons/reload.svg`)}`,
+        windowEvent: (window) => {
+            window.tabs.forEach(tab => {
+                chrome.tabs.reload(tab.id);
+            });
+        }
+    },
+    edit: {
+        title: 'Edit',
+        src: `${chrome.runtime.getURL(`icons/edit.svg`)}`,
+        tabEvent: (window) => {
+            console.log(window);
+        }
+    },
+    checkTabs: {
+        title: 'Check \\ Uncheck All Tabs',
+        src: `${chrome.runtime.getURL(`icons/checkTabs.svg`)}`,
+        windowEvent: (tabsElement) => {
+            console.log(tabsElement);
+        }
+    }
 }

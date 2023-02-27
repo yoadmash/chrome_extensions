@@ -1,5 +1,4 @@
 import { assets } from "./assets.js";
-console.log(assets);
 
 const root = document.querySelector('#root');
 let allowedIncognito = false;
@@ -125,12 +124,13 @@ function renderWindows(windows) {
         windowTitle.append(title, icons);
         windowEl.append(windowTitle, renderWindowTabs(window));
         windowsListEl.append(windowEl);
-        renderWindow(window, i + 1, renderWindowTabs(window));
+        console.log(renderWindow(window, i, renderWindowTabs(window)));
     })
 
     if (!root.querySelector('.list')) {
         root.append(windowsListEl);
     }
+
 }
 
 function renderWindow(windowObj, windowIndex, tabsElement) {
@@ -153,8 +153,38 @@ function renderWindow(windowObj, windowIndex, tabsElement) {
     if (windowObj.focused) {
         title.classList.add('active');
     }
+    title.addEventListener('click', () => {
+        chrome.windows.update(window.id, {
+            focused: true
+        });
+        close();
+    });
 
-    console.log(windowElement);
+    for(const key in assets) {
+        if(key !== 'edit') {
+            const icon = document.createElement('img');
+            icon.classList.add('icon');
+            icon.src = assets[key].src;
+            icon.title = assets[key].title;
+            icon.alt = 'action_icon';
+            if(assets[key].windowEvent) {
+                icon.addEventListener('click', () => {
+                    switch (key) {
+                        case 'close':
+                        case 'reload':
+                            assets[key].windowEvent(windowObj);
+                            break;
+                        case 'checkTabs':
+                            assets[key].windowEvent(tabsElement);
+                            break;
+                    }
+                });
+            }
+            icons.append(icon);
+        }
+    }
+
+    return windowElement;
 }
 
 function reorderWindows(windowIndex) {
