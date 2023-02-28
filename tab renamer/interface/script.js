@@ -24,107 +24,8 @@ function renderWindows(windows) {
     const windowsListEl = (root.querySelector('.list')) ? root.querySelector('.list') : document.createElement('div');
     windowsListEl.classList = 'list';
 
-    windows.forEach(async (window, i) => {
-        // const windowEl = document.createElement('div');
-        // const windowTitle = document.createElement('div');
-        // const title = document.createElement('span');
-        // const icons = document.createElement('div');
-        // const reloadIcon = document.createElement('img');
-        // const closeIcon = document.createElement('img');
-        // const checkTabs = document.createElement('img');
-
-        // windowEl.setAttribute('id', window.id);
-        // windowEl.classList.add('window');
-
-        // windowTitle.classList.add('windowTitle');
-
-        // title.classList.add('title');
-        // title.innerText = `[Window ${i + 1}${(window.incognito) ? ' - incognito' : ''} | ${window.state} | ${window.tabs.length} tabs]`;
-        // if (window.focused) {
-        //     title.classList.add('active');
-        // }
-        // title.addEventListener('click', () => {
-        //     chrome.windows.update(window.id, {
-        //         focused: true
-        //     });
-        //     close();
-        // });
-
-        // icons.classList.add('icons');
-
-        // reloadIcon.classList.add('icon');
-        // reloadIcon.src = `${chrome.runtime.getURL('icons/reload.svg')}`;
-        // reloadIcon.title = 'Reload all the tabs of this window';
-        // reloadIcon.alt = 'reload';
-        // reloadIcon.addEventListener('click', () => {
-        //     window.tabs.forEach(tab => {
-        //         chrome.tabs.reload(tab.id);
-        //     });
-        // });
-
-        // closeIcon.classList.add('icon');
-        // closeIcon.src = `${chrome.runtime.getURL('icons/close.svg')}`;
-        // closeIcon.title = 'Close Window \\ Selected Tabs';
-        // closeIcon.alt = 'close';
-        // closeIcon.addEventListener('click', async () => {
-        //     const selectedTabs = windowEl.querySelector('.currentTabs').contains(document.querySelector('.checkTab'));
-        //     if (!selectedTabs) {
-        //         chrome.windows.remove(window.id);
-        //         const windowIndex = Number(title.innerHTML.charAt(8));
-        //         document.getElementById(window.id).remove();
-        //         reorderWindows(windowIndex - 1);
-        //     } else {
-        //         const arr = windowEl.querySelector('.currentTabs').querySelectorAll('.checkTab');
-        //         for (let j = arr.length - 1; j >= 0; j--) {
-        //             const tabToClose = await chrome.tabs.get(Number(arr[j].parentElement.id));
-        //             if (!tabToClose.url.match('https://gx-corner.opera.com/')) {
-        //                 chrome.tabs.remove(tabToClose.id);
-        //                 document.getElementById(tabToClose.id).remove();
-        //                 title.innerText = `[Window ${i + 1}${(window.incognito) ? ' - incognito' : ''} | ${window.state} | ${windowEl.querySelector('.currentTabs').children.length} tabs]`;
-        //             }
-        //         }
-        //         if (windowEl.querySelector('.currentTabs').children.length === 0) {
-        //             windowEl.remove();
-        //         }
-        //     }
-        // });
-
-        // checkTabs.classList.add('icon');
-        // checkTabs.src = `${chrome.runtime.getURL('icons/checkTabs.svg')}`;
-        // checkTabs.title = 'Check \\ Uncheck All Tabs';
-        // checkTabs.alt = 'check tabs';
-        // checkTabs.addEventListener('click', async () => {
-        //     const currentTabs = windowEl.querySelector('.currentTabs');
-        //     if (currentTabs.contains(currentTabs.querySelector('.favicon'))) {
-        //         for (const tab of currentTabs.children) {
-        //             // tab.removeEventListener('mouseenter', this);
-        //             const favicon = tab.querySelector('.favicon');
-        //             const checkTab = document.createElement('input');
-        //             checkTab.classList = 'checkTab';
-        //             checkTab.type = 'checkbox';
-        //             checkTab.checked = true;
-        //             favicon?.replaceWith(checkTab);
-        //             checkTab.addEventListener('input', (event) => {
-        //                 if (!event.target.checked) {
-        //                     checkTab.replaceWith(favicon);
-        //                 }
-        //             });
-        //         }
-        //     } else {
-        //         location.reload();
-        //     }
-        // });
-
-        // icons.append(closeIcon, reloadIcon);
-
-        // if (window.tabs.length > 1) {
-        //     icons.append(checkTabs);
-        // }
-
-        // windowTitle.append(title, icons);
-        // windowEl.append(windowTitle, renderWindowTabs(window));
-        // windowsListEl.append(windowEl);
-        windowsListEl.append(renderWindow(window, (i + 1), renderWindowTabs(window))); 
+    windows.forEach((window, i) => {
+        windowsListEl.append(renderWindow(window, (i + 1), renderWindowTabs(window)));
     })
 
     if (!root.querySelector('.list')) {
@@ -161,17 +62,19 @@ export function renderWindow(windowObj, windowIndex, tabsElement) {
         close();
     });
 
-    for(const key in assets) {
-        if(key !== 'edit') {
+    for (const key in assets) {
+        if (key !== 'edit') {
             const icon = document.createElement('img');
             icon.classList.add('icon');
             icon.src = assets[key].src;
             icon.title = assets[key].title;
             icon.alt = 'action_icon';
-            if(assets[key].windowEvent) {
+            if (assets[key].windowEvent) {
                 icon.addEventListener('click', () => {
                     switch (key) {
                         case 'close':
+                            assets[key].windowEvent(windowObj, windowIndex, tabsElement);
+                            break;
                         case 'reload':
                             assets[key].windowEvent(windowObj);
                             break;
@@ -181,12 +84,8 @@ export function renderWindow(windowObj, windowIndex, tabsElement) {
                     }
                 });
             }
-            if(key !== 'checkTabs') {
+            if (windowObj.tabs.length > 1) {
                 icons.append(icon);
-            } else {
-                if(windowObj.tabs.length > 1) {
-                    icons.append(icon);
-                }
             }
         }
     }
@@ -194,7 +93,7 @@ export function renderWindow(windowObj, windowIndex, tabsElement) {
     return windowElement;
 }
 
-function reorderWindows(windowIndex) {
+export function reorderWindows(windowIndex) {
     const arr = document.getElementsByClassName('title');
     for (let i = windowIndex; i < arr.length; i++) {
         arr[i].innerHTML = arr[i].innerHTML.replace(arr[i].innerHTML.charAt(8), (i + 1));
