@@ -176,7 +176,7 @@ export function renderWindow(windowObj, windowIndex, tabsElement) {
                             assets[key].windowEvent(windowObj);
                             break;
                         case 'checkTabs':
-                            assets[key].windowEvent(window, windowIndex, tabsElement);
+                            assets[key].windowEvent(windowObj, windowIndex, tabsElement);
                             break;
                     }
                 });
@@ -201,7 +201,7 @@ function reorderWindows(windowIndex) {
     }
 }
 
-function renderWindowTabs(window) {
+export function renderWindowTabs(window) {
     const currentTabsEl = document.createElement('div');
 
     window.tabs.forEach((el) => {

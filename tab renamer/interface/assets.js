@@ -1,4 +1,4 @@
-import { renderWindow } from "./script.js";
+import { renderWindow, renderWindowTabs } from "./script.js";
 
 export const assets = {
     close: {
@@ -43,7 +43,7 @@ export const assets = {
                     });
                 }
             } else {
-                console.log(renderWindow(window, windowIndex - 1, tabsElement));
+                document.getElementById(window.id).replaceWith(renderWindow(window, windowIndex, renderWindowTabs(window)));
             }
         }
     }
