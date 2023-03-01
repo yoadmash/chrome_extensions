@@ -37,7 +37,6 @@ function renderWindows(windows) {
 export function renderWindow(windowObj, windowIndex, tabsElement) {
     const windowElement = document.createElement('div');
     windowElement.setAttribute('id', windowObj.id);
-    windowElement.setAttribute('index', windowIndex);
     windowElement.classList.add('window');
 
     const windowTitleElement = document.createElement('div');
