@@ -62,27 +62,25 @@ export function renderWindow(windowObj, windowIndex, tabsElement) {
     });
 
     for (const key in assets) {
-        if (key !== 'edit') {
+        if (assets[key].windowEvent) {
             const icon = document.createElement('img');
             icon.classList.add('icon');
             icon.src = assets[key].src;
             icon.title = assets[key].title;
             icon.alt = 'action_icon';
-            if (assets[key].windowEvent) {
-                icon.addEventListener('click', () => {
-                    switch (key) {
-                        case 'close':
-                            assets[key].windowEvent(windowObj, windowIndex, tabsElement);
-                            break;
-                        case 'reload':
-                            assets[key].windowEvent(windowObj);
-                            break;
-                        case 'checkTabs':
-                            assets[key].windowEvent(windowObj, windowIndex, tabsElement);
-                            break;
-                    }
-                });
-            }
+            icon.addEventListener('click', () => {
+                switch (key) {
+                    case 'close':
+                        assets[key].windowEvent(windowObj, windowIndex, tabsElement);
+                        break;
+                    case 'reload':
+                        assets[key].windowEvent(windowObj);
+                        break;
+                    case 'checkTabs':
+                        assets[key].windowEvent(windowObj, windowIndex, tabsElement);
+                        break;
+                }
+            });
             if (windowObj.tabs.length > 1) {
                 icons.append(icon);
             }
