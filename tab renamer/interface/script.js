@@ -305,6 +305,7 @@ function renderSearch(search) {
         tab.classList = 'tab';
 
         tabTitle.innerText = el.title;
+        tabTitle.title = el.title;
         if (el.active && el.windowId === search.windowId) {
             tabTitle.classList.add('activeTab');
         }
