@@ -458,13 +458,13 @@ function renderOptions(options) {
                     }
                     reorderWindows(0);
                 } else {
-                    let incognitoWindows = await chrome.windows.getAll({
+                    let allWindows = await chrome.windows.getAll({
                         populate: true,
                         windowTypes: ['normal']
                     });
-                    incognitoWindows = incognitoWindows.filter(window => window.incognito);
-                    renderWindows(incognitoWindows);
-                    reorderWindows(0);
+                    const list = document.querySelector('.list');
+                    list.innerHTML = '';
+                    renderWindows(allWindows);
                 }
             }
         });
