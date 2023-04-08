@@ -11,7 +11,8 @@ async function loadAssets() {
     });
 
     storage = await chrome.storage.local.get();
-    if (!storage.options.incognito_windows) {
+    const currentWindow = await chrome.windows.getCurrent();
+    if (!storage.options.incognito_windows && !currentWindow.incognito) {
         windows = windows.filter(window => !window.incognito);
     }
 
@@ -289,6 +290,7 @@ export function renderWindowTabs(window) {
                 chrome.tabs.update(el.id, { active: true }, (tab) => {
                     chrome.windows.update(tab.windowId, { focused: true });
                 });
+                close();
             }
         });
 
@@ -419,18 +421,19 @@ function renderSearch(search) {
 
 async function options() {
     allowedIncognito = await chrome.extension.isAllowedIncognitoAccess();
-    renderOptions(storage.options);
+    await renderOptions(storage.options);
 }
 
-function renderOptions(options) {
+async function renderOptions(options) {
     const optionsEl = document.createElement('div');
     optionsEl.classList.add('options');
     const optionsMap = [
         { id: 'auto_scroll', label: 'Auto-Scroll to Active Tab', element_type: ['input', 'checkbox'] },
         { id: 'incognito_windows', label: 'Show Incognito Windows', element_type: ['input', 'checkbox'] }
     ]
+    const currentWindow = await chrome.windows.getCurrent();
     for (const option of optionsMap) {
-        if (option.id === 'incognito_windows' && !allowedIncognito) {
+        if (option.id === 'incognito_windows' && (!allowedIncognito || currentWindow.incognito)) {
             continue;
         }
         const label = document.createElement('label');
