@@ -188,13 +188,17 @@ export function renderWindowTabs(window) {
 
         tabTitle.addEventListener('click', () => {
             if (!el.url.match('https://gx-corner.opera.com/')) {
-                chrome.windows.update(window.id, {
-                    focused: true
-                }, () => {
-                    chrome.tabs.update(el.id, { active: true });
-                    location.reload();
+                // chrome.windows.update(window.id, {
+                //     focused: true
+                // }, () => {
+                //     chrome.tabs.update(el.id, { active: true });
+                //     location.reload();
+                // });
+
+                chrome.tabs.update(el.id, {active: true}, (tab) => {
+                    chrome.windows.update(tab.windowId, {focused: true});
                 });
-                close();
+                // close();
             }
         });
 
