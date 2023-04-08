@@ -46,7 +46,7 @@ export function renderWindow(windowObj, windowIndex, tabsElement) {
     title.classList.add('title');
     icons.classList.add('icons');
 
-    windowTitleElement.append(title, icons);
+    windowTitleElement.append(title, tabsElement.children.length > 1 ? icons : '');
 
     windowElement.append(windowTitleElement, tabsElement);
 
@@ -82,8 +82,6 @@ export function renderWindow(windowObj, windowIndex, tabsElement) {
                 }
             });
             if (windowObj.tabs.length > 1) {
-                icons.append(icon);
-            } else if(key === 'close') {
                 icons.append(icon);
             }
         }
