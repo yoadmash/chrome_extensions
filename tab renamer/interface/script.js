@@ -102,149 +102,6 @@ export function reorderWindows(windowIndex) {
     }
 }
 
-// export function renderWindowTabs(window) {
-//     const currentTabsEl = document.createElement('div');
-
-//     window.tabs.forEach((el) => {
-//         const tab = document.createElement('div');
-//         const checkTab = document.createElement('input');
-//         const favicon = document.createElement('img');
-//         const tabTitle = document.createElement('span')
-//         const icons = document.createElement('div');
-//         const closeIcon = document.createElement('img');
-//         const reloadIcon = document.createElement('img');
-//         const editIcon = document.createElement('img');
-
-//         tab.classList = 'tab';
-//         tab.setAttribute('id', el.id);
-//         tab.append(favicon, tabTitle, icons);
-
-//         icons.classList = 'icons';
-
-//         checkTab.classList = 'checkTab';
-//         checkTab.type = 'checkbox';
-
-//         favicon.classList = 'favicon';
-//         favicon.alt = 'favicon';
-//         if (el.status === 'complete') {
-//             favicon.src = (el.favIconUrl?.length !== 0 && el.favIconUrl) ? el.favIconUrl : chrome.runtime.getURL('icons/generic_tab.svg');
-//         } else {
-//             favicon.src = chrome.runtime.getURL('icons/generic_tab.svg');
-//         }
-
-//         if (window.tabs.length > 1) {
-//             tab.addEventListener('mouseenter', () => {
-//                 if (!checkTab.checked) {
-//                     favicon.replaceWith(checkTab);
-//                 }
-//             });
-//         }
-
-//         tab.addEventListener('mouseleave', () => {
-//             if (!checkTab.checked) {
-//                 checkTab.replaceWith(favicon);
-//             }
-//         });
-
-//         tabTitle.innerText = el.title;
-//         tabTitle.title = el.title;
-//         if (el.active && window.focused) {
-//             tabTitle.classList.add('activeTab');
-//         }
-
-//         editIcon.classList.add('icon');
-//         editIcon.src = `${chrome.runtime.getURL('icons/edit.svg')}`;
-//         editIcon.title = 'Edit title';
-//         editIcon.alt = 'edit';
-
-//         reloadIcon.classList.add('icon');
-//         reloadIcon.src = `${chrome.runtime.getURL('icons/reload.svg')}`;
-//         reloadIcon.title = 'Reload Tab';
-//         reloadIcon.alt = 'reload';
-//         reloadIcon.addEventListener('click', () => {
-//             chrome.tabs.reload(el.id);
-//         });
-
-//         closeIcon.classList.add('icon');
-//         closeIcon.src = `${chrome.runtime.getURL('icons/close.svg')}`;
-//         closeIcon.title = 'Close Tab';
-//         closeIcon.alt = 'close';
-//         closeIcon.addEventListener('click', () => {
-// const windowIndex = Array.from(document.querySelector('.list').children).indexOf(currentTabsEl.parentElement);
-// const currentWindowTitle = currentTabsEl.parentElement.querySelector('.windowTitle').querySelector('.title');
-// currentWindowTitle.innerHTML = `[Window ${windowIndex + 1}${(window.incognito) ? ' - incognito' : ''} | ${window.state} | ${currentTabsEl.children.length - 1} tabs]`;
-// if (currentTabsEl.children.length > 1) {
-//     chrome.tabs.remove(el.id);
-//     document.getElementById(el.id).remove();
-// } else {
-//     chrome.windows.remove(el.windowId);
-//     document.getElementById(el.windowId).remove();
-//     reorderWindows(windowIndex);
-// }
-//         });
-
-//         if (!el.url.match('https://gx-corner.opera.com/') && !el.url.match('chrome://*/')) {
-//             icons.append(editIcon, reloadIcon, closeIcon);
-//         } else if (el.url.match('chrome://*/')) {
-//             icons.append(reloadIcon, closeIcon)
-//         } else if (el.url.match('https://gx-corner.opera.com/')) {
-//             icons.append(reloadIcon);
-//         }
-
-//         tabTitle.addEventListener('click', () => {
-//             if (!el.url.match('https://gx-corner.opera.com/')) {
-//                 chrome.tabs.update(el.id, {active: true}, (tab) => {
-//                     chrome.windows.update(tab.windowId, {focused: true});
-//                 });
-//             }
-//         });
-
-//         editIcon.addEventListener('click', async () => {
-//             const editMode = (tab.childNodes[1].nodeName.toLocaleLowerCase() === 'span');
-//             let newEl = tab.children[1];
-//             if (editMode) {
-//                 let alreadyEditing = (document.querySelector('.list').querySelector("input[type='text']"));
-//                 if (alreadyEditing) {
-//                     const alreadyEditingTab = await chrome.tabs.get(Number(alreadyEditing?.parentElement.id));
-//                     const element = document.getElementById(alreadyEditingTab.id);
-//                     const oldTitle = document.createElement('span');
-//                     oldTitle.innerHTML = alreadyEditingTab.title;
-//                     if (alreadyEditingTab.active) {
-//                         oldTitle.classList.add('activeTab');
-//                     }
-//                     element.replaceChild(oldTitle, element.children[1]);
-//                 }
-//                 newEl = document.createElement('input');
-//                 newEl.type = 'text';
-//                 newEl.placeholder = 'Current Title: ' + tabTitle.innerText;
-//                 newEl.value = tabTitle.innerText;
-//                 tab.replaceChild(newEl, tab.children[1]);
-//                 newEl.focus();
-//                 newEl.setSelectionRange(0, newEl.value.length);
-//                 newEl.addEventListener('keypress', (event) => {
-//                     if (event.key === 'Enter') {
-//                         chrome.scripting.executeScript({
-//                             target: { tabId: el.id },
-//                             args: [newEl.value],
-//                             func: setTitle,
-//                         });
-//                         tabTitle.innerHTML = newEl.value;
-//                         tabTitle.title = newEl.value;
-//                         tab.replaceChild(tabTitle, newEl);
-//                     }
-//                 })
-//             } else {
-//                 tab.replaceChild(tabTitle, newEl);
-//             }
-//         });
-
-//         currentTabsEl.classList.add('currentTabs');
-//         currentTabsEl.append(tab);
-//     })
-
-//     return currentTabsEl;
-// }
-
 export function renderWindowTabs(window) {
     const tabsEl = document.createElement('div');
     tabsEl.classList.add('currentTabs');
@@ -442,9 +299,6 @@ async function renderOptions(options) {
     ]
     const currentWindow = await chrome.windows.getCurrent();
     for (const option of optionsMap) {
-        if (option.id === 'incognito_windows' && !allowedIncognito) {
-            continue;
-        }
         const label = document.createElement('label');
         label.setAttribute('id', option.id);
 
@@ -455,6 +309,14 @@ async function renderOptions(options) {
         if (option.id === 'incognito_windows' && currentWindow.incognito) {
             option.label = 'Show only incognito windows'
             element.checked = true;
+        }
+
+        if (option.id === 'incognito_windows' && !allowedIncognito) {
+            option.label += ' (missing incognito access)';
+            element.disabled = true;
+            label.append(element, option.label);
+            optionsEl.append(label);
+            continue;
         }
 
         element.addEventListener('click', async (event) => {
