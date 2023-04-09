@@ -12,8 +12,12 @@ async function loadAssets() {
 
     storage = await chrome.storage.local.get();
     const currentWindow = await chrome.windows.getCurrent();
-    if (!storage.options.incognito_windows && !currentWindow.incognito) {
-        windows = windows.filter(window => !window.incognito);
+    if (!currentWindow.incognito) {
+        if (!storage.options.incognito_windows) {
+            windows = windows.filter(window => !window.incognito);
+        }
+    } else {
+        windows = windows.filter(window => window.incognito);
     }
 
     search(windows);
@@ -166,17 +170,17 @@ export function reorderWindows(windowIndex) {
 //         closeIcon.title = 'Close Tab';
 //         closeIcon.alt = 'close';
 //         closeIcon.addEventListener('click', () => {
-            // const windowIndex = Array.from(document.querySelector('.list').children).indexOf(currentTabsEl.parentElement);
-            // const currentWindowTitle = currentTabsEl.parentElement.querySelector('.windowTitle').querySelector('.title');
-            // currentWindowTitle.innerHTML = `[Window ${windowIndex + 1}${(window.incognito) ? ' - incognito' : ''} | ${window.state} | ${currentTabsEl.children.length - 1} tabs]`;
-            // if (currentTabsEl.children.length > 1) {
-            //     chrome.tabs.remove(el.id);
-            //     document.getElementById(el.id).remove();
-            // } else {
-            //     chrome.windows.remove(el.windowId);
-            //     document.getElementById(el.windowId).remove();
-            //     reorderWindows(windowIndex);
-            // }
+// const windowIndex = Array.from(document.querySelector('.list').children).indexOf(currentTabsEl.parentElement);
+// const currentWindowTitle = currentTabsEl.parentElement.querySelector('.windowTitle').querySelector('.title');
+// currentWindowTitle.innerHTML = `[Window ${windowIndex + 1}${(window.incognito) ? ' - incognito' : ''} | ${window.state} | ${currentTabsEl.children.length - 1} tabs]`;
+// if (currentTabsEl.children.length > 1) {
+//     chrome.tabs.remove(el.id);
+//     document.getElementById(el.id).remove();
+// } else {
+//     chrome.windows.remove(el.windowId);
+//     document.getElementById(el.windowId).remove();
+//     reorderWindows(windowIndex);
+// }
 //         });
 
 //         if (!el.url.match('https://gx-corner.opera.com/') && !el.url.match('chrome://*/')) {
@@ -337,6 +341,11 @@ export function setTitle(newTitle) {
     document.title = newTitle;
 }
 
+function updateActiveWindowAndTab(windowId, tabId) {
+    document.getElementById(windowId).classList.add('active');
+    document.getElementById(tabId).classList.add('active');
+}
+
 function search(windows) {
     const search = document.createElement('div');
     const searchInput = document.createElement('input');
@@ -429,11 +438,11 @@ async function renderOptions(options) {
     optionsEl.classList.add('options');
     const optionsMap = [
         { id: 'auto_scroll', label: 'Auto-Scroll to Active Tab', element_type: ['input', 'checkbox'] },
-        { id: 'incognito_windows', label: 'Show Incognito Windows', element_type: ['input', 'checkbox'] }
+        { id: 'incognito_windows', label: 'Show incognito windows', element_type: ['input', 'checkbox'] }
     ]
     const currentWindow = await chrome.windows.getCurrent();
     for (const option of optionsMap) {
-        if (option.id === 'incognito_windows' && (!allowedIncognito || currentWindow.incognito)) {
+        if (option.id === 'incognito_windows' && !allowedIncognito) {
             continue;
         }
         const label = document.createElement('label');
@@ -443,6 +452,11 @@ async function renderOptions(options) {
         element.type = option.element_type[1];
         element.checked = options[option.id];
 
+        if (option.id === 'incognito_windows' && currentWindow.incognito) {
+            option.label = 'Show only incognito windows'
+            element.checked = true;
+        }
+
         element.addEventListener('click', async (event) => {
             options[option.id] = event.target.checked;
             chrome.storage.local.set({ options: options });
@@ -451,24 +465,43 @@ async function renderOptions(options) {
                     scrollToActiveTab(true);
                 }
             } else if (option.id === 'incognito_windows') {
-                if (!options[option.id]) {
-                    const arr = document.getElementsByClassName('window');
-                    for (let i = arr.length - 1; i >= 0; i--) {
-                        const window = await chrome.windows.get(Number(arr[i].id));
-                        if (window.incognito) {
-                            arr[i].remove();
+                if(!currentWindow.incognito) {
+                    if (!options[option.id]) {
+                        const arr = document.getElementsByClassName('window');
+                        for (let i = arr.length - 1; i >= 0; i--) {
+                            const window = await chrome.windows.get(Number(arr[i].id));
+                            if (window.incognito) {
+                                arr[i].remove();
+                            }
                         }
+                        reorderWindows(0);
+                    } else {
+                        let allWindows = await chrome.windows.getAll({
+                            populate: true,
+                            windowTypes: ['normal']
+                        });
+                        const activeWindow = allWindows.find(window => window.id === currentWindow.id);
+                        const activeTab = activeWindow.tabs.find(tab => tab.active);
+                        const list = document.querySelector('.list');
+                        list.innerHTML = '';
+                        renderWindows(allWindows);
+                        updateActiveWindowAndTab(activeWindow.id, activeTab.id);
                     }
-                    reorderWindows(0);
                 } else {
                     let allWindows = await chrome.windows.getAll({
                         populate: true,
                         windowTypes: ['normal']
                     });
+                    const activeWindow = allWindows.find(window => window.id === currentWindow.id);
+                    const activeTab = activeWindow.tabs.find(tab => tab.active);
                     const list = document.querySelector('.list');
                     list.innerHTML = '';
+                    if(element.checked) {
+                        allWindows = allWindows.filter(window => window.incognito);
+                    }
                     renderWindows(allWindows);
-                }
+                    updateActiveWindowAndTab(activeWindow.id, activeTab.id);
+                } 
             }
         });
 
