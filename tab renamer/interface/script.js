@@ -255,7 +255,6 @@ async function search() {
                 } else {
                     renderWindows(windows);
                 }
-                await updateActiveWindowAndTab();
             }
         });
     });
