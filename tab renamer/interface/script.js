@@ -27,7 +27,7 @@ async function loadAssets() {
     renderWindows(windows);
 }
 
-async function renderWindows(windows) {
+function renderWindows(windows) {
     const windowsListEl = (root.querySelector('.list')) ? root.querySelector('.list') : document.createElement('div');
     windowsListEl.classList = 'list';
 
@@ -57,6 +57,9 @@ export function renderWindow(windowObj, windowIndex, tabsElement) {
     windowElement.append(windowTitleElement, tabsElement);
 
     title.innerText = `[Window ${windowIndex}${(windowObj.incognito) ? ' - incognito' : ''} | ${windowObj.state} | ${windowObj.tabs.length} tabs]`;
+    if (windowObj.focused) {
+        title.classList.add('active');
+    }
     title.addEventListener('click', () => {
         chrome.windows.update(windowObj.id, {
             focused: true
@@ -141,6 +144,9 @@ export function renderWindowTabs(window) {
 
         tabTitle.innerText = el.title;
         tabTitle.title = el.title;
+        if (el.active && window.focused) {
+            tabTitle.classList.add('activeTab');
+        }
         tabTitle.addEventListener('click', () => {
             if (!el.url.match('https://gx-corner.opera.com/')) {
                 chrome.tabs.update(el.id, { active: true }, (tab) => {
@@ -249,6 +255,7 @@ async function search() {
                 } else {
                     renderWindows(windows);
                 }
+                await updateActiveWindowAndTab();
             }
         });
     });
@@ -356,6 +363,7 @@ async function renderOptions(options) {
                 } else {
                     renderWindows(allWindows.filter(window => !window.incognito));
                 }
+                await updateActiveWindowAndTab();
             } else if (option.id === 'only_incognito') {
                 document.querySelector('.list').remove();
                 if (!options.privacy[option.id]) {
@@ -363,6 +371,7 @@ async function renderOptions(options) {
                 } else {
                     renderWindows(allWindows.filter(window => window.incognito));
                 }
+                await updateActiveWindowAndTab();
             }
         });
 
