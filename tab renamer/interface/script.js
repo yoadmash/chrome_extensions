@@ -38,8 +38,6 @@ async function renderWindows(windows) {
     if (!root.querySelector('.list')) {
         root.append(windowsListEl);
     }
-
-    await updateActiveWindowAndTab();
 }
 
 export function renderWindow(windowObj, windowIndex, tabsElement) {
