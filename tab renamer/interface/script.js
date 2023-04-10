@@ -199,18 +199,6 @@ export function setTitle(newTitle) {
     document.title = newTitle;
 }
 
-async function updateActiveWindowAndTab() {
-    let allWindows = await chrome.windows.getAll({
-        populate: true,
-        windowTypes: ['normal']
-    });
-    const currentWindow = await chrome.windows.getCurrent();
-    const activeWindow = allWindows.find(window => window.id === currentWindow.id);
-    const activeTab = activeWindow.tabs.find(tab => tab.active);
-    document.getElementById(activeWindow.id).classList.add('active');
-    document.getElementById(activeTab.id).classList.add('active');
-}
-
 async function search() {
     let windows = await chrome.windows.getAll({
         populate: true,
@@ -362,7 +350,6 @@ async function renderOptions(options) {
                 } else {
                     renderWindows(allWindows.filter(window => !window.incognito));
                 }
-                await updateActiveWindowAndTab();
             } else if (option.id === 'only_incognito') {
                 document.querySelector('.list').remove();
                 if (!options.privacy[option.id]) {
@@ -370,7 +357,6 @@ async function renderOptions(options) {
                 } else {
                     renderWindows(allWindows.filter(window => window.incognito));
                 }
-                await updateActiveWindowAndTab();
             }
         });
 
