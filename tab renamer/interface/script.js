@@ -13,16 +13,16 @@ async function loadAssets() {
     storage = await chrome.storage.local.get();
     const currentWindow = await chrome.windows.getCurrent();
     if (!currentWindow.incognito) {
-        if(!storage.options.privacy.include_incognito) {
+        if (!storage.options.privacy.include_incognito) {
             windows = windows.filter(window => !window.incognito);
         }
     } else {
-        if(storage.options.privacy.only_incognito) {
+        if (storage.options.privacy.only_incognito) {
             windows = windows.filter(window => window.incognito);
         }
     }
 
-    // search();
+    await search();
     await options();
     renderWindows(windows);
 }
@@ -211,7 +211,12 @@ async function updateActiveWindowAndTab() {
     document.getElementById(activeTab.id).classList.add('active');
 }
 
-function search() {
+async function search() {
+    let windows = await chrome.windows.getAll({
+        populate: true,
+        windowTypes: ['normal']
+    });
+
     const search = document.createElement('div');
     const searchInput = document.createElement('input');
 
@@ -221,12 +226,17 @@ function search() {
     searchInput.type = 'text';
     searchInput.placeholder = 'search tabs';
     searchInput.addEventListener('input', async () => {
-        const filteredWindows = windows.filter(window => window.tabs.find(tab => tab.title.toLocaleLowerCase().includes(searchInput.value.toLocaleLowerCase())));
+        let filteredWindows = windows.filter(window => window.tabs.find(tab => tab.title.toLocaleLowerCase().includes(searchInput.value.toLocaleLowerCase())));
         chrome.windows.getCurrent({
             populate: true,
             windowTypes: ['normal']
-        }).then(window => {
+        }).then(async window => {
             const search = { windowId: window.id, tabs: [] };
+            if (!window.incognito && !storage.options.privacy.include_incognito) {
+                filteredWindows = filteredWindows.filter(window => !window.incognito);
+            } else if (window.incognito && storage.options.privacy.only_incognito) {
+                filteredWindows = filteredWindows.filter(window => window.incognito);
+            }
             for (const window of filteredWindows) {
                 for (const tab of window.tabs) {
                     if (tab.title.toLocaleLowerCase().includes(searchInput.value.toLocaleLowerCase()) && !tab.url.match('https://gx-corner.opera.com/')) {
@@ -238,8 +248,14 @@ function search() {
                 renderSearch(search, searchInput.value);
             } else {
                 document.querySelector('.list').remove();
-                renderWindows(windows);
-                updateActiveWindowAndTab();
+                if (!window.incognito && !storage.options.privacy.include_incognito) {
+                    renderWindows(windows.filter(window => !window.incognito));
+                } else if (window.incognito && storage.options.privacy.only_incognito) {
+                    renderWindows(windows.filter(window => window.incognito));
+                } else {
+                    renderWindows(windows);
+                }
+                await updateActiveWindowAndTab();
             }
         });
     });
@@ -323,7 +339,7 @@ async function renderOptions(options) {
         element.type = option.element_type[1];
         element.checked = (option.id === 'include_incognito' || option.id === 'only_incognito') ? options.privacy[option.id] : options[option.id];
 
-        if(option.id === 'include_incognito' && !allowedIncognito) {
+        if (option.id === 'include_incognito' && !allowedIncognito) {
             option.label += ' (missing incognito permission)';
             element.disabled = true;
         }
@@ -335,12 +351,12 @@ async function renderOptions(options) {
                 options[option.id] = event.target.checked;
             }
             chrome.storage.local.set({ options: options });
-            
+
             if (option.id === 'auto_scroll') {
                 if (options[option.id]) {
                     scrollToActiveTab(true);
                 }
-            } else if(option.id === 'include_incognito') {
+            } else if (option.id === 'include_incognito') {
                 document.querySelector('.list').remove();
                 if (options.privacy[option.id]) {
                     renderWindows(allWindows);
@@ -360,14 +376,14 @@ async function renderOptions(options) {
         });
 
         label.append(element, option.label);
-        switch(label.id) {
+        switch (label.id) {
             case 'include_incognito':
-                if(!currentWindow.incognito) {
+                if (!currentWindow.incognito) {
                     optionsEl.append(label);
                 }
                 break;
             case 'only_incognito':
-                if(currentWindow.incognito && allowedIncognito) {
+                if (currentWindow.incognito && allowedIncognito) {
                     optionsEl.append(label);
                 }
                 break;
