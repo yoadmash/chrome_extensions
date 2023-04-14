@@ -91,7 +91,7 @@ export const assets = {
             if (!selectedTabs) {
                 chrome.windows.remove(window.id);
                 document.getElementById(window.id).remove();
-                reorderWindows(windowIndex - 1);
+                reorderWindows();
             } else {
                 const arr = tabsElement.querySelectorAll('.checkTab');
                 for (let j = arr.length - 1; j >= 0; j--) {
@@ -104,21 +104,22 @@ export const assets = {
                 }
                 if (tabsElement.children.length === 0) {
                     document.getElementById(window.id).remove();
+                    reorderWindows();
                 }
             }
         },
         tabEvent: (tab, window, tabsEl) => {
             const windowIndex = Array.from(document.querySelector('.list').children).indexOf(tabsEl.parentElement);
-            const currentWindowTitle = tabsEl.parentElement.querySelector('.windowTitle').querySelector('.title');
-            currentWindowTitle.innerHTML = `[Window ${windowIndex + 1}${(window.incognito) ? ' - incognito' : ''} | ${window.state} | ${tabsEl.children.length - 1} tabs]`;
             if (tabsEl.children.length > 1) {
+                const currentWindowTitle = tabsEl.parentElement.querySelector('.windowTitle').querySelector('.title');
+                currentWindowTitle.innerHTML = `[Window ${windowIndex + 1}${(window.incognito) ? ' - incognito' : ''} | ${window.state} | ${tabsEl.children.length - 1} tabs]`;
                 chrome.tabs.remove(tab.id);
                 document.getElementById(tab.id).remove();
             } else {
-                chrome.windows.remove(tab.windowId);
-                document.getElementById(tab.windowId).remove();
-                reorderWindows(windowIndex);
+                chrome.windows.remove(window.id);
+                document.getElementById(window.id).remove();
             }
+            reorderWindows();
         }
     },
 }
