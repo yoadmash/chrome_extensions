@@ -25,6 +25,8 @@ async function render() {
             } else {
                 windowsToRender = windows_arr;
             }
+        } else {
+            windowsToRender = windows_arr;
         }
     } else {
         if (storage.options.privacy.only_incognito) {
@@ -332,25 +334,31 @@ async function renderOptions(options) {
         element.checked = (option.id === 'include_incognito' || option.id === 'only_incognito') ? options.privacy[option.id] : options[option.id];
 
         if (option.id === 'include_incognito' && !allowedIncognito) {
-            option.label += ' (missing incognito permission)';
+            label.title = 'missing incognito permission';
             element.disabled = true;
         }
 
         element.addEventListener('click', async (event) => {
             if (option.id === 'include_incognito' || option.id === 'only_incognito') {
-                options.privacy[option.id] = event.target.checked;
+                if(allowedIncognito) {
+                    options.privacy[option.id] = event.target.checked;
+                }
             } else {
                 options[option.id] = event.target.checked;
             }
             chrome.storage.local.set({ options: options });
-
+           
             if (option.id === 'auto_scroll') {
                 if (options[option.id]) {
                     scrollToActiveTab(true);
                 }
             }
-            else if (option.id === 'include_incognito' || option.id === 'only_incognito') {
-                await render();
+            else if ((option.id === 'include_incognito' || option.id === 'only_incognito')) {
+                if(allowedIncognito) {
+                    await render();
+                } else {
+                    root.innerHTML = '<h1 style="text-align: center; font-size: 100px;">🖕</h1>';
+                }
             }
         });
 
