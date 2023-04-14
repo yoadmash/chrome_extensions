@@ -96,9 +96,9 @@ export function renderWindow(windowObj, windowIndex, tabsElement) {
                     case 'reload':
                         assets[key].windowEvent(windowObj);
                         break;
-                    // case 'checkTabs':
-                    //     assets[key].windowEvent(windowObj, windowIndex, tabsElement);
-                    //     break;
+                    case 'checkTabs':
+                        assets[key].windowEvent(windowObj, windowIndex, tabsElement);
+                        break;
                 }
             });
             if (windowObj.tabs.length > 1) {
@@ -135,19 +135,19 @@ export function renderWindowTabs(windowObj) {
         tab.classList.add('tab');
         tab.setAttribute('id', el.id);
         tab.append(favicon, tabTitle, icons);
-        // if (windowObj.tabs.length > 1) {
-        //     tab.addEventListener('mouseenter', () => {
-        //         if (!checkTab.checked) {
-        //             favicon.replaceWith(checkTab);
-        //         }
-        //     });
-        // }
+        if (windowObj.tabs.length > 1) {
+            tab.addEventListener('mouseenter', () => {
+                if (!checkTab.checked) {
+                    favicon.replaceWith(checkTab);
+                }
+            });
+        }
 
-        // tab.addEventListener('mouseleave', () => {
-        //     if (!checkTab.checked) {
-        //         checkTab.replaceWith(favicon);
-        //     }
-        // });
+        tab.addEventListener('mouseleave', () => {
+            if (!checkTab.checked) {
+                checkTab.replaceWith(favicon);
+            }
+        });
 
         favicon.classList.add('favicon');
         favicon.alt = 'favicon';
