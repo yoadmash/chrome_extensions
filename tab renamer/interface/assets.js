@@ -94,15 +94,21 @@ export const assets = {
                 reorderWindows();
             } else {
                 const arr = tabsElement.querySelectorAll('.checkTab');
-                for (let j = arr.length - 1; j >= 0; j--) {
-                    const tabToClose = await chrome.tabs.get(Number(arr[j].parentElement.id));
-                    if (!tabToClose.url.match('https://gx-corner.opera.com/')) {
-                        chrome.tabs.remove(tabToClose.id);
-                        document.getElementById(tabToClose.id).remove();
-                        document.getElementById(window.id).querySelector('.title').innerText = `[Window ${windowIndex}${(window.incognito) ? ' - incognito' : ''} | ${window.state} | ${tabsElement.children.length} tabs]`;
+                if (arr.length !== tabsElement.children.length) {
+                    for (let j = 0; j < arr.length; j++) {
+                        const tabToClose = await chrome.tabs.get(Number(arr[j].parentElement.id));
+                        if (!tabToClose.url.match('https://gx-corner.opera.com/')) {
+                            chrome.tabs.remove(tabToClose.id).then(() => {
+                                document.getElementById(tabToClose.id).remove();
+                                document.getElementById(window.id).querySelector('.title').innerText = `[Window ${windowIndex}${(window.incognito) ? ' - incognito' : ''} | ${window.state} | ${tabsElement.children.length} tabs]`;
+                            });
+                        }
                     }
-                }
-                if (tabsElement.children.length === 0) {
+                    if (tabsElement.children.length - arr.length === 1) {
+                        document.getElementById(window.id).querySelector('.icons').remove();
+                    }
+                } else {
+                    chrome.windows.remove(window.id);
                     document.getElementById(window.id).remove();
                     reorderWindows();
                 }
