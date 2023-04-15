@@ -24,6 +24,16 @@ export const assets = {
             }
         }
     },
+    saveWindow: {
+        title_window: 'Save Window',
+        src: `${chrome.runtime.getURL(`icons/save_window.svg`)}`,
+        windowEvent: async (window) => {
+            const storage = await chrome.storage.local.get();
+            const savedWindows = storage.savedWindows;
+            savedWindows.push(window);
+            chrome.storage.local.set({savedWindows: savedWindows});
+        }
+    },
     edit: {
         title_tab: 'Edit Title',
         src: `${chrome.runtime.getURL(`icons/edit.svg`)}`,

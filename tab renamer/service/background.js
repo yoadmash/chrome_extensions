@@ -8,6 +8,7 @@ chrome.runtime.onInstalled.addListener(async () => {
             }
         },
         openedWindows: chrome.storage.local.set({openedWindows: await chrome.windows.getAll({populate: true, windowTypes: ['normal']})}),
+        savedWindows: [],
     });
 });
 

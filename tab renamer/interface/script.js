@@ -101,6 +101,9 @@ export function renderWindow(windowObj, windowIndex, tabsElement) {
                     case 'checkTabs':
                         assets[key].windowEvent(windowObj, windowIndex, tabsElement);
                         break;
+                    case 'saveWindow':
+                        assets[key].windowEvent(windowObj);
+                        break;
                 }
             });
             if (windowObj.tabs.length > 1) {
@@ -320,6 +323,7 @@ async function renderOptions(options) {
 
     const optionsMap = [
         { id: 'auto_scroll', label: 'Auto-Scroll to Active Tab', element_type: ['input', 'checkbox'] },
+        { id: 'saved_windows', label: 'Show saved windows', element_type: ['input', 'checkbox'] },
         { id: 'include_incognito', label: 'Show incognito windows', element_type: ['input', 'checkbox'] },
         { id: 'only_incognito', label: 'Show only incognito windows', element_type: ['input', 'checkbox'] }
     ]
@@ -339,21 +343,24 @@ async function renderOptions(options) {
         }
 
         element.addEventListener('click', async (event) => {
-            if (option.id === 'include_incognito' || option.id === 'only_incognito') {
-                if(allowedIncognito) {
-                    options.privacy[option.id] = event.target.checked;
+            if(option.id !== 'saved_windows') {
+                if (option.id === 'include_incognito' || option.id === 'only_incognito') {
+                    if(allowedIncognito) {
+                        options.privacy[option.id] = event.target.checked;
+                    }
+                } else {
+                    options[option.id] = event.target.checked;
                 }
-            } else {
-                options[option.id] = event.target.checked;
+                chrome.storage.local.set({ options: options });
             }
-            chrome.storage.local.set({ options: options });
            
             if (option.id === 'auto_scroll') {
                 if (options[option.id]) {
                     scrollToActiveTab(true);
                 }
-            }
-            else if ((option.id === 'include_incognito' || option.id === 'only_incognito')) {
+            } else if( option.id === 'saved_windows') {
+                console.log(element.checked);
+            } else if ((option.id === 'include_incognito' || option.id === 'only_incognito')) {
                 if(allowedIncognito) {
                     await render();
                 } else {
