@@ -78,8 +78,8 @@ export const assets = {
                 chrome.tabs.reload(tab.id);
             });
         },
-        tabEvent: (tab) => {
-            chrome.tabs.reload(tab.id);
+        tabEvent: (tab, event) => {
+            chrome.tabs.reload(tab.id, {bypassCache: event.shiftKey});
         }
     },
     close: {

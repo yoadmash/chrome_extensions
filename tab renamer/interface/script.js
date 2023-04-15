@@ -187,13 +187,13 @@ export function renderWindowTabs(windowObj) {
                 icon.src = assets[key].src;
                 icon.title = assets[key].title_tab;
                 icon.alt = 'tab_action_icon';
-                icon.addEventListener('click', () => {
+                icon.addEventListener('click', (event) => {
                     switch (key) {
                         case 'close':
                             assets[key].tabEvent(el, windowObj, tabsEl);
                             break;
                         case 'reload':
-                            assets[key].tabEvent(el);
+                            assets[key].tabEvent(el, event);
                             break;
                         case 'edit':
                             assets[key].tabEvent(el, tab, tabTitle);
