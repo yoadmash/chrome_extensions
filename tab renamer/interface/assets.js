@@ -3,7 +3,7 @@ import { renderWindow, renderWindowTabs, reorderWindows, setTitle } from "./scri
 export const assets = {
     checkTabs: {
         title_window: 'Check \\ Uncheck All Tabs',
-        src: `${chrome.runtime.getURL(`icons/checkTabs.svg`)}`,
+        src: `${chrome.runtime.getURL(`icons/check_tabs.svg`)}`,
         windowEvent: (window, windowIndex, tabsElement) => {
             if (tabsElement.contains(tabsElement.querySelector('.favicon'))) {
                 for (const tab of tabsElement.children) {
@@ -31,6 +31,16 @@ export const assets = {
             const storage = await chrome.storage.local.get();
             const savedWindows = storage.savedWindows;
             savedWindows.push(window);
+            chrome.storage.local.set({savedWindows: savedWindows});
+        }
+    },
+    deleteSavedWindow :{
+        title_window: 'Delete',
+        src: `${chrome.runtime.getURL(`icons/delete_saved_window.svg`)}`,
+        windowEvent: async (window) => {
+            const storage = await chrome.storage.local.get();
+            let savedWindows = storage.savedWindows;
+            savedWindows = savedWindows.filter(win => JSON.stringify(win) !== JSON.stringify(window));
             chrome.storage.local.set({savedWindows: savedWindows});
         }
     },
@@ -88,8 +98,8 @@ export const assets = {
                 chrome.tabs.reload(tab.id);
             });
         },
-        tabEvent: (tab, event) => {
-            chrome.tabs.reload(tab.id, {bypassCache: event.shiftKey});
+        tabEvent: (tab) => {
+            chrome.tabs.reload(tab.id);
         }
     },
     close: {
