@@ -31,17 +31,17 @@ export const assets = {
             const storage = await chrome.storage.local.get();
             const savedWindows = storage.savedWindows;
             savedWindows.push(window);
-            chrome.storage.local.set({savedWindows: savedWindows});
+            chrome.storage.local.set({ savedWindows: savedWindows });
         }
     },
-    deleteSavedWindow :{
+    deleteSavedWindow: {
         title_window: 'Delete',
         src: `${chrome.runtime.getURL(`icons/delete_saved_window.svg`)}`,
         windowEvent: async (window) => {
             const storage = await chrome.storage.local.get();
             let savedWindows = storage.savedWindows;
             savedWindows = savedWindows.filter(win => JSON.stringify(win) !== JSON.stringify(window));
-            chrome.storage.local.set({savedWindows: savedWindows});
+            chrome.storage.local.set({ savedWindows: savedWindows });
         }
     },
     edit: {

@@ -63,7 +63,7 @@ export function renderWindow(windowObj, windowIndex, tabsElement) {
     title.classList.add('title');
     icons.classList.add('icons');
 
-    windowTitleElement.append(title, icons);
+    windowTitleElement.append(title);
 
     windowElement.append(windowTitleElement, tabsElement);
 
@@ -87,7 +87,7 @@ export function renderWindow(windowObj, windowIndex, tabsElement) {
         } else {
             const urls = [];
             windowObj.tabs.forEach(tab => {
-                if(!tab.url.match('https://gx-corner.opera.com/')) {
+                if (!tab.url.match('https://gx-corner.opera.com/')) {
                     urls.push(tab.url);
                 }
             });
@@ -102,6 +102,18 @@ export function renderWindow(windowObj, windowIndex, tabsElement) {
         }
     });
 
+    if(show_saved_windows) {
+        windowTitleElement.addEventListener('mouseenter', () => {
+            windowTitleElement.append(icons);
+        });
+    
+        windowTitleElement.addEventListener('mouseleave', () => {
+            icons.remove();
+        });
+    } else {
+        windowTitleElement.append(icons);
+    }
+
     for (const key in assets) {
         if (assets[key].windowEvent) {
             const icon = document.createElement('img');
@@ -109,14 +121,14 @@ export function renderWindow(windowObj, windowIndex, tabsElement) {
             icon.src = assets[key].src;
             icon.title = assets[key].title_window;
             icon.alt = 'window_action_icon';
-            if(!show_saved_windows) {
+            if (!show_saved_windows) {
                 if (windowObj.tabs.length < 2 && key !== 'saveWindow') {
                     continue;
-                } else if(key === 'deleteSavedWindow') {
+                } else if (key === 'deleteSavedWindow') {
                     continue;
                 }
             } else {
-                if(key !== 'deleteSavedWindow') {
+                if (key !== 'deleteSavedWindow') {
                     continue;
                 }
             }
@@ -230,7 +242,7 @@ export function renderWindowTabs(windowObj) {
 
         icons.classList.add('icons');
 
-        if(!show_saved_windows) {
+        if (!show_saved_windows) {
             for (const key in assets) {
                 if (assets[key].tabEvent) {
                     const icon = document.createElement('img');
@@ -432,7 +444,7 @@ async function renderOptions(options) {
                 }
                 break;
             case 'auto_scroll':
-                if(!show_saved_windows) {
+                if (!show_saved_windows) {
                     optionsEl.append(label);
                 }
                 break;
