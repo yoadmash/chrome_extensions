@@ -223,11 +223,13 @@ export function renderWindowTabs(windowObj) {
             }).catch((err) => console.log(err));
         }
         tabTitle.addEventListener('click', () => {
-            if (!el.url.match('https://gx-corner.opera.com/') && !show_saved_windows) {
-                chrome.tabs.update(el.id, { active: true }, (tab) => {
-                    chrome.windows.update(tab.windowId, { focused: true });
-                });
-                close();
+            if (!show_saved_windows) {
+                if(!el.url.match('https://gx-corner.opera.com/')) {
+                    chrome.tabs.update(el.id, { active: true }, (tab) => {
+                        chrome.windows.update(tab.windowId, { focused: true });
+                    });
+                    close();
+                }
             } else {
                 chrome.windows.create({
                     focused: true,

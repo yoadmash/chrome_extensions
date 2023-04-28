@@ -1,15 +1,18 @@
 chrome.runtime.onInstalled.addListener(async () => {
-    chrome.storage.local.set({
-        options: {
-            auto_scroll: true,
-            privacy: {
-                include_incognito: false,
-                only_incognito: true
-            }
-        },
-        openedWindows: chrome.storage.local.set({openedWindows: await chrome.windows.getAll({populate: true, windowTypes: ['normal']})}),
-        savedWindows: [],
-    });
+    const data = await chrome.storage.local.get();
+    if(Object.entries(data).length === 0) {
+        chrome.storage.local.set({
+            options: {
+                auto_scroll: true,
+                privacy: {
+                    include_incognito: false,
+                    only_incognito: true
+                }
+            },
+            openedWindows: chrome.storage.local.set({openedWindows: await chrome.windows.getAll({populate: true, windowTypes: ['normal']})}),
+            savedWindows: [],
+        });
+    }
 });
 
 chrome.windows.onCreated.addListener(async () => {
