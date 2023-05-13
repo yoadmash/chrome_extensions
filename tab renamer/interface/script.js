@@ -18,7 +18,11 @@ async function render() {
 
     if (show_saved_windows) {
         await options();
-        windowsToRender = storage.savedWindows;
+        if(!currentWindow.incognito) {
+            windowsToRender = (storage.options.privacy.include_incognito) ? storage.savedWindows : storage.savedWindows.filter(savedWindow => !savedWindow.incognito);
+        } else {
+            windowsToRender = (!storage.options.privacy.only_incognito) ? storage.savedWindows : storage.savedWindows.filter(savedWindow => savedWindow.incognito);
+        }
     } else {
         await search();
         await options();
@@ -384,14 +388,23 @@ async function renderOptions(options) {
     const optionsEl = document.createElement('div');
     optionsEl.classList.add('options');
 
+    const currentWindow = await chrome.windows.getCurrent();
+
+    function showSavedWindowsCount() {
+        if(!currentWindow.incognito) {
+            return (storage.options.privacy.include_incognito) ? storage.savedWindows.length : storage.savedWindows.filter(savedWindow => !savedWindow.incognito).length;
+        } else {
+            return (!storage.options.privacy.only_incognito) ? storage.savedWindows.length : storage.savedWindows.filter(savedWindow => savedWindow.incognito).length;
+        }
+    }
+
     const optionsMap = [
         { id: 'auto_scroll', label: 'Auto-Scroll to Active Tab', element_type: ['input', 'checkbox'] },
-        { id: 'saved_windows', label: `Show saved windows (${storage.savedWindows.length})`, element_type: ['input', 'checkbox'] },
+        { id: 'saved_windows', label: `Show saved windows (${showSavedWindowsCount()})`, element_type: ['input', 'checkbox'] },
         { id: 'include_incognito', label: 'Show incognito windows', element_type: ['input', 'checkbox'] },
         { id: 'only_incognito', label: 'Show only incognito windows', element_type: ['input', 'checkbox'] }
     ]
 
-    const currentWindow = await chrome.windows.getCurrent();
     for (const option of optionsMap) {
         const label = document.createElement('label');
         label.setAttribute('id', option.id);
