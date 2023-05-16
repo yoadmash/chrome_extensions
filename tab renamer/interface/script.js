@@ -72,7 +72,7 @@ export function renderWindow(windowObj, windowIndex, tabsElement) {
     windowElement.append(windowTitleElement, tabsElement);
 
     if (!show_saved_windows) {
-        title.innerText = `[Window ${windowIndex}${(windowObj.incognito) ? ' - incognito' : ''} | ${windowObj.state} | ${windowObj.tabs.length} tabs]`;
+        title.innerText = `[Window ${windowIndex}${(windowObj.incognito) ? ' - incognito' : ''} | ${windowObj.state}${(windowObj.tabs.length > 1) ? ` | ${windowObj.tabs.length} tabs` : ''}]`;
         chrome.windows.getCurrent().then((currentWindow) => {
             if (currentWindow.id === windowObj.id) {
                 title.classList.add('active');
@@ -170,7 +170,7 @@ export function reorderWindows() {
         const windowId = title.parentElement.parentElement.id;
         const tabs = title.parentElement.parentElement.querySelector('.currentTabs').children;
         chrome.windows.get(Number(windowId), { populate: true }, (window) => {
-            title.innerText = `[Window ${i + 1}${(window.incognito) ? ' - incognito' : ''} | ${window.state} | ${tabs.length} tabs]`;
+            title.innerText = `[Window ${i + 1}${(window.incognito) ? ' - incognito' : ''} | ${window.state}${(tabs.length > 1) ? ` | ${tabs.length} tabs` : ''}]`;
         });
     });
 }

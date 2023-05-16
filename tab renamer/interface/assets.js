@@ -135,10 +135,10 @@ export const assets = {
             }
         },
         tabEvent: (tab, window, tabsEl) => {
-            const windowIndex = Array.from(document.querySelector('.list').children).indexOf(tabsEl.parentElement);
+            // const windowIndex = Array.from(document.querySelector('.list').children).indexOf(tabsEl.parentElement);
             if (tabsEl.children.length > 1) {
-                const currentWindowTitle = tabsEl.parentElement.querySelector('.windowTitle').querySelector('.title');
-                currentWindowTitle.innerHTML = `[Window ${windowIndex + 1}${(window.incognito) ? ' - incognito' : ''} | ${window.state} | ${tabsEl.children.length - 1} tabs]`;
+                // const currentWindowTitle = tabsEl.parentElement.querySelector('.windowTitle').querySelector('.title');
+                // currentWindowTitle.innerHTML = `[Window ${windowIndex + 1}${(window.incognito) ? ' - incognito' : ''} | ${window.state}${(tabsEl.children.length - 1 !== 1) ? `${tabsEl.children.length - 1} tabs` : ''}]`;
                 chrome.tabs.remove(tab.id);
                 document.getElementById(tab.id).remove();
             } else {
