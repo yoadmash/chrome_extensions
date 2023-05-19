@@ -37,7 +37,6 @@ async function render() {
         }
     }
     renderWindows(windowsToRender);
-    scrollToActiveTab(storage.options.auto_scroll);
 }
 
 async function updateOpenedWindows() {
@@ -485,4 +484,5 @@ function scrollToActiveTab(auto_scroll) {
 
 window.onload = async () => {
     await render();
+    scrollToActiveTab(storage.options.auto_scroll);
 }
