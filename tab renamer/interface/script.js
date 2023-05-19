@@ -18,10 +18,14 @@ async function render() {
 
     if (show_saved_windows) {
         await options();
-        if(!currentWindow.incognito) {
-            windowsToRender = (storage.options.privacy.include_incognito) ? storage.savedWindows : storage.savedWindows.filter(savedWindow => !savedWindow.incognito);
+        if(allowedIncognito) {
+            if(!currentWindow.incognito) {
+                windowsToRender = (storage.options.privacy.include_incognito) ? storage.savedWindows : storage.savedWindows.filter(savedWindow => !savedWindow.incognito);
+            } else {
+                windowsToRender = (!storage.options.privacy.only_incognito) ? storage.savedWindows : storage.savedWindows.filter(savedWindow => savedWindow.incognito);
+            }
         } else {
-            windowsToRender = (!storage.options.privacy.only_incognito) ? storage.savedWindows : storage.savedWindows.filter(savedWindow => savedWindow.incognito);
+            windowsToRender = storage.savedWindows.filter(savedWindow => !savedWindow.incognito);
         }
     } else {
         await search();
@@ -390,10 +394,14 @@ async function renderOptions(options) {
     const currentWindow = await chrome.windows.getCurrent();
 
     function showSavedWindowsCount() {
-        if(!currentWindow.incognito) {
-            return (storage.options.privacy.include_incognito) ? storage.savedWindows.length : storage.savedWindows.filter(savedWindow => !savedWindow.incognito).length;
+        if(allowedIncognito) {
+            if(!currentWindow.incognito) {
+                return (storage.options.privacy.include_incognito) ? storage.savedWindows.length : storage.savedWindows.filter(savedWindow => !savedWindow.incognito).length;
+            } else {
+                return (!storage.options.privacy.only_incognito) ? storage.savedWindows.length : storage.savedWindows.filter(savedWindow => savedWindow.incognito).length;
+            }
         } else {
-            return (!storage.options.privacy.only_incognito) ? storage.savedWindows.length : storage.savedWindows.filter(savedWindow => savedWindow.incognito).length;
+            return storage.savedWindows.filter(savedWindow => !savedWindow.incognito).length;
         }
     }
 
@@ -414,6 +422,7 @@ async function renderOptions(options) {
 
         if (option.id === 'include_incognito' && !allowedIncognito) {
             label.title = 'missing incognito permission';
+            element.checked = false;
             element.disabled = true;
         }
 
