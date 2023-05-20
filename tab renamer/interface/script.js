@@ -303,9 +303,8 @@ async function search() {
     searchInput.classList.add('searchInput');
     searchInput.type = 'text';
     searchInput.placeholder = 'search tabs';
-    searchInput.addEventListener('input', async () => {
+    searchInput.addEventListener('input', async (event) => {
         storage = await chrome.storage.local.get();
-        console.log(storage.openedWindows);
         let filteredWindows = storage.openedWindows.filter(window => window.tabs.find(tab => tab.title.toLocaleLowerCase().includes(searchInput.value.toLocaleLowerCase())));
         chrome.windows.getCurrent({
             populate: true,
@@ -330,6 +329,12 @@ async function search() {
                 await render();
             }
         });
+        if(event.target.value === 'savedwindowshistory') {
+            location.href = chrome.runtime.getURL('interface/deletedSavedWindows.html');
+        } else if (event.target.value === 'clearsavedwindowshistory') {
+            chrome.storage.local.set({deletedSavedWindows: []});
+            await render();
+        }
     });
 
     search.append(searchInput);

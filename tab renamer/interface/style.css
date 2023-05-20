@@ -32,8 +32,7 @@ body {
 
 label {
     display: flex;
-    flex-direction: row;
-    align-items: center;
+    align-items: stretch;
 }
 
 .search {
@@ -147,4 +146,14 @@ label {
 
 .checkTab {
     width: 3% !important;
+}
+
+.deletedWindows a {
+    color: crimson;
+    font-weight: bold;
+    text-decoration: none;
+}
+
+.deletedWindows > .top-nav {
+    margin-bottom: 10px;
 }
