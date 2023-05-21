@@ -157,3 +157,7 @@ label {
 .deletedWindows > .top-nav {
     margin-bottom: 10px;
 }
+
+.deletedWindows > .list > h3 {
+    text-align: center;
+}

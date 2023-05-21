@@ -4,7 +4,7 @@ let storage = undefined;
 
 window.onload = async () => {
     storage = await chrome.storage.local.get();
-    storage.deletedSavedWindows.forEach((obj) => list.append(renderDeletedWindow(obj, renderDeletedWindowTabs(obj))));
+    render();
 }
 
 function renderDeletedWindow(deletedWindowObj, tabsElement) {
@@ -66,4 +66,14 @@ function renderDeletedWindowTabs(deletedWindowObj) {
     });
 
     return tabsEl;
+}
+
+function render() {
+    if(storage.deletedSavedWindows.length > 0) {
+        storage.deletedSavedWindows.forEach((obj) => list.append(renderDeletedWindow(obj, renderDeletedWindowTabs(obj))));
+    } else {
+        const empty_list_message = document.createElement('h3');
+        empty_list_message.innerText = 'Empty';
+        list.append(empty_list_message);
+    }
 }
