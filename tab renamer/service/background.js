@@ -28,7 +28,6 @@ chrome.windows.onRemoved.addListener((windowId) => {
         const openedWindows = data.openedWindows;
         const deletedSavedWindows = data.deletedSavedWindows;
         const closedIncognitoWindow = openedWindows.find(window => window.id === windowId && window.incognito);
-        console.log(closedIncognitoWindow);
         if(closedIncognitoWindow) {
             deletedSavedWindows.push(closedIncognitoWindow);
         }
