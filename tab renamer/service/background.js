@@ -23,22 +23,32 @@ chrome.runtime.onStartup.addListener(async () => {
     chrome.storage.local.set({deletedSavedWindows: deletedSavedWindows});
 });
 
-chrome.windows.onCreated.addListener(async () => {
-    chrome.storage.local.set({openedWindows: await chrome.windows.getAll({populate: true, windowTypes: ['normal']})});
+chrome.windows.onRemoved.addListener((windowId) => {
+    chrome.storage.local.get().then(async (data) => {
+        const openedWindows = data.openedWindows;
+        const deletedSavedWindows = data.deletedSavedWindows;
+        const closedIncognitoWindow = openedWindows.find(window => window.id === windowId && window.incognito);
+        console.log(closedIncognitoWindow);
+        if(closedIncognitoWindow) {
+            deletedSavedWindows.push(closedIncognitoWindow);
+        }
+        chrome.storage.local.set({openedWindows: await chrome.windows.getAll({populate: true, windowTypes: ['normal']}), deletedSavedWindows: deletedSavedWindows});
+    });
 });
 
-chrome.windows.onRemoved.addListener(async () => {
-    chrome.storage.local.set({openedWindows: await chrome.windows.getAll({populate: true, windowTypes: ['normal']})});
-});
-
-chrome.tabs.onCreated.addListener(async () => {
-    chrome.storage.local.set({openedWindows: await chrome.windows.getAll({populate: true, windowTypes: ['normal']})});
-});
-
-chrome.tabs.onRemoved.addListener(async () => {
-    chrome.storage.local.set({openedWindows: await chrome.windows.getAll({populate: true, windowTypes: ['normal']})});
+chrome.tabs.onCreated.addListener(async (tab) => {
+    await saveCurrentWindows(tab);
 });
 
 chrome.tabs.onActivated.addListener(async () => {
-    chrome.storage.local.set({openedWindows: await chrome.windows.getAll({populate: true, windowTypes: ['normal']})});
+    await saveCurrentWindows();
 });
+
+async function saveCurrentWindows(tab = undefined) {
+    if(tab !== undefined) {
+        while(tab.status !== 'complete') {
+            tab = await chrome.tabs.get(tab.id);
+        }
+    }
+    await chrome.storage.local.set({openedWindows: await chrome.windows.getAll({populate: true, windowTypes: ['normal']})});
+}
