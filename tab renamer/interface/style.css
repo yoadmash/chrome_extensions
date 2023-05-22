@@ -156,6 +156,9 @@ label {
 
 .deletedWindows > .top-nav {
     margin-bottom: 10px;
+    width: 99%;
+    display: flex;
+    justify-content: space-between;
 }
 
 .deletedWindows > .list > h3 {

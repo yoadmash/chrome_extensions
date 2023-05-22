@@ -18,8 +18,8 @@ async function render() {
 
     if (show_saved_windows) {
         await options();
-        if(allowedIncognito) {
-            if(!currentWindow.incognito) {
+        if (allowedIncognito) {
+            if (!currentWindow.incognito) {
                 windowsToRender = (storage.options.privacy.include_incognito) ? storage.savedWindows : storage.savedWindows.filter(savedWindow => !savedWindow.incognito);
             } else {
                 windowsToRender = (!storage.options.privacy.only_incognito) ? storage.savedWindows : storage.savedWindows.filter(savedWindow => savedWindow.incognito);
@@ -109,11 +109,11 @@ export function renderWindow(windowObj, windowIndex, tabsElement) {
         }
     });
 
-    if(show_saved_windows) {
+    if (show_saved_windows) {
         windowTitleElement.addEventListener('mouseenter', () => {
             windowTitleElement.append(icons);
         });
-    
+
         windowTitleElement.addEventListener('mouseleave', () => {
             icons.remove();
         });
@@ -231,7 +231,7 @@ export function renderWindowTabs(windowObj) {
         }
         tabTitle.addEventListener('click', () => {
             if (!show_saved_windows) {
-                if(!el.url.match('https://gx-corner.opera.com/')) {
+                if (!el.url.match('https://gx-corner.opera.com/')) {
                     chrome.tabs.update(el.id, { active: true }, (tab) => {
                         chrome.windows.update(tab.windowId, { focused: true });
                     });
@@ -329,12 +329,6 @@ async function search() {
                 await render();
             }
         });
-        if(event.target.value === 'savedwindowshistory') {
-            location.href = chrome.runtime.getURL('interface/deletedSavedWindows.html');
-        } else if (event.target.value === 'clearsavedwindowshistory') {
-            chrome.storage.local.set({deletedSavedWindows: []});
-            await render();
-        }
     });
 
     search.append(searchInput);
@@ -399,8 +393,8 @@ async function renderOptions(options) {
     const currentWindow = await chrome.windows.getCurrent();
 
     function showSavedWindowsCount() {
-        if(allowedIncognito) {
-            if(!currentWindow.incognito) {
+        if (allowedIncognito) {
+            if (!currentWindow.incognito) {
                 return (storage.options.privacy.include_incognito) ? storage.savedWindows.length : storage.savedWindows.filter(savedWindow => !savedWindow.incognito).length;
             } else {
                 return (!storage.options.privacy.only_incognito) ? storage.savedWindows.length : storage.savedWindows.filter(savedWindow => savedWindow.incognito).length;
@@ -413,6 +407,7 @@ async function renderOptions(options) {
     const optionsMap = [
         { id: 'auto_scroll', label: 'Auto-Scroll to Active Tab', element_type: ['input', 'checkbox'] },
         { id: 'saved_windows', label: `Show saved windows (${showSavedWindowsCount()})`, element_type: ['input', 'checkbox'] },
+        { id: 'deleted_windows', label: 'Show deleted saved windows', element_type: ['input', 'checkbox'] },
         { id: 'include_incognito', label: 'Show incognito windows', element_type: ['input', 'checkbox'] },
         { id: 'only_incognito', label: 'Show only incognito windows', element_type: ['input', 'checkbox'] }
     ]
@@ -432,7 +427,7 @@ async function renderOptions(options) {
         }
 
         element.addEventListener('click', async (event) => {
-            if (option.id !== 'saved_windows') {
+            if (option.id !== 'saved_windows' && option.id !== 'deleted_windows') {
                 if (option.id === 'include_incognito' || option.id === 'only_incognito') {
                     if (allowedIncognito) {
                         options.privacy[option.id] = event.target.checked;
@@ -450,6 +445,8 @@ async function renderOptions(options) {
             } else if (option.id === 'saved_windows') {
                 show_saved_windows = element.checked;
                 await render();
+            } else if(option.id === 'deleted_windows') {
+                location.href = chrome.runtime.getURL('interface/deletedSavedWindows.html');
             } else if ((option.id === 'include_incognito' || option.id === 'only_incognito')) {
                 if (allowedIncognito) {
                     await render();
@@ -476,6 +473,11 @@ async function renderOptions(options) {
                     optionsEl.append(label);
                 }
                 break;
+            case 'deleted_windows':
+                if (show_saved_windows) {
+                    optionsEl.append(label);
+                }
+                break;
             default:
                 optionsEl.append(label);
                 break;
@@ -497,6 +499,9 @@ function scrollToActiveTab(auto_scroll) {
 }
 
 window.onload = async () => {
+    if(location.href.includes('view=saved_windows')) {
+        show_saved_windows = true;
+    }
     await render();
     scrollToActiveTab(storage.options.auto_scroll);
 }

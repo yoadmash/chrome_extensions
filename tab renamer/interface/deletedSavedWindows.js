@@ -76,4 +76,10 @@ function render() {
         empty_list_message.innerText = 'Empty';
         list.append(empty_list_message);
     }
+
+    const top_nav = document.querySelector('.top-nav');
+    const buttons = top_nav.querySelectorAll('a');
+    buttons[1].addEventListener('click', () => {
+        chrome.storage.local.set({deletedSavedWindows: []});
+    });
 }
