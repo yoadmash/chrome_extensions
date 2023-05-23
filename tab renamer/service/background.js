@@ -12,6 +12,8 @@ chrome.runtime.onInstalled.addListener(async () => {
             openedWindows: chrome.storage.local.set({openedWindows: await chrome.windows.getAll({populate: true, windowTypes: ['normal']})}),
             savedWindows: [],
             deletedSavedWindows: [],
+            recentlyDeletedDate: '',
+            autoClearDeletedSavedWindowsList: '',
         });
     }
 });
@@ -19,7 +21,7 @@ chrome.runtime.onInstalled.addListener(async () => {
 chrome.runtime.onStartup.addListener(async () => {
     const data = await chrome.storage.local.get();
     let deletedSavedWindows = [];
-    deletedSavedWindows = data.deletedSavedWindows.filter(deletedWindowObj => parseInt(Date.now() / 1000 - (deletedWindowObj.id)) <= 604800);
+    deletedSavedWindows = data.deletedSavedWindows.filter(deletedWindowObj => parseInt(Date.now() - (deletedWindowObj.id)) <= data.autoClearDeletedSavedWindowsList);
     chrome.storage.local.set({deletedSavedWindows: deletedSavedWindows});
 });
 
@@ -29,9 +31,10 @@ chrome.windows.onRemoved.addListener((windowId) => {
         const deletedSavedWindows = data.deletedSavedWindows;
         const closedIncognitoWindow = openedWindows.find(window => window.id === windowId && window.incognito);
         if(closedIncognitoWindow) {
+            closedIncognitoWindow.id = Date.now();
             deletedSavedWindows.push(closedIncognitoWindow);
         }
-        chrome.storage.local.set({openedWindows: await chrome.windows.getAll({populate: true, windowTypes: ['normal']}), deletedSavedWindows: deletedSavedWindows});
+        chrome.storage.local.set({openedWindows: await chrome.windows.getAll({populate: true, windowTypes: ['normal']}), deletedSavedWindows: deletedSavedWindows, autoClearDeletedSavedWindowsList: closedIncognitoWindow.id + 604800000});
     });
 });
 

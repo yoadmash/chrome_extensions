@@ -28,9 +28,9 @@ export const assets = {
         title_window: 'Save Window',
         src: `${chrome.runtime.getURL(`icons/save_window.svg`)}`,
         windowEvent: async (window) => {
-            window.id = parseInt(Date.now() / 1000);
             const storage = await chrome.storage.local.get();
             const savedWindows = storage.savedWindows;
+            window.id = (savedWindows[savedWindows.length-1]) ? savedWindows[savedWindows.length-1].id + 1 : 100;
             savedWindows.push(window);
             chrome.storage.local.set({ savedWindows: savedWindows });
         }
@@ -43,8 +43,9 @@ export const assets = {
             let savedWindows = storage.savedWindows;
             let deletedSavedWindows = storage.deletedSavedWindows;
             savedWindows = savedWindows.filter(win => win.id !== window.id);
+            window.id = Date.now();
             deletedSavedWindows.push(window);
-            chrome.storage.local.set({ savedWindows: savedWindows, deletedSavedWindows: deletedSavedWindows });
+            chrome.storage.local.set({ savedWindows: savedWindows, deletedSavedWindows: deletedSavedWindows, recentlyDeletedDate: window.id, autoClearDeletedSavedWindowsList: window.id + 604800000});
         }
     },
     edit: {

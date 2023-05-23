@@ -21,7 +21,7 @@ function renderDeletedWindow(deletedWindowObj, tabsElement) {
 
     windowElement.append(windowTitleElement, tabsElement);
 
-    title.innerText = `[tabs: ${deletedWindowObj.tabs.length} | incognito: ${deletedWindowObj.incognito}]`;
+    title.innerText = `[tabs: ${deletedWindowObj.tabs.length} | incognito: ${deletedWindowObj.incognito} | deleted on: ${new Date(deletedWindowObj.id).toLocaleDateString('en-GB')}]`;
 
     title.addEventListener('click', () => {
         const urls = [];
@@ -78,8 +78,9 @@ function render() {
     }
 
     const top_nav = document.querySelector('.top-nav');
-    const buttons = top_nav.querySelectorAll('a');
+    const buttons = top_nav.querySelectorAll('a'); 
+    buttons[1].innerText = (storage.autoClearDeletedSavedWindowsList) ? `Clear list (auto clear on: ${new Date(storage.autoClearDeletedSavedWindowsList).toLocaleDateString('en-GB')})` : '';
     buttons[1].addEventListener('click', () => {
-        chrome.storage.local.set({deletedSavedWindows: []});
+        chrome.storage.local.set({deletedSavedWindows: [], autoClearDeletedSavedWindowsList: ''});
     });
 }
