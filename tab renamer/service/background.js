@@ -21,8 +21,8 @@ chrome.runtime.onInstalled.addListener(async () => {
 chrome.runtime.onStartup.addListener(async () => {
     const data = await chrome.storage.local.get();
     let deletedSavedWindows = [];
-    deletedSavedWindows = data.deletedSavedWindows.filter(deletedWindowObj => parseInt(Date.now() - (deletedWindowObj.id)) <= data.autoClearDeletedSavedWindowsList);
-    chrome.storage.local.set({deletedSavedWindows: deletedSavedWindows});
+    deletedSavedWindows = data.deletedSavedWindows.filter(deletedWindowObj => Date.now() - deletedWindowObj.id <= Date.now() - data.autoClearDeletedSavedWindowsList);
+    chrome.storage.local.set({deletedSavedWindows: deletedSavedWindows, autoClearDeletedSavedWindowsList: ''});
 });
 
 chrome.windows.onRemoved.addListener((windowId) => {
