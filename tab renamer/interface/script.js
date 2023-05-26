@@ -324,7 +324,7 @@ async function search() {
                 }
             }
             if (searchInput.value.length > 0) {
-                renderSearch(search, searchInput.value);
+                renderSearch(search);
             } else {
                 await render();
             }

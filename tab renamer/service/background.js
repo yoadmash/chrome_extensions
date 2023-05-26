@@ -33,23 +33,23 @@ chrome.windows.onRemoved.addListener((windowId) => {
         if (closedIncognitoWindow) {
             closedIncognitoWindow.id = Date.now();
             deletedSavedWindows.push(closedIncognitoWindow);
-            chrome.storage.local.set({ deletedSavedWindows: deletedSavedWindows, autoClearDeletedSavedWindowsList: closedIncognitoWindow.id + 604800000 });
+            await chrome.storage.local.set({ deletedSavedWindows: deletedSavedWindows, autoClearDeletedSavedWindowsList: closedIncognitoWindow.id + 604800000 });
         }
-        await saveCurrentWindows();
+        await saveCurrentWindows('windows.onRemoved event');
     });
 });
 
 chrome.tabs.onActivated.addListener(async () => {
-    await saveCurrentWindows();
+    await saveCurrentWindows('tabs.onActivated event');
 });
 
 chrome.tabs.onUpdated.addListener(async () => {
-    await saveCurrentWindows();
+    await saveCurrentWindows('tabs.onUpdated event');
 });
 
-async function saveCurrentWindows() {
+async function saveCurrentWindows(updater) {
     const openedWindows = await chrome.windows.getAll({ populate: true, windowTypes: ['normal'] });
     await chrome.storage.local.set({ openedWindows:  openedWindows});
-    console.log('openedWindows recently updated: ' + new Date().toLocaleString('en-GB'));
+    console.log('openedWindows has been recently updated on: ' + new Date().toLocaleString('en-GB') + ' by: ' + updater);
     console.log(openedWindows);
 }
