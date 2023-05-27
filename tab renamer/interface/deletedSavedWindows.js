@@ -33,7 +33,6 @@ function renderDeletedWindow(deletedWindowObj, tabsElement) {
         chrome.windows.create({
             focused: true,
             incognito: deletedWindowObj.incognito,
-            state: deletedWindowObj.state,
             url: urls
         }).then(() => {
             close();

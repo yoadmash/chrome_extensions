@@ -101,7 +101,6 @@ export function renderWindow(windowObj, windowIndex, tabsElement) {
             chrome.windows.create({
                 focused: true,
                 incognito: windowObj.incognito,
-                state: windowObj.state,
                 url: urls
             }).then(() => {
                 close();
