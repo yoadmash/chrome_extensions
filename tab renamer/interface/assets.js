@@ -1,4 +1,4 @@
-import { renderWindow, renderWindowTabs, reorderWindows, setTitle } from "./script.js";
+import { renderWindow, renderWindowTabs, reorderWindows, setTitle, render } from "./script.js";
 
 export const assets = {
     checkTabs: {
@@ -32,7 +32,7 @@ export const assets = {
             const savedWindows = storage.savedWindows;
             window.id = (savedWindows[savedWindows.length-1]) ? savedWindows[savedWindows.length-1].id + 1 : 100;
             savedWindows.push(window);
-            chrome.storage.local.set({ savedWindows: savedWindows });
+            chrome.storage.local.set({ savedWindows: savedWindows }).then(async () => await render());
         }
     },
     deleteSavedWindow: {
@@ -45,7 +45,7 @@ export const assets = {
             savedWindows = savedWindows.filter(win => win.id !== window.id);
             window.id = Date.now();
             deletedSavedWindows.push(window);
-            chrome.storage.local.set({ savedWindows: savedWindows, deletedSavedWindows: deletedSavedWindows, recentlyDeletedDate: window.id, autoClearDeletedSavedWindowsList: window.id + 604800000});
+            chrome.storage.local.set({ savedWindows: savedWindows, deletedSavedWindows: deletedSavedWindows, recentlyDeletedDate: window.id, autoClearDeletedSavedWindowsList: window.id + 604800000}).then(async () => await render());
         }
     },
     edit: {

@@ -6,7 +6,7 @@ let storage = undefined;
 let allowedIncognito = false;
 let show_saved_windows = false;
 
-async function render() {
+export async function render() {
     await updateOpenedWindows();
 
     const currentWindow = await chrome.windows.getCurrent();
@@ -152,11 +152,11 @@ export function renderWindow(windowObj, windowIndex, tabsElement) {
                         break;
                     case 'saveWindow':
                         assets[key].windowEvent(windowObj);
-                        render();
+                        // render();
                         break;
                     case 'deleteSavedWindow':
                         assets[key].windowEvent(windowObj);
-                        render();
+                        // render();
                         break;
                 }
             });
@@ -488,11 +488,13 @@ async function renderOptions(options) {
 function scrollToActiveTab(auto_scroll) {
     if (auto_scroll) {
         chrome.windows.getCurrent({ populate: true }).then((currentWindow) => {
-            const activeTab = currentWindow.tabs.find(tab => tab.active);
-            document.getElementById(activeTab.id)?.scrollIntoView({
-                behavior: 'smooth',
-                block: "center",
-            });
+            if(root.contains(document.getElementById(currentWindow.id))) {
+                const activeTab = currentWindow.tabs.find(tab => tab.active);
+                document.getElementById(activeTab.id)?.scrollIntoView({
+                    behavior: 'smooth',
+                    block: "center",
+                });
+            }
         });
     }
 }
