@@ -10,7 +10,7 @@ setTimeout(async () => {
     if (settings.a_integration) {
 
         const body = document.body;
-        const qrCode = document.getElementsByTagName("canvas")[1];
+        const qrCode = document.getElementsByTagName("canvas")[0];
         if (!body.contains(qrCode)) {
             const buttons = document.getElementsByTagName('span')[7];
 
@@ -21,7 +21,7 @@ setTimeout(async () => {
             inputButton.title = 'New chat by phone number';
 
             inputButton.addEventListener("click", async () => {
-                let number = prompt("Please type in the phone number, required format: 0521234567");
+                let number = prompt("Enter a phone number\nRequired format: 0521234567");
                 if (number !== null && number.length === 10 && !isNaN(number)) {
                     const formatted = number.slice(1, number.length);
                     const url = `https://wa.me/972${formatted}`;
@@ -39,4 +39,4 @@ setTimeout(async () => {
             alert('Attention: In order for this WhatsApp extension to work, please link your device and reload the page.');
         }
     }
-}, 5500);
+}, 10000);
