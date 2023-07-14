@@ -23,11 +23,16 @@ body {
     width: 500px;
 }
 
-.options {
+.options, .backup {
     display: flex;
     flex-direction: row;
     justify-content: space-between;
     margin-bottom: 10px;
+}
+
+.backup {
+    justify-content: start;
+    gap: 10px;
 }
 
 label {

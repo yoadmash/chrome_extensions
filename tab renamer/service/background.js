@@ -14,6 +14,7 @@ chrome.runtime.onInstalled.addListener(async () => {
             openedWindows: chrome.storage.local.set({ openedWindows: await chrome.windows.getAll({ populate: true, windowTypes: ['normal'] }) }),
             savedWindows: [],
             deletedSavedWindows: [],
+            backup: [],
             recentlyDeletedDate: null,
             recentlyClosedIncognito: null,
             autoClearDeletedSavedWindowsList: null,
@@ -106,5 +107,8 @@ async function saveCurrentWindows(updater) {
     const openedWindows = await chrome.windows.getAll({ populate: true, windowTypes: ['normal'] });
     await chrome.storage.local.set({ openedWindows: openedWindows });
     console.log('openedWindows has been recently updated on: ' + new Date().toLocaleString('en-GB') + ' by: ' + updater);
-    console.log(openedWindows);
 }
+
+chrome.storage.onChanged.addListener((changes) => {
+    console.log(changes);
+})

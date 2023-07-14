@@ -18,6 +18,7 @@ export async function render() {
 
     if (show_saved_windows) {
         await options();
+        backup();
         if (allowedIncognito) {
             if (!currentWindow.incognito) {
                 windowsToRender = (storage.options.privacy.include_incognito) ? storage.savedWindows : storage.savedWindows.filter(savedWindow => !savedWindow.incognito);
@@ -411,7 +412,7 @@ async function renderOptions(options) {
         { id: 'only_incognito', label: 'Show only incognito windows', element_type: ['input', 'checkbox'] }
     ]
 
-    for (const option of optionsMap) {
+    optionsMap.forEach(option => {
         const label = document.createElement('label');
         label.setAttribute('id', option.id);
 
@@ -444,7 +445,7 @@ async function renderOptions(options) {
             } else if (option.id === 'saved_windows') {
                 show_saved_windows = element.checked;
                 await render();
-            } else if(option.id === 'deleted_windows') {
+            } else if (option.id === 'deleted_windows') {
                 location.href = chrome.runtime.getURL('interface/deletedSavedWindows.html');
             } else if ((option.id === 'include_incognito' || option.id === 'only_incognito')) {
                 if (allowedIncognito) {
@@ -481,14 +482,45 @@ async function renderOptions(options) {
                 optionsEl.append(label);
                 break;
         }
-    }
+    });
     root.append(optionsEl);
+}
+
+function backup() {
+    const backupEl = document.createElement('div');
+    backupEl.classList.add('backup');
+
+    const buttons = [
+        { id: 'backup', title: 'Backup saved windows list' },
+        { id: 'restore', title: 'Restore from backup' },
+        { id: 'deleteAll', title: 'Delete all saved windows'},
+    ]
+
+    buttons.forEach(item => {
+        const btn = document.createElement('button');
+        btn.setAttribute('id', item.id);
+        btn.innerText = item.title;
+        btn.addEventListener('click', async () => {
+            const storage = await chrome.storage.local.get();
+            if(btn.id === 'backup') {
+                navigator.clipboard.writeText(JSON.stringify(storage.savedWindows));
+                await chrome.storage.local.set({backup: storage.savedWindows});
+            } else if(btn.id === 'restore') {
+                chrome.storage.local.set({savedWindows: storage.backup}).then(async () => await render());
+            } else if( btn.id === 'deleteAll') {
+                chrome.storage.local.set({savedWindows: []}).then(async () => await render());
+            }
+        });
+        backupEl.append(btn);
+    });
+
+    root.append(backupEl);
 }
 
 function scrollToActiveTab(auto_scroll) {
     if (auto_scroll) {
         chrome.windows.getCurrent({ populate: true }).then((currentWindow) => {
-            if(root.contains(document.getElementById(currentWindow.id))) {
+            if (root.contains(document.getElementById(currentWindow.id))) {
                 const activeTab = currentWindow.tabs.find(tab => tab.active);
                 document.getElementById(activeTab.id)?.scrollIntoView({
                     behavior: 'smooth',
@@ -500,7 +532,7 @@ function scrollToActiveTab(auto_scroll) {
 }
 
 window.onload = async () => {
-    if(location.href.includes('view=saved_windows')) {
+    if (location.href.includes('view=saved_windows')) {
         show_saved_windows = true;
     }
     await render();
