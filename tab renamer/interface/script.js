@@ -505,7 +505,7 @@ function backup() {
             if(btn.id === 'backup') {
                 navigator.clipboard.writeText(JSON.stringify(storage.savedWindows));
                 await chrome.storage.local.set({backup: storage.savedWindows});
-            } else if(btn.id === 'restore') {
+            } else if(btn.id === 'restore' && storage.backup?.length > 0) {
                 chrome.storage.local.set({savedWindows: storage.backup}).then(async () => await render());
             } else if( btn.id === 'deleteAll') {
                 chrome.storage.local.set({savedWindows: []}).then(async () => await render());
