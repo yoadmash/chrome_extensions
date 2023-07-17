@@ -30,9 +30,16 @@ export const assets = {
         windowEvent: async (window) => {
             const storage = await chrome.storage.local.get();
             const savedWindows = storage.savedWindows;
-            window.id = (savedWindows[savedWindows.length-1]) ? savedWindows[savedWindows.length-1].id + 1 : 100;
+            window.id = (savedWindows[savedWindows.length - 1]) ? savedWindows[savedWindows.length - 1].id + 1 : 100;
             savedWindows.push(window);
-            chrome.storage.local.set({ savedWindows: savedWindows }).then(async () => await render());
+            navigator.clipboard.writeText(JSON.stringify(savedWindows));
+            chrome.storage.local.set({
+                savedWindows: savedWindows,
+                backup: {
+                    data: savedWindows,
+                    date: Date.now()
+                }
+            }).then(async () => await render());
         }
     },
     deleteSavedWindow: {
@@ -45,7 +52,7 @@ export const assets = {
             savedWindows = savedWindows.filter(win => win.id !== window.id);
             window.id = Date.now();
             deletedSavedWindows.push(window);
-            chrome.storage.local.set({ savedWindows: savedWindows, deletedSavedWindows: deletedSavedWindows, recentlyDeletedDate: window.id, autoClearDeletedSavedWindowsList: window.id + 604800000}).then(async () => await render());
+            chrome.storage.local.set({ savedWindows: savedWindows, deletedSavedWindows: deletedSavedWindows, recentlyDeletedDate: window.id, autoClearDeletedSavedWindowsList: window.id + 604800000 }).then(async () => await render());
         }
     },
     edit: {

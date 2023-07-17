@@ -18,7 +18,7 @@ export async function render() {
 
     if (show_saved_windows) {
         await options();
-        backup();
+        await backup();
         if (allowedIncognito) {
             if (!currentWindow.incognito) {
                 windowsToRender = (storage.options.privacy.include_incognito) ? storage.savedWindows : storage.savedWindows.filter(savedWindow => !savedWindow.incognito);
@@ -486,32 +486,47 @@ async function renderOptions(options) {
     root.append(optionsEl);
 }
 
-function backup() {
+async function backup() {
+    const storage = await chrome.storage.local.get();
     const backupEl = document.createElement('div');
     backupEl.classList.add('backup');
 
     const buttons = [
         { id: 'backup', title: 'Backup saved windows list' },
         { id: 'restore', title: 'Restore from backup' },
-        { id: 'deleteAll', title: 'Delete all saved windows'},
+        { id: 'deleteAll', title: 'Delete all saved windows' },
     ]
 
     buttons.forEach(item => {
         const btn = document.createElement('button');
         btn.setAttribute('id', item.id);
         btn.innerText = item.title;
+        if (item.id === 'restore') btn.title = `Backed up at: ${new Date(storage.backup.date).toLocaleString('en-GB')}`;
         btn.addEventListener('click', async () => {
-            const storage = await chrome.storage.local.get();
-            if(btn.id === 'backup') {
+            console.log(storage.backup.data);
+            if (btn.id === 'backup') {
                 navigator.clipboard.writeText(JSON.stringify(storage.savedWindows));
-                await chrome.storage.local.set({backup: storage.savedWindows});
-            } else if(btn.id === 'restore' && storage.backup?.length > 0) {
-                chrome.storage.local.set({savedWindows: storage.backup}).then(async () => await render());
-            } else if( btn.id === 'deleteAll') {
-                chrome.storage.local.set({savedWindows: []}).then(async () => await render());
+                await chrome.storage.local.set({
+                    backup: {
+                        data: storage.savedWindows,
+                        date: Date.now()
+                    }
+                }).then(async () => await render());
+            } else if (btn.id === 'restore' && storage.backup.data?.length > 0) {
+                await chrome.storage.local.set({ savedWindows: storage.backup.data }).then(async () => await render());
+            } else if (btn.id === 'deleteAll') {
+                await chrome.storage.local.set({ savedWindows: [] }).then(async () => await render());
             }
         });
-        backupEl.append(btn);
+        switch (item.id) {
+            case 'backup':
+            case 'deleteAll':
+                if (storage.savedWindows.length > 0) backupEl.append(btn);
+                break;
+            case 'restore':
+                if (storage.backup.data.length > 0) backupEl.append(btn);
+                break;
+        }
     });
 
     root.append(backupEl);
