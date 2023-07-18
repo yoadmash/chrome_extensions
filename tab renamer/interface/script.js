@@ -524,7 +524,7 @@ async function backup() {
                 if (storage.savedWindows.length > 0) backupEl.append(btn);
                 break;
             case 'restore':
-                if (storage.backup.data.length > 0) backupEl.append(btn);
+                if (storage.backup.data?.length > 0) backupEl.append(btn);
                 break;
         }
     });
