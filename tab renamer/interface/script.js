@@ -211,11 +211,15 @@ export function renderWindowTabs(windowObj) {
 
         favicon.classList.add('favicon');
         favicon.alt = 'favicon';
-        if (el.status === 'complete') {
-            favicon.src = (el.favIconUrl?.length !== 0 && el.favIconUrl) ? el.favIconUrl : chrome.runtime.getURL('icons/generic_tab.svg');
-        } else {
+        favicon.src = el.favIconUrl;
+        favicon.onerror = () => {
             favicon.src = chrome.runtime.getURL('icons/generic_tab.svg');
         }
+        // if (el.status === 'complete') {
+        //     favicon.src = (el.favIconUrl?.length !== 0 && el.favIconUrl) ? el.favIconUrl : chrome.runtime.getURL('icons/generic_tab.svg');
+        // } else {
+        //     favicon.src = chrome.runtime.getURL('icons/generic_tab.svg');
+        // }
 
         checkTab.classList.add('checkTab');
         checkTab.type = 'checkbox';
