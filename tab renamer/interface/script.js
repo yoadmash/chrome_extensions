@@ -41,7 +41,9 @@ export async function render() {
             windowsToRender = (storage.options.privacy.only_incognito) ? windows_arr.filter(window => window.incognito) : windows_arr;
         }
     }
-    calculateTotalTabs(windowsToRender);
+    if(windowsToRender.length > 1) {
+        calculateTotalTabs(windowsToRender);
+    }
     renderWindows(windowsToRender);
 }
 
