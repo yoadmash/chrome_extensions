@@ -41,11 +41,24 @@ export async function render() {
             windowsToRender = (storage.options.privacy.only_incognito) ? windows_arr.filter(window => window.incognito) : windows_arr;
         }
     }
+    calculateTotalTabs(windowsToRender);
     renderWindows(windowsToRender);
 }
 
 async function updateOpenedWindows() {
     chrome.storage.local.set({ openedWindows: await chrome.windows.getAll({ populate: true, windowTypes: ['normal'] }) });
+}
+
+function calculateTotalTabs(windows_arr) {
+    const totalTabsEl = document.createElement('div');
+    totalTabsEl.classList.add('totalTabs');
+    totalTabsEl.append(document.createElement('span'));
+    
+    let totalTabsSum = 0;
+    windows_arr.forEach(window => totalTabsSum += window.tabs.length);
+    
+    totalTabsEl.firstChild.innerText = 'Total tabs: ' + totalTabsSum;
+    root.append(totalTabsEl);
 }
 
 function renderWindows(windows) {
