@@ -4,7 +4,7 @@ const root = document.querySelector('#root');
 let windows_arr = [];
 let storage = undefined;
 let allowedIncognito = false;
-var show_saved_windows = false;
+let show_saved_windows = false;
 
 export async function render() {
     await updateOpenedWindows();
@@ -254,8 +254,6 @@ export function renderWindowTabs(windowObj) {
                     incognito: windowObj.incognito,
                     state: "maximized",
                     url: el.url
-                }).then(() => {
-                    close();
                 });
             }
         });
@@ -567,9 +565,6 @@ function scrollToActiveTab(auto_scroll) {
 }
 
 window.onload = async () => {
-    if (location.href.includes('view=saved_windows')) {
-        show_saved_windows = true;
-    }
     await render();
     scrollToActiveTab(storage.options.auto_scroll);
 }

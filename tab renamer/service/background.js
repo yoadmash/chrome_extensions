@@ -40,32 +40,32 @@ chrome.windows.onRemoved.addListener(async (windowId) => {
     await saveCurrentWindows('windows.onRemoved event');
 });
 
-chrome.windows.onCreated.addListener(async (window) => {
-    await chrome.storage.local.get().then(async (data) => {
-        if (data.openedWindows.length !== 0) {
-            if (window.incognito && data.recentlyClosedIncognito) {
-                await chrome.notifications.getAll(async (notifs) => {
-                    if (notifs.recentlyClosedIncognito) {
-                        await chrome.notifications.clear('recentlyClosedIncognito');
-                    }
-                    const notificationOptions = {
-                        type: 'basic',
-                        iconUrl: '../icons/tab_renamer128.png',
-                        requireInteraction: true,
-                        silent: true,
-                        eventTime: Date.now(),
-                        title: 'Tabs Manager',
-                        message: 'Would you like to restore the tabs of the latest closed incognito window?',
-                        contextMessage: 'Click the notification to restore the tabs or \'Close\' to delete.',
-                        priority: 2
-                    }
-                    await chrome.notifications.create('recentlyClosedIncognito', notificationOptions);
-                    recentIncognitoWindowId = window.id;
-                });
-            }
-        }
-    });
-});
+// chrome.windows.onCreated.addListener(async (window) => {
+//     await chrome.storage.local.get().then(async (data) => {
+//         if (data.openedWindows.length !== 0) {
+//             if (window.incognito && data.recentlyClosedIncognito) {
+//                 await chrome.notifications.getAll(async (notifs) => {
+//                     if (notifs.recentlyClosedIncognito) {
+//                         await chrome.notifications.clear('recentlyClosedIncognito');
+//                     }
+//                     const notificationOptions = {
+//                         type: 'basic',
+//                         iconUrl: '../icons/tab_renamer128.png',
+//                         requireInteraction: true,
+//                         silent: true,
+//                         eventTime: Date.now(),
+//                         title: 'Tabs Manager',
+//                         message: 'Would you like to restore the tabs of the latest closed incognito window?',
+//                         contextMessage: 'Click the notification to restore the tabs or \'Close\' to delete.',
+//                         priority: 2
+//                     }
+//                     await chrome.notifications.create('recentlyClosedIncognito', notificationOptions);
+//                     recentIncognitoWindowId = window.id;
+//                 });
+//             }
+//         }
+//     });
+// });
 
 chrome.tabs.onActivated.addListener(async () => {
     await saveCurrentWindows('tabs.onActivated event');
