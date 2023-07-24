@@ -14,7 +14,7 @@ chrome.runtime.onInstalled.addListener(async () => {
             openedWindows: chrome.storage.local.set({ openedWindows: await chrome.windows.getAll({ populate: true, windowTypes: ['normal'] }) }),
             savedWindows: [],
             deletedSavedWindows: [],
-            backup: [{data: [], date: null}],
+            backup: { data: [], date: null },
             recentlyDeletedDate: null,
             recentlyClosedIncognito: null,
             autoClearDeletedSavedWindowsList: null,

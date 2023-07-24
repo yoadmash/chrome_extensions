@@ -4,7 +4,7 @@ const root = document.querySelector('#root');
 let windows_arr = [];
 let storage = undefined;
 let allowedIncognito = false;
-let show_saved_windows = false;
+var show_saved_windows = false;
 
 export async function render() {
     await updateOpenedWindows();
@@ -17,8 +17,6 @@ export async function render() {
     root.innerHTML = '';
 
     if (show_saved_windows) {
-        await options();
-        await backup();
         if (allowedIncognito) {
             if (!currentWindow.incognito) {
                 windowsToRender = (storage.options.privacy.include_incognito) ? storage.savedWindows : storage.savedWindows.filter(savedWindow => !savedWindow.incognito);
@@ -29,8 +27,6 @@ export async function render() {
             windowsToRender = storage.savedWindows.filter(savedWindow => !savedWindow.incognito);
         }
     } else {
-        await search();
-        await options();
         if (!currentWindow.incognito) {
             if (allowedIncognito) {
                 windowsToRender = (!storage.options.privacy.include_incognito) ? windows_arr.filter(window => !window.incognito) : windows_arr;
@@ -41,9 +37,10 @@ export async function render() {
             windowsToRender = (storage.options.privacy.only_incognito) ? windows_arr.filter(window => window.incognito) : windows_arr;
         }
     }
-    if(windowsToRender.length > 1) {
-        calculateTotalTabs(windowsToRender);
-    }
+    await search(windowsToRender);
+    (show_saved_windows) && await backup();
+    await options();
+    (windowsToRender.length > 1) && calculateTotalTabs(windowsToRender);
     renderWindows(windowsToRender);
 }
 
@@ -230,11 +227,6 @@ export function renderWindowTabs(windowObj) {
         favicon.onerror = () => {
             favicon.src = chrome.runtime.getURL('icons/generic_tab.svg');
         }
-        // if (el.status === 'complete') {
-        //     favicon.src = (el.favIconUrl?.length !== 0 && el.favIconUrl) ? el.favIconUrl : chrome.runtime.getURL('icons/generic_tab.svg');
-        // } else {
-        //     favicon.src = chrome.runtime.getURL('icons/generic_tab.svg');
-        // }
 
         checkTab.classList.add('checkTab');
         checkTab.type = 'checkbox';
@@ -260,7 +252,7 @@ export function renderWindowTabs(windowObj) {
                 chrome.windows.create({
                     focused: true,
                     incognito: windowObj.incognito,
-                    state: windowObj.state,
+                    state: "maximized",
                     url: el.url
                 }).then(() => {
                     close();
@@ -313,7 +305,7 @@ export function setTitle(newTitle) {
     document.title = newTitle;
 }
 
-async function search() {
+async function search(windows_arr) {
     const search = document.createElement('div');
     const searchInput = document.createElement('input');
 
@@ -324,7 +316,7 @@ async function search() {
     searchInput.placeholder = 'search tabs';
     searchInput.addEventListener('input', async (event) => {
         storage = await chrome.storage.local.get();
-        let filteredWindows = storage.openedWindows.filter(window => window.tabs.find(tab => tab.title.toLocaleLowerCase().includes(searchInput.value.toLocaleLowerCase())));
+        let filteredWindows = windows_arr.filter(window => window.tabs.find(tab => tab.title.toLocaleLowerCase().includes(searchInput.value.toLocaleLowerCase())));
         chrome.windows.getCurrent({
             populate: true,
             windowTypes: ['normal']
@@ -384,12 +376,21 @@ function renderSearch(search) {
 
         tabTitle.addEventListener('click', () => {
             if (!el.url.match('https://gx-corner.opera.com/')) {
-                chrome.windows.update(el.windowId, {
-                    focused: true
-                }, () => {
-                    chrome.tabs.update(el.id, { active: true });
-                    location.reload();
-                });
+                if(!show_saved_windows) {
+                    chrome.windows.update(el.windowId, {
+                        focused: true
+                    }, () => {
+                        chrome.tabs.update(el.id, { active: true });
+                        location.reload();
+                    });
+                } else {
+                    chrome.windows.create({
+                        focused: true,
+                        incognito: el.incognito,
+                        state: "maximized",
+                        url: el.url
+                    });
+                }
             }
         });
 
