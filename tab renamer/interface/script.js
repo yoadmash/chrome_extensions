@@ -17,6 +17,9 @@ export async function render() {
     root.innerHTML = '';
 
     if (show_saved_windows) {
+        await search();
+        await backup();
+        await options();
         if (allowedIncognito) {
             if (!currentWindow.incognito) {
                 windowsToRender = (storage.options.privacy.include_incognito) ? storage.savedWindows : storage.savedWindows.filter(savedWindow => !savedWindow.incognito);
@@ -27,6 +30,8 @@ export async function render() {
             windowsToRender = storage.savedWindows.filter(savedWindow => !savedWindow.incognito);
         }
     } else {
+        await search();
+        await options();
         if (!currentWindow.incognito) {
             if (allowedIncognito) {
                 windowsToRender = (!storage.options.privacy.include_incognito) ? windows_arr.filter(window => !window.incognito) : windows_arr;
@@ -37,9 +42,7 @@ export async function render() {
             windowsToRender = (storage.options.privacy.only_incognito) ? windows_arr.filter(window => window.incognito) : windows_arr;
         }
     }
-    await search(windowsToRender);
-    (show_saved_windows) && await backup();
-    await options();
+
     (windowsToRender.length > 1) && calculateTotalTabs(windowsToRender);
     renderWindows(windowsToRender);
 }
@@ -52,10 +55,10 @@ function calculateTotalTabs(windows_arr) {
     const totalTabsEl = document.createElement('div');
     totalTabsEl.classList.add('totalTabs');
     totalTabsEl.append(document.createElement('span'));
-    
+
     let totalTabsSum = 0;
     windows_arr.forEach(window => totalTabsSum += window.tabs.length);
-    
+
     totalTabsEl.firstChild.innerText = 'Total tabs: ' + totalTabsSum;
     root.append(totalTabsEl);
 }
@@ -303,7 +306,7 @@ export function setTitle(newTitle) {
     document.title = newTitle;
 }
 
-async function search(windows_arr) {
+async function search() {
     const search = document.createElement('div');
     const searchInput = document.createElement('input');
 
@@ -313,8 +316,8 @@ async function search(windows_arr) {
     searchInput.type = 'text';
     searchInput.placeholder = 'search tabs';
     searchInput.addEventListener('input', async (event) => {
-        storage = await chrome.storage.local.get();
-        let filteredWindows = windows_arr.filter(window => window.tabs.find(tab => tab.title.toLocaleLowerCase().includes(searchInput.value.toLocaleLowerCase())));
+        const windowsToRender = (show_saved_windows) ? storage.savedWindows : storage.openedWindows;
+        let filteredWindows = windowsToRender.filter(window => window.tabs.find(tab => tab.title.toLocaleLowerCase().includes(searchInput.value.toLocaleLowerCase())));
         chrome.windows.getCurrent({
             populate: true,
             windowTypes: ['normal']
@@ -374,7 +377,7 @@ function renderSearch(search) {
 
         tabTitle.addEventListener('click', () => {
             if (!el.url.match('https://gx-corner.opera.com/')) {
-                if(!show_saved_windows) {
+                if (!show_saved_windows) {
                     chrome.windows.update(el.windowId, {
                         focused: true
                     }, () => {
@@ -565,6 +568,9 @@ function scrollToActiveTab(auto_scroll) {
 }
 
 window.onload = async () => {
+    if (location.href.includes('saved_windows')) {
+        show_saved_windows = true;
+    }
     await render();
     scrollToActiveTab(storage.options.auto_scroll);
 }
