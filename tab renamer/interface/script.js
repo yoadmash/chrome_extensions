@@ -71,7 +71,11 @@ function renderWindows(windows) {
         windowsListEl.append(renderWindow(window, (i + 1), renderWindowTabs(window)));
     })
 
-    root.append(windowsListEl);
+    if(show_saved_windows) {
+        if(storage.savedWindows.length > 0) root.append(windowsListEl);
+    } else {
+        if(storage.openedWindows.length > 0) root.append(windowsListEl);
+    }
 }
 
 export function renderWindow(windowObj, windowIndex, tabsElement) {
@@ -168,11 +172,9 @@ export function renderWindow(windowObj, windowIndex, tabsElement) {
                         break;
                     case 'saveWindow':
                         assets[key].windowEvent(windowObj);
-                        // render();
                         break;
                     case 'deleteSavedWindow':
                         assets[key].windowEvent(windowObj);
-                        // render();
                         break;
                 }
             });
@@ -227,9 +229,7 @@ export function renderWindowTabs(windowObj) {
         favicon.classList.add('favicon');
         favicon.alt = 'favicon';
         favicon.src = el.favIconUrl;
-        favicon.onerror = () => {
-            favicon.src = chrome.runtime.getURL('icons/generic_tab.svg');
-        }
+        favicon.onerror = () => favicon.src = chrome.runtime.getURL('icons/generic_tab.svg');
 
         checkTab.classList.add('checkTab');
         checkTab.type = 'checkbox';
@@ -495,7 +495,7 @@ async function renderOptions(options) {
                 }
                 break;
             case 'deleted_windows':
-                if (show_saved_windows) {
+                if (show_saved_windows && storage.deletedSavedWindows.length > 0) {
                     optionsEl.append(label);
                 }
                 break;
@@ -508,7 +508,6 @@ async function renderOptions(options) {
 }
 
 async function backup() {
-    const storage = await chrome.storage.local.get();
     const backupEl = document.createElement('div');
     backupEl.classList.add('backup');
 
@@ -545,12 +544,14 @@ async function backup() {
                 if (storage.savedWindows.length > 0) backupEl.append(btn);
                 break;
             case 'restore':
-                if (storage.backup.data?.length > 0) backupEl.append(btn);
+                if (storage.backup.data.length > 0) backupEl.append(btn);
                 break;
         }
     });
 
-    root.append(backupEl);
+    if(storage.backup.data.length > 0) {
+        root.append(backupEl);
+    }
 }
 
 function scrollToActiveTab(auto_scroll) {

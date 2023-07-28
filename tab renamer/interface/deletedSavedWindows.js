@@ -57,9 +57,10 @@ function renderDeletedWindowTabs(deletedWindowObj) {
 
         favicon.classList.add('favicon');
         favicon.src = (el.favIconUrl?.length !== 0 && el.favIconUrl) ? el.favIconUrl : chrome.runtime.getURL('icons/generic_tab.svg');
+        favicon.onerror = () => favicon.src = chrome.runtime.getURL('icons/generic_tab.svg');
 
         tabTitle.innerText = el.title;
-        tabTitle.title = el.title; 
+        tabTitle.title = el.title;
 
         tabsEl.append(tab);
     });
@@ -68,7 +69,7 @@ function renderDeletedWindowTabs(deletedWindowObj) {
 }
 
 function render() {
-    if(storage.deletedSavedWindows.length > 0) {
+    if (storage.deletedSavedWindows.length > 0) {
         storage.deletedSavedWindows.forEach((obj) => list.append(renderDeletedWindow(obj, renderDeletedWindowTabs(obj))));
     } else {
         const empty_list_message = document.createElement('h3');
@@ -77,9 +78,15 @@ function render() {
     }
 
     const top_nav = document.querySelector('.top-nav');
-    const buttons = top_nav.querySelectorAll('a'); 
+    const buttons = top_nav.querySelectorAll('a');
     buttons[1].innerText = (storage.autoClearDeletedSavedWindowsList) ? `Clear list (auto clear on: ${new Date(storage.autoClearDeletedSavedWindowsList).toLocaleString('en-GB')})` : '';
     buttons[1].addEventListener('click', () => {
-        chrome.storage.local.set({deletedSavedWindows: [], autoClearDeletedSavedWindowsList: ''});
+        chrome.storage.local.set({
+            deletedSavedWindows: [], autoClearDeletedSavedWindowsList: '',
+            backup: {
+                data: (storage.savedWindows.length !== 0) ? storage.backup.data : [],
+                date: (storage.savedWindows.length !== 0) ? storage.backup.date : null
+            } 
+        });
     });
 }
