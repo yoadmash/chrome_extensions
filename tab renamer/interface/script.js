@@ -150,11 +150,11 @@ export function renderWindow(windowObj, windowIndex, tabsElement) {
             if (!show_saved_windows) {
                 if (windowObj.tabs.length < 2 && key !== 'saveWindow') {
                     continue;
-                } else if (key === 'deleteSavedWindow') {
+                } else if (key === 'delete') {
                     continue;
                 }
             } else {
-                if (key !== 'deleteSavedWindow') {
+                if (key !== 'delete') {
                     continue;
                 }
             }
@@ -173,7 +173,7 @@ export function renderWindow(windowObj, windowIndex, tabsElement) {
                     case 'saveWindow':
                         assets[key].windowEvent(windowObj);
                         break;
-                    case 'deleteSavedWindow':
+                    case 'delete':
                         assets[key].windowEvent(windowObj);
                         break;
                 }
@@ -265,7 +265,7 @@ export function renderWindowTabs(windowObj) {
 
         if (!show_saved_windows) {
             for (const key in assets) {
-                if (assets[key].tabEvent) {
+                if (assets[key].tabEvent && key !== 'delete') {
                     const icon = document.createElement('img');
                     icon.classList.add('icon');
                     icon.src = assets[key].src;
@@ -293,6 +293,16 @@ export function renderWindowTabs(windowObj) {
                     }
                 }
             }
+        } else {
+            const icon = document.createElement('img');
+            icon.classList.add('icon');
+            icon.src = assets['delete'].src;
+            icon.title = assets['delete'].title_tab;
+            icon.alt = 'tab_action_icon';
+            icon.addEventListener('click', () => {
+                assets['delete'].tabEvent(windowObj, el);
+            });
+            icons.append(icon);
         }
 
         tabsEl.append(tab);

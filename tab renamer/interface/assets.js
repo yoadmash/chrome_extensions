@@ -42,9 +42,10 @@ export const assets = {
             }).then(async () => await render());
         }
     },
-    deleteSavedWindow: {
+    delete: {
         title_window: 'Delete',
-        src: `${chrome.runtime.getURL(`icons/delete_saved_window.svg`)}`,
+        title_tab: 'Delete',
+        src: `${chrome.runtime.getURL(`icons/delete.svg`)}`,
         windowEvent: async (window) => {
             const storage = await chrome.storage.local.get();
             let savedWindows = storage.savedWindows;
@@ -53,6 +54,15 @@ export const assets = {
             window.id = Date.now();
             deletedSavedWindows.push(window);
             chrome.storage.local.set({ savedWindows: savedWindows, deletedSavedWindows: deletedSavedWindows, recentlyDeletedDate: window.id, autoClearDeletedSavedWindowsList: window.id + 604800000 }).then(async () => await render());
+        },
+        tabEvent: async (savedWindow, tabToDelete) => {
+            const storage = await chrome.storage.local.get();
+            const updatedSavedWindows = storage.savedWindows;
+            const savedWindowToUpdateIndex = updatedSavedWindows.findIndex(win => win.id === savedWindow.id);
+            const updatedTabs = savedWindow.tabs.filter(tab => tab.id !== tabToDelete.id);
+            updatedSavedWindows[savedWindowToUpdateIndex].tabs = updatedTabs;
+            document.getElementById(tabToDelete.id).remove();
+            chrome.storage.local.set({ savedWindows: updatedSavedWindows }).then(async () => await render());
         }
     },
     edit: {
