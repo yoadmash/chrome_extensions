@@ -22,6 +22,7 @@ body {
 
 #root {
     width: 500px;
+    position: relative;
 }
 
 .options, .backup {
@@ -160,6 +161,45 @@ label {
     width: 3% !important;
 }
 
+.edit_tab > .form {
+    z-index: 2;
+    position: fixed;
+    top: 40%;
+    left: 12%;
+    width: 70%;
+    padding: 10px 20px 10px 10px;
+    border: 3px solid black;
+    border-radius: 10px;
+    background-color: bisque;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 10px;
+}
+
+.form > div input {
+    width: 100%;
+}
+
+.form div:last-child {
+    display: flex;
+    justify-content: center;
+    gap: 5px;
+}
+
+.edit_tab .overlay {
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.2);
+    backdrop-filter: blur(3px);
+    z-index: 1;
+}
+
 .deletedWindows a {
     color: crimson;
     font-weight: bold;
@@ -175,4 +215,8 @@ label {
 
 .deletedWindows > .list > h3 {
     text-align: center;
+}
+
+.hidden {
+    display: none;
 }

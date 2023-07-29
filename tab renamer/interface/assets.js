@@ -1,4 +1,5 @@
 import { renderWindow, renderWindowTabs, reorderWindows, setTitle, render } from "./script.js";
+import edit_tab_popup from './edit_tab_popup.js';
 
 export const assets = {
     checkTabs: {
@@ -108,6 +109,51 @@ export const assets = {
             } else {
                 tabEl.replaceChild(tabTitle, newEl);
             }
+        },
+        savedWindowTabEvent: (savedWindow, tab) => {
+            const edit_tab = new DOMParser().parseFromString(edit_tab_popup, "text/html").body.firstChild;
+            document.body.append(edit_tab);
+            disableScorlling(true);
+
+            const titleInput = document.getElementById('edit_tab_title');
+            const urlInput = document.getElementById('edit_tab_url');
+
+            const currentTitle = tab.title;
+            const currentURL = tab.url;
+
+            titleInput.value = currentTitle;
+            titleInput.placeholder = 'Current Title: ' + currentTitle;
+
+            urlInput.value = currentURL;
+            urlInput.placeholder = 'Current URL: ' + currentURL;
+
+            const saveBtn = document.getElementById('edit_tab_save');
+            saveBtn.addEventListener('click', async () => {
+                if(titleInput.value !== currentTitle || urlInput.value !== currentURL) {
+                    tab.title = titleInput.value;
+                    tab.url = urlInput.value;
+                    document.getElementById(tab.id).children[1].innerText = titleInput.value;
+
+                    const savedTabToUpdateIndex = savedWindow.tabs.findIndex(savedTab => savedTab.id === tab.id);
+                    savedWindow.tabs[savedTabToUpdateIndex] = tab;
+
+                    const storage = await chrome.storage.local.get();
+                    const updatedSavedWindows = storage.savedWindows;
+                    const savedWindowToUpdateIndex = updatedSavedWindows.findIndex(win => win.id === savedWindow.id);
+
+                    updatedSavedWindows[savedWindowToUpdateIndex] = savedWindow;
+
+                    chrome.storage.local.set({savedWindows: updatedSavedWindows});
+                }
+                edit_tab.remove();
+                disableScorlling(false);
+            })
+
+            const cancelBtn = document.getElementById('edit_tab_cancel');
+            cancelBtn.addEventListener('click', () => {
+                edit_tab.remove();
+                disableScorlling(false);
+            })
         }
     },
     reload: {
@@ -166,4 +212,14 @@ export const assets = {
             reorderWindows();
         }
     },
+}
+
+function disableScorlling(status) {
+    if(status) {
+        const xPos = window.scrollX;
+        const yPos = window.scrollY;
+        window.onscroll = () => window.scroll(xPos, yPos);
+    } else {
+        window.onscroll =() => {}
+    }
 }

@@ -294,17 +294,26 @@ export function renderWindowTabs(windowObj) {
                 }
             }
         } else {
-            const icon = document.createElement('img');
-            icon.classList.add('icon');
-            icon.src = assets['delete'].src;
-            icon.title = assets['delete'].title_tab;
-            icon.alt = 'tab_action_icon';
-            icon.addEventListener('click', () => {
-                assets['delete'].tabEvent(windowObj, el);
-            });
-            icons.append(icon);
+            for (const key in assets) {
+                if(key !== 'delete' && key !== 'edit') continue;
+                const icon = document.createElement('img');
+                icon.classList.add('icon');
+                icon.src = assets[key].src;
+                icon.title = (key === 'edit') ? 'Edit Tab' : assets[key].title_tab;
+                icon.alt = 'tab_action_icon';
+                icon.addEventListener('click', (event) => {
+                    switch(key) {
+                        case 'delete':
+                            assets[key].tabEvent(windowObj, el);
+                            break;
+                        case 'edit':
+                            assets[key].savedWindowTabEvent(windowObj, el);
+                            break;
+                    }
+                });
+                icons.prepend(icon);
+            }
         }
-
         tabsEl.append(tab);
     });
 
@@ -533,7 +542,7 @@ async function backup() {
         btn.innerText = item.title;
         if (item.id === 'restore') btn.title = `Backed up at: ${new Date(storage.backup.date).toLocaleString('en-GB')}`;
         btn.addEventListener('click', async () => {
-            console.log(storage.backup.data);
+            console.log(JSON.stringify(storage.savedWindows));
             if (btn.id === 'backup') {
                 navigator.clipboard.writeText(JSON.stringify(storage.savedWindows));
                 await chrome.storage.local.set({
