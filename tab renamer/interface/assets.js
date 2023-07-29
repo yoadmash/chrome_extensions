@@ -117,7 +117,8 @@ export const assets = {
 
             const titleInput = document.getElementById('edit_tab_title');
             const urlInput = document.getElementById('edit_tab_url');
-
+            const faviconInput = document.getElementById('edit_tab_favicon');
+            
             const currentTitle = tab.title;
             const currentURL = tab.url;
 
@@ -127,11 +128,15 @@ export const assets = {
             urlInput.value = currentURL;
             urlInput.placeholder = 'Current URL: ' + currentURL;
 
+            faviconInput.value = tab.favIconUrl;
+
             const saveBtn = document.getElementById('edit_tab_save');
             saveBtn.addEventListener('click', async () => {
-                if(titleInput.value !== currentTitle || urlInput.value !== currentURL) {
+                if(titleInput.value !== currentTitle || urlInput.value !== currentURL || faviconInput.value !== tab.favIconUrl) {
                     tab.title = titleInput.value;
                     tab.url = urlInput.value;
+                    tab.favIconUrl = faviconInput.value;
+                    document.getElementById(tab.id).children[0].src = faviconInput.value;
                     document.getElementById(tab.id).children[1].innerText = titleInput.value;
 
                     const savedTabToUpdateIndex = savedWindow.tabs.findIndex(savedTab => savedTab.id === tab.id);
@@ -154,6 +159,44 @@ export const assets = {
                 edit_tab.remove();
                 disableScorlling(false);
             })
+
+            const pasteBtn = document.getElementById('edit_tab_paste');
+            pasteBtn.addEventListener('click', async () => {
+                const pasteInput = document.createElement('input');
+                pasteBtn.replaceWith(pasteInput);
+                pasteInput.focus();
+                pasteInput.addEventListener('keypress', (event) => {
+                    if(event.key === 'Enter') {
+                        try {
+                            const data = JSON.parse(pasteInput.value);
+                            titleInput.value = data.title;
+                            urlInput.value = data.url;
+                            faviconInput.value = data.favicon;
+                            pasteInput.replaceWith(pasteBtn);
+                        } catch (err) {
+                            if(err) {
+                                pasteInput.value = '';
+                                pasteInput.placeholder = 'Not a valid JSON';
+                                setTimeout(() => {
+                                    pasteInput.placeholder = '';
+                                }, 1500);
+                            }
+                        }
+                    }
+                })
+            })
+        }
+    },
+    clone: {
+        title_tab: 'Clone Tab Data',
+        src: `${chrome.runtime.getURL(`icons/clone.svg`)}`,
+        tabEvent: (tab) => {
+            const clonedData = {
+                title: tab.title,
+                url: tab.url,
+                favicon: (tab.favIconUrl) ? tab.favIconUrl : chrome.runtime.getURL('icons/generic_tab.svg')
+            }
+            navigator.clipboard.writeText(JSON.stringify(clonedData));
         }
     },
     reload: {

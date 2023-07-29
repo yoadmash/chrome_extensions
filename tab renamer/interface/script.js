@@ -228,8 +228,7 @@ export function renderWindowTabs(windowObj) {
 
         favicon.classList.add('favicon');
         favicon.alt = 'favicon';
-        favicon.src = el.favIconUrl;
-        favicon.onerror = () => favicon.src = chrome.runtime.getURL('icons/generic_tab.svg');
+        favicon.src = (el.favIconUrl) ? el.favIconUrl : chrome.runtime.getURL('icons/generic_tab.svg');
 
         checkTab.classList.add('checkTab');
         checkTab.type = 'checkbox';
@@ -281,6 +280,9 @@ export function renderWindowTabs(windowObj) {
                                 break;
                             case 'edit':
                                 assets[key].tabEvent(el, tab, tabTitle);
+                                break;
+                            case 'clone':
+                                assets[key].tabEvent(el);
                                 break;
                         }
                     });

@@ -56,8 +56,7 @@ function renderDeletedWindowTabs(deletedWindowObj) {
         tab.append(favicon, tabTitle);
 
         favicon.classList.add('favicon');
-        favicon.src = (el.favIconUrl?.length !== 0 && el.favIconUrl) ? el.favIconUrl : chrome.runtime.getURL('icons/generic_tab.svg');
-        favicon.onerror = () => favicon.src = chrome.runtime.getURL('icons/generic_tab.svg');
+        favicon.src = (el.favIconUrl) ? el.favIconUrl : chrome.runtime.getURL('icons/generic_tab.svg');
 
         tabTitle.innerText = el.title;
         tabTitle.title = el.title;

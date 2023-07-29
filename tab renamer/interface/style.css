@@ -164,7 +164,7 @@ label {
 .edit_tab > .form {
     z-index: 2;
     position: fixed;
-    top: 40%;
+    top: 35%;
     left: 12%;
     width: 70%;
     padding: 10px 20px 10px 10px;
