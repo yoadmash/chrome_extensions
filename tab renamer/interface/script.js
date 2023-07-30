@@ -102,7 +102,7 @@ export function renderWindow(windowObj, windowIndex, tabsElement) {
             }
         }).catch((err) => console.log(err));
     } else {
-        title.innerText = `[tabs: ${windowObj.tabs.length} | incognito: ${windowObj.incognito}]`;
+        title.innerText = `[Window ${windowIndex} | tabs: ${windowObj.tabs.length} | incognito: ${windowObj.incognito}]`;
     }
 
     title.addEventListener('click', () => {
