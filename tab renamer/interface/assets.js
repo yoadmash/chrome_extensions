@@ -148,7 +148,7 @@ export const assets = {
 
                     updatedSavedWindows[savedWindowToUpdateIndex] = savedWindow;
 
-                    chrome.storage.local.set({ savedWindows: updatedSavedWindows });
+                    chrome.storage.local.set({ savedWindows: updatedSavedWindows, clipboard: null});
                 }
                 edit_tab.remove();
                 disableScorlling(false);
