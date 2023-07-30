@@ -15,7 +15,7 @@ export default `<div class="edit_tab">
 </div>
     <div>
         <button id="edit_tab_save">Save</button>
-        <button id="edit_tab_paste">Paste from clipboard</button>
+        <button id="edit_tab_fill">Fill from clipboard</button>
         <button id="edit_tab_cancel">Cancel</button>
     </div>
 </div>

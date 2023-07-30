@@ -118,7 +118,7 @@ export const assets = {
             const titleInput = document.getElementById('edit_tab_title');
             const urlInput = document.getElementById('edit_tab_url');
             const faviconInput = document.getElementById('edit_tab_favicon');
-            
+
             const currentTitle = tab.title;
             const currentURL = tab.url;
 
@@ -132,7 +132,7 @@ export const assets = {
 
             const saveBtn = document.getElementById('edit_tab_save');
             saveBtn.addEventListener('click', async () => {
-                if(titleInput.value !== currentTitle || urlInput.value !== currentURL || faviconInput.value !== tab.favIconUrl) {
+                if (titleInput.value !== currentTitle || urlInput.value !== currentURL || faviconInput.value !== tab.favIconUrl) {
                     tab.title = titleInput.value;
                     tab.url = urlInput.value;
                     tab.favIconUrl = faviconInput.value;
@@ -148,7 +148,7 @@ export const assets = {
 
                     updatedSavedWindows[savedWindowToUpdateIndex] = savedWindow;
 
-                    chrome.storage.local.set({savedWindows: updatedSavedWindows});
+                    chrome.storage.local.set({ savedWindows: updatedSavedWindows });
                 }
                 edit_tab.remove();
                 disableScorlling(false);
@@ -160,43 +160,28 @@ export const assets = {
                 disableScorlling(false);
             })
 
-            const pasteBtn = document.getElementById('edit_tab_paste');
+            const pasteBtn = document.getElementById('edit_tab_fill');
             pasteBtn.addEventListener('click', async () => {
-                const pasteInput = document.createElement('input');
-                pasteBtn.replaceWith(pasteInput);
-                pasteInput.focus();
-                pasteInput.addEventListener('keypress', (event) => {
-                    if(event.key === 'Enter') {
-                        try {
-                            const data = JSON.parse(pasteInput.value);
-                            titleInput.value = data.title;
-                            urlInput.value = data.url;
-                            faviconInput.value = data.favicon;
-                            pasteInput.replaceWith(pasteBtn);
-                        } catch (err) {
-                            if(err) {
-                                pasteInput.value = '';
-                                pasteInput.placeholder = 'Not a valid JSON';
-                                setTimeout(() => {
-                                    pasteInput.placeholder = '';
-                                }, 1500);
-                            }
-                        }
-                    }
-                })
+                const storage = await chrome.storage.local.get();
+                const clipboard = JSON.parse(storage.clipboard);
+                titleInput.value = clipboard.title;
+                urlInput.value = clipboard.url;
+                faviconInput.value = clipboard.favicon;
+                titleInput.setAttribute('disabled', true);
+                urlInput.setAttribute('disabled', true);
             })
         }
     },
     clone: {
         title_tab: 'Clone Tab Data',
         src: `${chrome.runtime.getURL(`icons/clone.svg`)}`,
-        tabEvent: (tab) => {
+        tabEvent: async (tab) => {
             const clonedData = {
                 title: tab.title,
                 url: tab.url,
                 favicon: (tab.favIconUrl) ? tab.favIconUrl : chrome.runtime.getURL('icons/generic_tab.svg')
             }
-            navigator.clipboard.writeText(JSON.stringify(clonedData));
+            await chrome.storage.local.set({ clipboard: JSON.stringify(clonedData) });
         }
     },
     reload: {
@@ -258,11 +243,11 @@ export const assets = {
 }
 
 function disableScorlling(status) {
-    if(status) {
+    if (status) {
         const xPos = window.scrollX;
         const yPos = window.scrollY;
         window.onscroll = () => window.scroll(xPos, yPos);
     } else {
-        window.onscroll =() => {}
+        window.onscroll = () => { }
     }
 }

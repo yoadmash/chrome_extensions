@@ -13,6 +13,7 @@ chrome.runtime.onInstalled.addListener(async () => {
             savedWindows: [],
             deletedSavedWindows: [],
             backup: { data: [], date: null },
+            clipboard: null,
             recentlyDeletedDate: null,
             autoClearDeletedSavedWindowsList: null,
         });
