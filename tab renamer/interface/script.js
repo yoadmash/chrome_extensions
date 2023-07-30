@@ -122,8 +122,6 @@ export function renderWindow(windowObj, windowIndex, tabsElement) {
                 focused: true,
                 incognito: windowObj.incognito,
                 url: urls
-            }).then(() => {
-                close();
             });
         }
     });
