@@ -78,6 +78,14 @@ label {
     gap: 10px;
 }
 
+.transfer-to {
+    width: 125px;
+}
+
+.transfer-to option:first-child {
+    display: none;
+}
+
 .title {
     cursor: pointer;
 }

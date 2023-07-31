@@ -102,7 +102,7 @@ export function renderWindow(windowObj, windowIndex, tabsElement) {
             }
         }).catch((err) => console.log(err));
     } else {
-        title.innerText = `[Window ${windowIndex} | tabs: ${windowObj.tabs.length} | incognito: ${windowObj.incognito}]`;
+        title.innerText = `[Window ID: ${windowObj.id} | tabs: ${windowObj.tabs.length} | incognito: ${windowObj.incognito}]`;
     }
 
     title.addEventListener('click', () => {
@@ -134,6 +134,38 @@ export function renderWindow(windowObj, windowIndex, tabsElement) {
         windowTitleElement.addEventListener('mouseleave', () => {
             icons.remove();
         });
+
+        // const tranferTabsToSelection = document.createElement('select');
+        // tranferTabsToSelection.classList.add('transfer-to')
+        
+        // const defualtValue = document.createElement('option');
+        // defualtValue.setAttribute('disabled', true);
+        // defualtValue.setAttribute('selected', true);
+        // defualtValue.innerText = 'Transfer tabs to';
+        // tranferTabsToSelection.append(defualtValue);
+
+        // for(let window of storage.savedWindows) {
+        //     const option = document.createElement('option');
+        //     option.disabled = (windowObj.id === window.id);
+        //     option.innerText = (windowObj.id !== window.id) ? window.id : 'Current';
+        //     option.value = window.id;
+        //     tranferTabsToSelection.append(option);
+        // }
+
+        // tranferTabsToSelection.addEventListener('change', (event) => {
+        //     const fromWindowId = windowObj.id;
+        //     const toWindowId = Number(event.target.value);
+
+        //     const fromWindowObj = storage.savedWindows.find(window => window.id === fromWindowId);
+        //     const toWindowObj = storage.savedWindows.find(window => window.id === toWindowId);
+
+        //     const mergedTabs = toWindowObj.tabs.concat(fromWindowObj.tabs);
+        //     toWindowObj.tabs = mergedTabs;
+
+        //     console.log(toWindowObj);
+        // })
+
+        // icons.append(tranferTabsToSelection);
     } else {
         windowTitleElement.append(icons);
     }
