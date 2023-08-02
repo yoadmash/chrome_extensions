@@ -148,6 +148,7 @@ export function renderWindow(windowObj, windowIndex, tabsElement) {
         //     const option = document.createElement('option');
         //     option.disabled = (windowObj.id === window.id);
         //     option.innerText = (windowObj.id !== window.id) ? window.id : 'Current';
+        //     option.style.color = (windowObj.id === window.id) ? 'green' : 'black';
         //     option.value = window.id;
         //     tranferTabsToSelection.append(option);
         // }
@@ -271,6 +272,12 @@ export function renderWindowTabs(windowObj) {
                     tabTitle.classList.add('activeTab');
                 }
             }).catch((err) => console.log(err));
+        } else {
+            fetch(el.url).then(res => res.text()).then(resTxt => {
+                if(resTxt.includes('Post Not Found')) {
+                    tabTitle.style.color = 'red';
+                }
+            });
         }
         tabTitle.addEventListener('click', () => {
             if (!show_saved_windows) {

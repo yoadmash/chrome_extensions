@@ -138,6 +138,7 @@ export const assets = {
                     tab.favIconUrl = faviconInput.value;
                     document.getElementById(tab.id).children[0].src = faviconInput.value;
                     document.getElementById(tab.id).children[1].innerText = titleInput.value;
+                    document.getElementById(tab.id).children[1].removeAttribute('style');
 
                     const savedTabToUpdateIndex = savedWindow.tabs.findIndex(savedTab => savedTab.id === tab.id);
                     savedWindow.tabs[savedTabToUpdateIndex] = tab;
