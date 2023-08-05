@@ -16,7 +16,10 @@ export async function render() {
 
     root.innerHTML = '';
 
+    const bodyDimensions = 'min-height: 400px; max-height: 800px;';
+
     if (show_saved_windows) {
+        document.body.style.cssText += bodyDimensions;
         await search();
         await backup();
         await options();
@@ -30,6 +33,7 @@ export async function render() {
             windowsToRender = storage.savedWindows.filter(savedWindow => !savedWindow.incognito);
         }
     } else {
+        document.body.style.cssText -= bodyDimensions;
         await search();
         await options();
         if (!currentWindow.incognito) {
@@ -43,7 +47,8 @@ export async function render() {
         }
     }
 
-    (windowsToRender.length > 1) && calculateTotalTabs(windowsToRender);
+    (windowsToRender.length > 1 || (show_saved_windows && windowsToRender.length > 0)) && calculateTotalTabs(windowsToRender);
+    (windowsToRender.length > 1 && show_saved_windows) && scrollToSavedWindow();
     renderWindows(windowsToRender);
 }
 
@@ -53,14 +58,68 @@ async function updateOpenedWindows() {
 
 function calculateTotalTabs(windows_arr) {
     const totalTabsEl = document.createElement('div');
+    const icons = document.createElement('div');
+
     totalTabsEl.classList.add('totalTabs');
+    icons.classList.add('icons');
+
     totalTabsEl.append(document.createElement('span'));
 
     let totalTabsSum = 0;
     windows_arr.forEach(window => totalTabsSum += window.tabs.length);
 
     totalTabsEl.firstChild.innerText = 'Total tabs: ' + totalTabsSum;
+
+    if (show_saved_windows) {
+        const icon = document.createElement('img');
+        icon.classList.add('icon');
+        icon.src = assets['validate'].src;
+        icon.title = assets['validate'].title_window;
+        icon.alt = 'window_action_icon';
+
+        icon.addEventListener('click', () => {
+            windows_arr.forEach(window => {
+                window.tabs.forEach(tab => {
+                    markNotFound(tab, document.getElementById(tab.id).children[1]);
+                })
+            });
+        });
+
+        icons.append(icon);
+
+        totalTabsEl.append(icons);
+    }
+
     root.append(totalTabsEl);
+}
+
+function scrollToSavedWindow() {
+    const scrollToSavedWindowEl = document.createElement('div');
+    scrollToSavedWindowEl.classList.add('scroll-to');
+
+    const label = document.createElement('label');
+    label.innerText = 'Scroll to saved window: ';
+
+    const savedWindowsSelection = document.createElement('select');
+
+    for (let window of storage.savedWindows) {
+        const option = document.createElement('option');
+        option.innerText = window.id;
+        option.value = window.id;
+        savedWindowsSelection.append(option);
+    }
+
+    savedWindowsSelection.addEventListener('change', (event) => {
+        const element = document.getElementById(event.target.value).offsetTop - 50;
+        window.scrollTo({
+            top: element,
+            left: 0,
+            behavior: 'smooth'
+        });
+    });
+
+    scrollToSavedWindowEl.append(label, savedWindowsSelection);
+    root.append(scrollToSavedWindowEl);
 }
 
 function renderWindows(windows) {
@@ -268,6 +327,9 @@ export function renderWindowTabs(windowObj) {
         favicon.classList.add('favicon');
         favicon.alt = 'favicon';
         favicon.src = (el.favIconUrl) ? el.favIconUrl : chrome.runtime.getURL('icons/generic_tab.svg');
+        favicon.onerror = () => {
+            favicon.src = chrome.runtime.getURL('icons/generic_tab.svg');
+        }
 
         checkTab.classList.add('checkTab');
         checkTab.type = 'checkbox';
@@ -280,8 +342,6 @@ export function renderWindowTabs(windowObj) {
                     tabTitle.classList.add('activeTab');
                 }
             }).catch((err) => console.log(err));
-        } else {
-            markNotFound(el, tabTitle);
         }
         tabTitle.addEventListener('click', () => {
             if (!show_saved_windows) {
@@ -368,6 +428,27 @@ export function setTitle(newTitle) {
     document.title = newTitle;
 }
 
+function expand() {
+    const icon = document.createElement('img');
+    icon.classList.add('icon');
+    icon.title = 'Expand';
+    icon.src = `${chrome.runtime.getURL('icons/expand.svg')}`;
+    icon.addEventListener('click', () => {
+        chrome.windows.create({
+            focused: true,
+            state: 'normal',
+            type: 'popup',
+            top: screen.height / 2 - 800 / 2,
+            left: screen.width / 2 - 500 / 2,
+            height: 800,
+            width: 550,
+            url: `chrome-extension://pkpappdoljaliljaeffdbofjcnpahago/interface/popup.html`
+        });
+        close();
+    });
+    return icon;
+}
+
 async function search() {
     const search = document.createElement('div');
     const searchInput = document.createElement('input');
@@ -405,7 +486,7 @@ async function search() {
         });
     });
 
-    search.append(searchInput);
+    search.append(searchInput, expand());
     root.append(search);
     searchInput.focus();
 }
@@ -436,6 +517,9 @@ function renderSearch(search) {
         favicon.classList.add('favicon');
         favicon.alt = 'favicon';
         favicon.src = (el.favIconUrl) ? el.favIconUrl : chrome.runtime.getURL('icons/generic_tab.svg');
+        favicon.onerror = () => {
+            favicon.src = chrome.runtime.getURL('icons/generic_tab.svg');
+        }
 
         tabTitle.innerText = el.title;
         tabTitle.title = el.title;

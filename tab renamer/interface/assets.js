@@ -229,6 +229,10 @@ export const assets = {
             reorderWindows();
         }
     },
+    validate: {
+        title_window: 'Validate Tabs',
+        src: `${chrome.runtime.getURL('icons/validate.svg')}`,
+    }
 }
 
 function disableScorlling(status) {
