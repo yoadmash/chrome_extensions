@@ -149,7 +149,7 @@ export const assets = {
 
                     updatedSavedWindows[savedWindowToUpdateIndex] = savedWindow;
 
-                    chrome.storage.local.set({ savedWindows: updatedSavedWindows, clipboard: null});
+                    chrome.storage.local.set({ savedWindows: updatedSavedWindows, clipboard: null });
                 }
                 edit_tab.remove();
                 disableScorlling(false);
@@ -171,18 +171,6 @@ export const assets = {
                 titleInput.setAttribute('disabled', true);
                 urlInput.setAttribute('disabled', true);
             })
-        }
-    },
-    clone: {
-        title_tab: 'Clone Tab Data',
-        src: `${chrome.runtime.getURL(`icons/clone.svg`)}`,
-        tabEvent: async (tab) => {
-            const clonedData = {
-                title: tab.title,
-                url: tab.url,
-                favicon: (tab.favIconUrl) ? tab.favIconUrl : chrome.runtime.getURL('icons/generic_tab.svg')
-            }
-            await chrome.storage.local.set({ clipboard: JSON.stringify(clonedData) });
         }
     },
     reload: {

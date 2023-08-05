@@ -226,6 +226,14 @@ export function reorderWindows() {
     });
 }
 
+function markNotFound(tab, titleEl) {
+    chrome.runtime.sendMessage({from: 'savedWindowsView', url: tab.url}, response => {
+        if(response) {
+            titleEl.style.color = 'red';
+        }
+    });
+}
+
 export function renderWindowTabs(windowObj) {
     const tabsEl = document.createElement('div');
     tabsEl.classList.add('currentTabs');
@@ -273,11 +281,7 @@ export function renderWindowTabs(windowObj) {
                 }
             }).catch((err) => console.log(err));
         } else {
-            fetch(el.url).then(res => res.text()).then(resTxt => {
-                if(resTxt.includes('Post Not Found')) {
-                    tabTitle.style.color = 'red';
-                }
-            });
+            markNotFound(el, tabTitle);
         }
         tabTitle.addEventListener('click', () => {
             if (!show_saved_windows) {

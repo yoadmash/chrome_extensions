@@ -24,7 +24,10 @@ chrome.runtime.onStartup.addListener(async () => {
     const data = await chrome.storage.local.get();
     let deletedSavedWindows = [];
     deletedSavedWindows = data.deletedSavedWindows.filter(deletedWindowObj => Date.now() - deletedWindowObj.id <= Date.now() - data.autoClearDeletedSavedWindowsList);
-    chrome.storage.local.set({ deletedSavedWindows: deletedSavedWindows, autoClearDeletedSavedWindowsList: '' });
+    chrome.storage.local.set({
+        deletedSavedWindows: deletedSavedWindows,
+        autoClearDeletedSavedWindowsList: '',
+    });
 });
 
 chrome.tabs.onActivated.addListener(async () => {
@@ -43,4 +46,13 @@ async function saveCurrentWindows(updater) {
 
 chrome.storage.onChanged.addListener((changes) => {
     console.log(changes);
-})
+});
+
+chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
+    if (message.from === 'savedWindowsView') {
+        fetch(message.url)
+            .then(response => response.text())
+            .then(data => sendResponse(data.includes('Post Not Found')));
+        return true;
+    }
+});
