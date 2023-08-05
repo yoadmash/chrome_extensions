@@ -71,10 +71,10 @@ function renderWindows(windows) {
         windowsListEl.append(renderWindow(window, (i + 1), renderWindowTabs(window)));
     })
 
-    if(show_saved_windows) {
-        if(storage.savedWindows.length > 0) root.append(windowsListEl);
+    if (show_saved_windows) {
+        if (storage.savedWindows.length > 0) root.append(windowsListEl);
     } else {
-        if(storage.openedWindows.length > 0) root.append(windowsListEl);
+        if (storage.openedWindows.length > 0) root.append(windowsListEl);
     }
 }
 
@@ -137,7 +137,7 @@ export function renderWindow(windowObj, windowIndex, tabsElement) {
 
         // const tranferTabsToSelection = document.createElement('select');
         // tranferTabsToSelection.classList.add('transfer-to')
-        
+
         // const defualtValue = document.createElement('option');
         // defualtValue.setAttribute('disabled', true);
         // defualtValue.setAttribute('selected', true);
@@ -227,8 +227,8 @@ export function reorderWindows() {
 }
 
 function markNotFound(tab, titleEl) {
-    chrome.runtime.sendMessage({from: 'savedWindowsView', url: tab.url}, response => {
-        if(response) {
+    chrome.runtime.sendMessage({ from: 'savedWindowsView', url: tab.url }, response => {
+        if (response) {
             titleEl.style.color = 'red';
         }
     });
@@ -338,14 +338,14 @@ export function renderWindowTabs(windowObj) {
             }
         } else {
             for (const key in assets) {
-                if(key !== 'delete' && key !== 'edit') continue;
+                if (key !== 'delete' && key !== 'edit') continue;
                 const icon = document.createElement('img');
                 icon.classList.add('icon');
                 icon.src = assets[key].src;
                 icon.title = (key === 'edit') ? 'Edit Tab' : assets[key].title_tab;
                 icon.alt = 'tab_action_icon';
-                icon.addEventListener('click', (event) => {
-                    switch(key) {
+                icon.addEventListener('click', () => {
+                    switch (key) {
                         case 'delete':
                             assets[key].tabEvent(windowObj, el);
                             break;
@@ -377,7 +377,7 @@ async function search() {
     searchInput.classList.add('searchInput');
     searchInput.type = 'text';
     searchInput.placeholder = 'search tabs';
-    searchInput.addEventListener('input', async (event) => {
+    searchInput.addEventListener('input', async () => {
         const windowsToRender = (show_saved_windows) ? storage.savedWindows : storage.openedWindows;
         let filteredWindows = windowsToRender.filter(window => window.tabs.find(tab => tab.title.toLocaleLowerCase().includes(searchInput.value.toLocaleLowerCase())));
         chrome.windows.getCurrent({
@@ -425,17 +425,23 @@ function renderSearch(search) {
 
     search.tabs.forEach(el => {
         const tab = document.createElement('div');
+        const favicon = document.createElement('img');
         const tabTitle = document.createElement('span')
 
         tab.classList = 'tab';
+
+        tab.setAttribute('id', el.id);
+        tab.append(favicon, tabTitle);
+
+        favicon.classList.add('favicon');
+        favicon.alt = 'favicon';
+        favicon.src = (el.favIconUrl) ? el.favIconUrl : chrome.runtime.getURL('icons/generic_tab.svg');
 
         tabTitle.innerText = el.title;
         tabTitle.title = el.title;
         if (el.active && el.windowId === search.windowId) {
             tabTitle.classList.add('activeTab');
         }
-
-        tab.append(tabTitle);
 
         tabTitle.addEventListener('click', () => {
             if (!el.url.match('https://gx-corner.opera.com/')) {
@@ -611,7 +617,7 @@ async function backup() {
         }
     });
 
-    if(storage.backup.data.length > 0) {
+    if (storage.backup.data.length > 0) {
         root.append(backupEl);
     }
 }
