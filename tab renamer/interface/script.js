@@ -442,7 +442,7 @@ function expand() {
             left: screen.width / 2 - 500 / 2,
             height: 800,
             width: 550,
-            url: `chrome-extension://pkpappdoljaliljaeffdbofjcnpahago/interface/popup.html`
+            url: `/interface/popup.html`
         });
         close();
     });
