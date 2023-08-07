@@ -49,8 +49,13 @@ chrome.tabs.onUpdated.addListener(async (tabId, changeInfo, tab) => {
     });
 });
 
-chrome.tabs.onRemoved.addListener(async () => {
-    reloadPopupHtmlWindow();
+chrome.tabs.onRemoved.addListener(async (tabId, removeInfo) => {
+    chrome.storage.local.get()
+    .then(storage => {
+        if(storage.popup !== removeInfo.windowId) {
+            reloadPopupHtmlWindow();
+        }
+    });
 });
 
 chrome.storage.onChanged.addListener((changes) => {
