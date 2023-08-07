@@ -49,10 +49,6 @@ chrome.tabs.onUpdated.addListener(async (tabId, changeInfo, tab) => {
     });
 });
 
-chrome.tabs.onCreated.addListener(async () => {
-    reloadPopupHtmlWindow();
-});
-
 chrome.tabs.onRemoved.addListener(async () => {
     reloadPopupHtmlWindow();
 });
