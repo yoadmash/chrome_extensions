@@ -110,7 +110,7 @@ export const assets = {
                 tabEl.replaceChild(tabTitle, newEl);
             }
         },
-        savedWindowTabEvent: (savedWindow, tab) => {
+        savedWindowTabEvent: async (savedWindow, tab) => {
             const edit_tab = new DOMParser().parseFromString(edit_tab_popup, "text/html").body.firstChild;
             document.body.append(edit_tab);
             disableScorlling(true);
@@ -162,15 +162,33 @@ export const assets = {
             })
 
             const pasteBtn = document.getElementById('edit_tab_fill');
-            pasteBtn.addEventListener('click', async () => {
-                const storage = await chrome.storage.local.get();
-                const clipboard = JSON.parse(storage.clipboard);
-                titleInput.value = clipboard.title;
-                urlInput.value = clipboard.url;
-                faviconInput.value = clipboard.favicon;
-                titleInput.setAttribute('disabled', true);
-                urlInput.setAttribute('disabled', true);
-            })
+            const storage = await chrome.storage.local.get();
+            const clipboard = JSON.parse(storage.clipboard);
+            if (clipboard && (clipboard.title && clipboard.url && clipboard.favicon)) {
+                pasteBtn.addEventListener('click', async () => {
+                    titleInput.value = clipboard.title;
+                    urlInput.value = clipboard.url;
+                    faviconInput.value = clipboard.favicon;
+                    titleInput.setAttribute('disabled', true);
+                    urlInput.setAttribute('disabled', true);
+                    chrome.storage.local.set({ clipboard: null });
+                });
+            } else {
+                pasteBtn.disabled = true;
+                pasteBtn.title = 'No Data';
+            }
+        }
+    },
+    clone: {
+        title_tab: 'Clone Tab Data',
+        src: `${chrome.runtime.getURL(`icons/clone.svg`)}`,
+        tabEvent: async (tab) => {
+            const clonedData = {
+                title: tab.title,
+                url: tab.url,
+                favicon: (tab.favIconUrl) ? tab.favIconUrl : chrome.runtime.getURL('icons/generic_tab.svg')
+            }
+            await chrome.storage.local.set({ clipboard: JSON.stringify(clonedData) });
         }
     },
     reload: {

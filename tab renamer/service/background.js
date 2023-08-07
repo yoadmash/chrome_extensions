@@ -36,27 +36,27 @@ chrome.tabs.onActivated.addListener(async () => {
 
 chrome.tabs.onUpdated.addListener(async (tabId, changeInfo, tab) => {
     await saveCurrentWindows('tabs.onUpdated event');
-    chrome.storage.local.get()
-    .then(storage => {
-        if(storage.popup) {
-            chrome.windows.get(storage.popup, {populate: true, windowTypes: ['popup']})
-            .then(window => {
-                if(tabId !== window.tabs[0].id) {
-                    reloadPopupHtmlWindow();
-                }
-            });
-        }
-    });
+    // chrome.storage.local.get()
+    // .then(storage => {
+    //     if(storage.popup) {
+    //         chrome.windows.get(storage.popup, {populate: true, windowTypes: ['popup']})
+    //         .then(window => {
+    //             if(tabId !== window.tabs[0].id) {
+    //                 reloadPopupHtmlWindow();
+    //             }
+    //         });
+    //     }
+    // });
 });
 
-chrome.tabs.onRemoved.addListener(async (tabId, removeInfo) => {
-    chrome.storage.local.get()
-    .then(storage => {
-        if(storage.popup !== removeInfo.windowId) {
-            reloadPopupHtmlWindow();
-        }
-    });
-});
+// chrome.tabs.onRemoved.addListener(async (tabId, removeInfo) => {
+//     chrome.storage.local.get()
+//     .then(storage => {
+//         if(storage.popup !== removeInfo.windowId) {
+//             reloadPopupHtmlWindow();
+//         }
+//     });
+// });
 
 chrome.storage.onChanged.addListener((changes) => {
     console.log(changes);

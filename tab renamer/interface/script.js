@@ -10,8 +10,8 @@ export async function render() {
     await updateOpenedWindows();
 
     const currentWindow = await chrome.windows.getCurrent();
-    if(currentWindow.type !== 'popup') {
-        chrome.storage.local.set({lastFocusedWindowId: currentWindow.id});
+    if (currentWindow.type !== 'popup') {
+        chrome.storage.local.set({ lastFocusedWindowId: currentWindow.id });
     }
     let windowsToRender = [];
     storage = await chrome.storage.local.get();
@@ -107,7 +107,7 @@ function scrollToSavedWindow() {
 
     for (let window of storage.savedWindows) {
         const option = document.createElement('option');
-        option.innerText = window.id;
+        option.innerText = `${window.id} (tabs: ${window.tabs.length})`;
         option.value = window.id;
         savedWindowsSelection.append(option);
     }
@@ -172,7 +172,7 @@ export function renderWindow(windowObj, windowIndex, tabsElement) {
             chrome.windows.update(windowObj.id, {
                 focused: true
             });
-            if(!storage.popup) {
+            if (!storage.popup) {
                 close();
             }
         } else {
@@ -354,7 +354,9 @@ export function renderWindowTabs(windowObj) {
                     chrome.tabs.update(el.id, { active: true }, (tab) => {
                         chrome.windows.update(tab.windowId, { focused: true });
                     });
-                    // close();
+                    if (!storage.popup) {
+                        close();
+                    }
                 }
             } else {
                 chrome.windows.create({
@@ -449,9 +451,20 @@ function expand() {
             width: 550,
             url: `/interface/popup.html`
         }).then(popup => {
-            chrome.storage.local.set({popup: popup.id});
+            chrome.storage.local.set({ popup: popup.id });
         });
         close();
+    });
+    return icon;
+}
+
+function reload() {
+    const icon = document.createElement('img');
+    icon.classList.add('icon');
+    icon.title = 'Reload';
+    icon.src = `${chrome.runtime.getURL('icons/reload.svg')}`;
+    icon.addEventListener('click', () => {
+        location.reload();
     });
     return icon;
 }
@@ -493,7 +506,11 @@ async function search() {
         });
     });
 
-    search.append(searchInput, expand());
+    if(!storage.popup) {
+        search.append(searchInput, expand());
+    } else {
+        search.append(searchInput, reload());
+    }
     root.append(search);
     searchInput.focus();
 }
