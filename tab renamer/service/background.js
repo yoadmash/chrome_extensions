@@ -34,15 +34,28 @@ chrome.tabs.onActivated.addListener(async () => {
     await saveCurrentWindows('tabs.onActivated event');
 });
 
-chrome.tabs.onUpdated.addListener(async () => {
+chrome.tabs.onUpdated.addListener(async (tabId, changeInfo, tab) => {
     await saveCurrentWindows('tabs.onUpdated event');
+    chrome.storage.local.get()
+    .then(storage => {
+        if(storage.popup) {
+            chrome.windows.get(storage.popup, {populate: true, windowTypes: ['popup']})
+            .then(window => {
+                if(tabId !== window.tabs[0].id) {
+                    reloadPopupHtmlWindow();
+                }
+            });
+        }
+    });
 });
 
-async function saveCurrentWindows(updater) {
-    const openedWindows = await chrome.windows.getAll({ populate: true, windowTypes: ['normal'] });
-    await chrome.storage.local.set({ openedWindows: openedWindows });
-    console.log('openedWindows has been recently updated on: ' + new Date().toLocaleString('en-GB') + ' by: ' + updater);
-}
+chrome.tabs.onCreated.addListener(async () => {
+    reloadPopupHtmlWindow();
+});
+
+chrome.tabs.onRemoved.addListener(async () => {
+    reloadPopupHtmlWindow();
+});
 
 chrome.storage.onChanged.addListener((changes) => {
     console.log(changes);
@@ -56,3 +69,30 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
         return true;
     }
 });
+
+chrome.windows.onRemoved.addListener(async (windowId) => {
+    chrome.storage.local.get().then(storage => {
+        const popupId = storage.popup;
+        if (popupId === windowId) {
+            chrome.storage.local.set({ popup: null });
+        }
+    });
+});
+
+function reloadPopupHtmlWindow() {
+    chrome.storage.local.get()
+        .then(storage => {
+            if (storage.popup) {
+                chrome.windows.get(storage.popup, { populate: true, windowTypes: ['popup'] })
+                    .then(window => {
+                        chrome.tabs.reload(window.tabs[0].id);
+                    });
+            }
+        });
+}
+
+async function saveCurrentWindows(updater) {
+    const openedWindows = await chrome.windows.getAll({ populate: true, windowTypes: ['normal'] });
+    await chrome.storage.local.set({ openedWindows: openedWindows });
+    console.log('openedWindows has been recently updated on: ' + new Date().toLocaleString('en-GB') + ' by: ' + updater);
+}

@@ -10,6 +10,9 @@ export async function render() {
     await updateOpenedWindows();
 
     const currentWindow = await chrome.windows.getCurrent();
+    if(currentWindow.type !== 'popup') {
+        chrome.storage.local.set({lastFocusedWindowId: currentWindow.id});
+    }
     let windowsToRender = [];
     storage = await chrome.storage.local.get();
     windows_arr = storage.openedWindows;
@@ -169,7 +172,9 @@ export function renderWindow(windowObj, windowIndex, tabsElement) {
             chrome.windows.update(windowObj.id, {
                 focused: true
             });
-            close();
+            if(!storage.popup) {
+                close();
+            }
         } else {
             const urls = [];
             windowObj.tabs.forEach(tab => {
@@ -349,7 +354,7 @@ export function renderWindowTabs(windowObj) {
                     chrome.tabs.update(el.id, { active: true }, (tab) => {
                         chrome.windows.update(tab.windowId, { focused: true });
                     });
-                    close();
+                    // close();
                 }
             } else {
                 chrome.windows.create({
@@ -443,6 +448,8 @@ function expand() {
             height: 800,
             width: 550,
             url: `/interface/popup.html`
+        }).then(popup => {
+            chrome.storage.local.set({popup: popup.id});
         });
         close();
     });
