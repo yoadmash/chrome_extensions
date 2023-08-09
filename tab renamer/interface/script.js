@@ -479,34 +479,34 @@ async function search() {
     searchInput.type = 'text';
     searchInput.placeholder = 'search tabs';
     searchInput.addEventListener('input', async () => {
-        const windowsToRender = (show_saved_windows) ? storage.savedWindows : storage.openedWindows;
-        let filteredWindows = windowsToRender.filter(window => window.tabs.find(tab => tab.title.toLocaleLowerCase().includes(searchInput.value.toLocaleLowerCase())));
-        chrome.windows.getCurrent({
-            populate: true,
-            windowTypes: ['normal']
-        }).then(async window => {
-            const search = { windowId: window.id, tabs: [] };
-            if (!window.incognito && !storage.options.privacy.include_incognito) {
-                filteredWindows = filteredWindows.filter(window => !window.incognito);
-            } else if (window.incognito && storage.options.privacy.only_incognito) {
-                filteredWindows = filteredWindows.filter(window => window.incognito);
-            }
-            for (const window of filteredWindows) {
-                for (const tab of window.tabs) {
-                    if (tab.title.toLocaleLowerCase().includes(searchInput.value.toLocaleLowerCase()) && !tab.url.match('https://gx-corner.opera.com/')) {
-                        search.tabs.push(tab);
+        if (searchInput.value.length > 0) {
+            const windowsToRender = (show_saved_windows) ? storage.savedWindows : storage.openedWindows;
+            let filteredWindows = windowsToRender.filter(window => window.tabs.find(tab => tab.title.toLocaleLowerCase().includes(searchInput.value.toLocaleLowerCase())));
+            chrome.windows.getCurrent({
+                populate: true,
+                windowTypes: ['normal']
+            }).then(async window => {
+                const search = { windowId: window.id, tabs: [] };
+                if (!window.incognito && !storage.options.privacy.include_incognito) {
+                    filteredWindows = filteredWindows.filter(window => !window.incognito);
+                } else if (window.incognito && storage.options.privacy.only_incognito) {
+                    filteredWindows = filteredWindows.filter(window => window.incognito);
+                }
+                for (const window of filteredWindows) {
+                    for (const tab of window.tabs) {
+                        if (tab.title.toLocaleLowerCase().includes(searchInput.value.toLocaleLowerCase()) && !tab.url.match('https://gx-corner.opera.com/')) {
+                            search.tabs.push(tab);
+                        }
                     }
                 }
-            }
-            if (searchInput.value.length > 0) {
                 renderSearch(search);
-            } else {
-                await render();
-            }
-        });
+            });
+        } else {
+            await render();
+        }
     });
 
-    if(!storage.popup) {
+    if (!storage.popup) {
         search.append(searchInput, expand());
     } else {
         search.append(searchInput, reload());
@@ -531,7 +531,7 @@ function renderSearch(search) {
     search.tabs.forEach(el => {
         const tab = document.createElement('div');
         const favicon = document.createElement('img');
-        const tabTitle = document.createElement('span')
+        const tabTitle = document.createElement('span');
 
         tab.classList = 'tab';
 
@@ -558,7 +558,9 @@ function renderSearch(search) {
                         focused: true
                     }, () => {
                         chrome.tabs.update(el.id, { active: true });
-                        location.reload();
+                        if (!storage.popup) {
+                            close();
+                        }
                     });
                 } else {
                     chrome.windows.create({
@@ -572,7 +574,7 @@ function renderSearch(search) {
         });
 
         tabs.append(tab);
-    })
+    });
 
     searchEl.append(searchTitle, tabs);
     list.append(searchEl);
