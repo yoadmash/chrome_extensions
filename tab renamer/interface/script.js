@@ -10,9 +10,6 @@ export async function render() {
     await updateOpenedWindows();
 
     const currentWindow = await chrome.windows.getCurrent();
-    if (currentWindow.type !== 'popup') {
-        chrome.storage.local.set({ lastFocusedWindowId: currentWindow.id });
-    }
     let windowsToRender = [];
     storage = await chrome.storage.local.get();
     windows_arr = storage.openedWindows;

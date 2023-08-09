@@ -14,6 +14,7 @@ chrome.runtime.onInstalled.addListener(async () => {
             deletedSavedWindows: [],
             backup: { data: [], date: null },
             clipboard: null,
+            popup: null,
             recentlyDeletedDate: null,
             autoClearDeletedSavedWindowsList: null,
         });
@@ -77,6 +78,7 @@ chrome.windows.onRemoved.addListener(async (windowId) => {
         if (popupId === windowId) {
             chrome.storage.local.set({ popup: null });
         }
+        console.log(popupId, windowId);
     });
 });
 
