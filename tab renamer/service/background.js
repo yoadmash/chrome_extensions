@@ -29,6 +29,7 @@ chrome.runtime.onStartup.addListener(async () => {
         deletedSavedWindows: deletedSavedWindows,
         autoClearDeletedSavedWindowsList: '',
     });
+    checkPopupWindow();
 });
 
 chrome.tabs.onActivated.addListener(async () => {
@@ -78,7 +79,6 @@ chrome.windows.onRemoved.addListener(async (windowId) => {
         if (popupId === windowId) {
             chrome.storage.local.set({ popup: null });
         }
-        console.log(popupId, windowId);
     });
 });
 
@@ -92,6 +92,17 @@ function reloadPopupHtmlWindow() {
                     });
             }
         });
+}
+
+function checkPopupWindow() {
+    chrome.storage.local.get().then(storage => {
+        chrome.windows.getAll({ populate: true, windowTypes: ['popup'] }).then(windows => {
+            const popupWindow = windows.findIndex(window => window.id === storage.popup);
+            if(popupWindow === -1) {
+                chrome.storage.local.set({popup: null});
+            }
+        })
+    });
 }
 
 async function saveCurrentWindows(updater) {
