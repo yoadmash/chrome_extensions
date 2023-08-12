@@ -80,7 +80,9 @@ function calculateTotalTabs(windows_arr) {
         icon.addEventListener('click', () => {
             windows_arr.forEach(window => {
                 window.tabs.forEach(tab => {
-                    markNotFound(tab, document.getElementById(tab.id).children[1]);
+                    if(!tab.url.match('chrome://*')) {
+                        markNotFound(tab, document.getElementById(tab.id).children[1]);
+                    }
                 })
             });
         });

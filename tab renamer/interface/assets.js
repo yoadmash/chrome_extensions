@@ -174,8 +174,13 @@ export const assets = {
                     chrome.storage.local.set({ clipboard: null });
                 });
             } else {
-                pasteBtn.disabled = true;
-                pasteBtn.title = 'No Data';
+                pasteBtn.innerText = 'Set as Free Slot';
+                pasteBtn.title = 'Set as Free Slot';
+                pasteBtn.addEventListener('click', () => {
+                    titleInput.value = 'Free Slot',
+                    urlInput.value = 'chrome://newtab/',
+                    faviconInput.value = chrome.runtime.getURL(`icons/generic_tab.svg`)
+                });
             }
         }
     },

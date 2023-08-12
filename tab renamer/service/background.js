@@ -18,6 +18,8 @@ chrome.runtime.onInstalled.addListener(async () => {
             recentlyDeletedDate: null,
             autoClearDeletedSavedWindowsList: null,
         });
+    } else {
+        chrome.storage.local.set({ popup: null })
     }
 });
 
@@ -98,8 +100,8 @@ function checkPopupWindow() {
     chrome.storage.local.get().then(storage => {
         chrome.windows.getAll({ populate: true, windowTypes: ['popup'] }).then(windows => {
             const popupWindow = windows.findIndex(window => window.id === storage.popup);
-            if(popupWindow === -1) {
-                chrome.storage.local.set({popup: null});
+            if (popupWindow === -1) {
+                chrome.storage.local.set({ popup: null });
             }
         })
     });
