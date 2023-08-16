@@ -19,7 +19,7 @@ export async function render() {
     const bodyDimensions = 'min-height: 400px; max-height: 800px;';
 
     if (show_saved_windows) {
-        document.body.style.cssText += bodyDimensions;
+        // document.body.style.cssText += bodyDimensions;
         await search();
         await backup();
         await options();
@@ -447,7 +447,7 @@ function expand() {
             top: screen.height / 2 - 800 / 2,
             left: screen.width / 2 - 500 / 2,
             height: 800,
-            width: 550,
+            width: 650,
             url: `/interface/popup.html`
         }).then(popup => {
             chrome.storage.local.set({ popup: popup.id });
