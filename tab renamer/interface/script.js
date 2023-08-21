@@ -1,6 +1,8 @@
 import { assets } from "./assets.js";
 
 const root = document.querySelector('#root');
+const scrollBtn = document.querySelector('#scrollToTop');
+
 let windows_arr = [];
 let storage = undefined;
 let allowedIncognito = false;
@@ -19,7 +21,6 @@ export async function render() {
     const bodyDimensions = 'min-height: 400px; max-height: 800px;';
 
     if (show_saved_windows) {
-        // document.body.style.cssText += bodyDimensions;
         await search();
         await backup();
         await options();
@@ -80,7 +81,7 @@ function calculateTotalTabs(windows_arr) {
         icon.addEventListener('click', () => {
             windows_arr.forEach(window => {
                 window.tabs.forEach(tab => {
-                    if(!tab.url.match('chrome://*')) {
+                    if (!tab.url.match('chrome://*')) {
                         markNotFound(tab, document.getElementById(tab.id).children[1]);
                     }
                 })
@@ -702,7 +703,7 @@ async function backup() {
         btn.addEventListener('click', async () => {
             console.log(JSON.stringify(storage.savedWindows));
             if (btn.id === 'backup') {
-                navigator.clipboard.writeText(JSON.stringify(storage.savedWindows));
+                await navigator.clipboard.writeText(JSON.stringify(storage.savedWindows));
                 await chrome.storage.local.set({
                     backup: {
                         data: storage.savedWindows,
@@ -751,4 +752,20 @@ window.onload = async () => {
     }
     await render();
     scrollToActiveTab(storage.options.auto_scroll);
+
+    scrollBtn.addEventListener('click', () => { 
+        window.scrollTo({
+            top: 0,
+            left: 0,
+            behavior: 'smooth'
+        });
+     });
 }
+
+window.onscroll = () => {
+    if (document.body.scrollTop > 20 || document.documentElement.scrollTop > 20) {
+        scrollBtn.style.display = "block";
+    } else {
+        scrollBtn.style.display = "none";
+    }
+};

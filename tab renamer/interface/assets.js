@@ -33,7 +33,7 @@ export const assets = {
             const savedWindows = storage.savedWindows;
             window.id = (savedWindows[savedWindows.length - 1]) ? savedWindows[savedWindows.length - 1].id + 1 : 100;
             savedWindows.push(window);
-            navigator.clipboard.writeText(JSON.stringify(savedWindows));
+            await navigator.clipboard.writeText(JSON.stringify(savedWindows));
             chrome.storage.local.set({
                 savedWindows: savedWindows,
                 backup: {

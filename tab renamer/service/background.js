@@ -84,6 +84,23 @@ chrome.windows.onRemoved.addListener(async (windowId) => {
     });
 });
 
+chrome.commands.onCommand.addListener((command, tab) => {
+    if (command) {
+        switch (command) {
+            case "duplicate_tab":
+                chrome.tabs.create({
+                    active: true,
+                    url: tab.url,
+                    windowId: tab.windowId
+                });
+                break;
+            case "bypass_cache_reload":
+                chrome.tabs.reload(tab.id, { bypassCache: true });
+                break;
+        }
+    }
+});
+
 function reloadPopupHtmlWindow() {
     chrome.storage.local.get()
         .then(storage => {

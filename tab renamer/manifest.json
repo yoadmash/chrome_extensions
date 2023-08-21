@@ -16,6 +16,16 @@
         "service_worker": "service/background.js",
         "type": "module"
     },
+    "commands": {
+        "duplicate_tab": {
+            "suggested_key": "Ctrl+Shift+D",
+            "description": "Duplicate current active tab"
+        },
+        "bypass_cache_reload": {
+            "suggested_key": "Ctrl+Shift+R",
+            "description": "Bypass local caching on reload"
+        }
+    },
     "permissions": [
         "tabs",
         "scripting",

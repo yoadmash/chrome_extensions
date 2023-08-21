@@ -23,6 +23,22 @@ body {
     /* position: relative; */
 }
 
+#scrollToTop {
+    display: none;
+    position: fixed;
+    bottom: 20px;
+    right: 5px;
+    z-index: 99;
+    border: none;
+    outline: none;
+    background-color: black;
+    color: white;
+    cursor: pointer;
+    padding: 5px;
+    border-radius: 10px;
+    font-size: 16px;
+  }
+
 .options, .backup {
     display: flex;
     flex-direction: row;
