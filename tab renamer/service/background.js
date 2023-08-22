@@ -91,7 +91,8 @@ chrome.commands.onCommand.addListener((command, tab) => {
                 chrome.tabs.create({
                     active: true,
                     url: tab.url,
-                    windowId: tab.windowId
+                    windowId: tab.windowId,
+                    index: tab.index + 1
                 });
                 break;
             case "bypass_cache_reload":

@@ -753,13 +753,13 @@ window.onload = async () => {
     await render();
     scrollToActiveTab(storage.options.auto_scroll);
 
-    scrollBtn.addEventListener('click', () => { 
+    scrollBtn.addEventListener('click', () => {
         window.scrollTo({
             top: 0,
             left: 0,
             behavior: 'smooth'
         });
-     });
+    });
 }
 
 window.onscroll = () => {
