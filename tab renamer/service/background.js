@@ -71,7 +71,7 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
         fetch(message.url)
             .then(response => response.text())
             .then(data => sendResponse(data.includes('Post Not Found')));
-        return true;
+            return true;
     }
 });
 

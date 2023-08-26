@@ -32,7 +32,8 @@ export const assets = {
             const storage = await chrome.storage.local.get();
             const savedWindows = storage.savedWindows;
             window.id = (savedWindows[savedWindows.length - 1]) ? savedWindows[savedWindows.length - 1].id + 1 : 100;
-            savedWindows.push(window);
+            const windowToSave = formatSavedWindow(window);
+            savedWindows.push(windowToSave);
             await navigator.clipboard.writeText(JSON.stringify(savedWindows));
             chrome.storage.local.set({
                 savedWindows: savedWindows,
@@ -178,8 +179,8 @@ export const assets = {
                 pasteBtn.title = 'Set as Free Slot';
                 pasteBtn.addEventListener('click', () => {
                     titleInput.value = 'Free Slot',
-                    urlInput.value = 'chrome://newtab/',
-                    faviconInput.value = chrome.runtime.getURL(`icons/generic_tab.svg`)
+                        urlInput.value = 'chrome://newtab/',
+                        faviconInput.value = chrome.runtime.getURL(`icons/generic_tab.svg`)
                 });
             }
         }
@@ -255,6 +256,11 @@ export const assets = {
     validate: {
         title_window: 'Validate Tabs',
         src: `${chrome.runtime.getURL('icons/validate.svg')}`,
+        windowEvent: (tabs) => {
+            tabs.forEach(tab => {
+                markNotFound(tab, document.getElementById(tab.id));
+            });
+        }
     }
 }
 
@@ -266,4 +272,42 @@ function disableScorlling(status) {
     } else {
         window.onscroll = () => { }
     }
+}
+
+function markNotFound(tab, titleEl) {
+    chrome.runtime.sendMessage({ from: 'savedWindowsView', url: tab.url }, response => {
+        if (response) {
+            titleEl.classList.add('page-not-found');
+        }
+    });
+}
+
+function formatSavedWindow(savedWindow) {
+    const formattedSavedWindow = {};
+    const allowedWindowProps = ['id', 'incognito', 'tabs'];
+    const allowedTabProps = ['favIconUrl', 'id', 'incognito', 'title', 'url', 'windowId'];
+
+    for (const window_key in savedWindow) {
+        if (allowedWindowProps.includes(window_key)) {
+            if (window_key === 'tabs') {
+                formattedSavedWindow['tabs'] = [];
+                savedWindow['tabs'].forEach((tab, index) => {
+                    const formattedTab = {};
+                    for (const tab_key in tab) {
+                        if (allowedTabProps.includes(tab_key)) {
+                            formattedTab[tab_key] =
+                                (tab_key === 'windowId') ? savedWindow.id
+                                    : (tab_key === 'id') ? `T${index + 1}W${savedWindow.id}`
+                                        : tab[tab_key];
+                        }
+                    }
+                    formattedSavedWindow['tabs'].push(formattedTab);
+                });
+                continue;
+            }
+            formattedSavedWindow[window_key] = savedWindow[window_key];
+        }
+    }
+
+    return formattedSavedWindow;
 }

@@ -59,10 +59,8 @@ async function updateOpenedWindows() {
 
 function calculateTotalTabs(windows_arr) {
     const totalTabsEl = document.createElement('div');
-    const icons = document.createElement('div');
 
     totalTabsEl.classList.add('totalTabs');
-    icons.classList.add('icons');
 
     totalTabsEl.append(document.createElement('span'));
 
@@ -70,28 +68,6 @@ function calculateTotalTabs(windows_arr) {
     windows_arr.forEach(window => totalTabsSum += window.tabs.length);
 
     totalTabsEl.firstChild.innerText = 'Total tabs: ' + totalTabsSum;
-
-    if (show_saved_windows) {
-        const icon = document.createElement('img');
-        icon.classList.add('icon');
-        icon.src = assets['validate'].src;
-        icon.title = assets['validate'].title_window;
-        icon.alt = 'window_action_icon';
-
-        icon.addEventListener('click', () => {
-            windows_arr.forEach(window => {
-                window.tabs.forEach(tab => {
-                    if (!tab.url.match('chrome://*')) {
-                        markNotFound(tab, document.getElementById(tab.id).children[1]);
-                    }
-                })
-            });
-        });
-
-        icons.append(icon);
-
-        totalTabsEl.append(icons);
-    }
 
     root.append(totalTabsEl);
 }
@@ -249,7 +225,7 @@ export function renderWindow(windowObj, windowIndex, tabsElement) {
                     continue;
                 }
             } else {
-                if (key !== 'delete') {
+                if (key !== 'delete' && key !== 'validate') {
                     continue;
                 }
             }
@@ -271,6 +247,9 @@ export function renderWindow(windowObj, windowIndex, tabsElement) {
                     case 'delete':
                         assets[key].windowEvent(windowObj);
                         break;
+                    case 'validate':
+                        assets[key].windowEvent(windowObj.tabs);
+                        break;
                 }
             });
         }
@@ -287,14 +266,6 @@ export function reorderWindows() {
         chrome.windows.get(Number(windowId), { populate: true }, (window) => {
             title.innerText = `[Window ${i + 1}${(window.incognito) ? ' - incognito' : ''} | ${window.state}${(tabs.length > 1) ? ` | ${tabs.length} tabs` : ''}]`;
         });
-    });
-}
-
-function markNotFound(tab, titleEl) {
-    chrome.runtime.sendMessage({ from: 'savedWindowsView', url: tab.url }, response => {
-        if (response) {
-            titleEl.style.color = 'red';
-        }
     });
 }
 
