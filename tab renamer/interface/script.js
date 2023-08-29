@@ -221,7 +221,7 @@ export function renderWindow(windowObj, windowIndex, tabsElement) {
             if (!show_saved_windows) {
                 if (windowObj.tabs.length < 2 && key !== 'saveWindow') {
                     continue;
-                } else if (key === 'delete') {
+                } else if (key === 'delete' || key === 'validate') {
                     continue;
                 }
             } else {
