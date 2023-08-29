@@ -18,8 +18,6 @@ export async function render() {
 
     root.innerHTML = '';
 
-    const bodyDimensions = 'min-height: 400px; max-height: 800px;';
-
     if (show_saved_windows) {
         await search();
         await backup();
@@ -34,7 +32,6 @@ export async function render() {
             windowsToRender = storage.savedWindows.filter(savedWindow => !savedWindow.incognito);
         }
     } else {
-        document.body.style.cssText -= bodyDimensions;
         await search();
         await options();
         if (!currentWindow.incognito) {
@@ -436,14 +433,6 @@ async function search() {
                 } else if (window.incognito && storage.options.privacy.only_incognito) {
                     filteredWindows = filteredWindows.filter(window => window.incognito);
                 }
-                // for (const window of filteredWindows) {
-                //     for (const tab of window.tabs) {
-                //         if (tab.title.toLocaleLowerCase().includes(searchInput.value.toLocaleLowerCase()) && !tab.url.match('https://gx-corner.opera.com/')) {
-                //             search.tabs.push(tab);
-                //         }
-                //     }
-                // }
-                // renderSearch(search);
                 renderSearch(filteredWindows, searchInput);
             });
         } else {

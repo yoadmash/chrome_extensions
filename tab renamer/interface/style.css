@@ -95,6 +95,10 @@ label {
     cursor: default;
 }
 
+.searchEl {
+    min-height: 300px;
+}
+
 .windowTitle {
     display: flex;
     align-items: center;
