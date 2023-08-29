@@ -161,6 +161,7 @@ export function renderWindow(windowObj, windowIndex, tabsElement) {
             chrome.windows.create({
                 focused: true,
                 incognito: windowObj.incognito,
+                state: "maximized",
                 url: urls
             });
         }
@@ -174,39 +175,6 @@ export function renderWindow(windowObj, windowIndex, tabsElement) {
         windowTitleElement.addEventListener('mouseleave', () => {
             icons.remove();
         });
-
-        // const tranferTabsToSelection = document.createElement('select');
-        // tranferTabsToSelection.classList.add('transfer-to')
-
-        // const defualtValue = document.createElement('option');
-        // defualtValue.setAttribute('disabled', true);
-        // defualtValue.setAttribute('selected', true);
-        // defualtValue.innerText = 'Transfer tabs to';
-        // tranferTabsToSelection.append(defualtValue);
-
-        // for(let window of storage.savedWindows) {
-        //     const option = document.createElement('option');
-        //     option.disabled = (windowObj.id === window.id);
-        //     option.innerText = (windowObj.id !== window.id) ? window.id : 'Current';
-        //     option.style.color = (windowObj.id === window.id) ? 'green' : 'black';
-        //     option.value = window.id;
-        //     tranferTabsToSelection.append(option);
-        // }
-
-        // tranferTabsToSelection.addEventListener('change', (event) => {
-        //     const fromWindowId = windowObj.id;
-        //     const toWindowId = Number(event.target.value);
-
-        //     const fromWindowObj = storage.savedWindows.find(window => window.id === fromWindowId);
-        //     const toWindowObj = storage.savedWindows.find(window => window.id === toWindowId);
-
-        //     const mergedTabs = toWindowObj.tabs.concat(fromWindowObj.tabs);
-        //     toWindowObj.tabs = mergedTabs;
-
-        //     console.log(toWindowObj);
-        // })
-
-        // icons.append(tranferTabsToSelection);
     } else {
         windowTitleElement.append(icons);
     }
@@ -221,7 +189,7 @@ export function renderWindow(windowObj, windowIndex, tabsElement) {
             if (!show_saved_windows) {
                 if (windowObj.tabs.length < 2 && key !== 'saveWindow') {
                     continue;
-                } else if (key === 'delete') {
+                } else if (key === 'delete' || key === 'validate') {
                     continue;
                 }
             } else {
@@ -273,133 +241,139 @@ export function renderWindowTabs(windowObj) {
     const tabsEl = document.createElement('div');
     tabsEl.classList.add('currentTabs');
 
-    windowObj.tabs.forEach((el) => {
-        const tab = document.createElement('div');
-        const checkTab = document.createElement('input');
-        const favicon = document.createElement('img');
-        const tabTitle = document.createElement('span')
-        const icons = document.createElement('div');
+    windowObj.tabs.forEach((tab) => {
+        tabsEl.append(createTab(tab, windowObj, tabsEl));
+    });
 
-        tab.classList.add('tab');
-        tab.setAttribute('id', el.id);
-        tab.append(favicon, tabTitle, icons);
+    return tabsEl;
+}
 
-        if (!show_saved_windows) {
-            if (windowObj.tabs.length > 1) {
-                tab.addEventListener('mouseenter', () => {
-                    if (!checkTab.checked) {
-                        favicon.replaceWith(checkTab);
-                    }
-                });
-            }
+function createTab(tabObj, windowObj, tabsList) {
+    const tab = document.createElement('div');
+    const checkTab = document.createElement('input');
+    const favicon = document.createElement('img');
+    const tabTitle = document.createElement('span')
+    const icons = document.createElement('div');
 
-            tab.addEventListener('mouseleave', () => {
+    tab.classList.add('tab');
+    tab.setAttribute('id', tabObj.id);
+    tab.append(favicon, tabTitle, icons);
+
+    if (!show_saved_windows) {
+        if (windowObj.tabs.length > 1) {
+            tab.addEventListener('mouseenter', () => {
                 if (!checkTab.checked) {
-                    checkTab.replaceWith(favicon);
+                    favicon.replaceWith(checkTab);
                 }
             });
         }
 
-        favicon.classList.add('favicon');
-        favicon.alt = 'favicon';
-        favicon.src = (el.favIconUrl) ? el.favIconUrl : chrome.runtime.getURL('icons/generic_tab.svg');
-        favicon.onerror = () => {
-            favicon.src = chrome.runtime.getURL('icons/generic_tab.svg');
-        }
-
-        checkTab.classList.add('checkTab');
-        checkTab.type = 'checkbox';
-
-        tabTitle.innerText = el.title;
-        tabTitle.title = el.title;
-        if (!show_saved_windows) {
-            chrome.windows.getCurrent().then((currentWindow) => {
-                if (el.active && currentWindow.id === windowObj.id) {
-                    tabTitle.classList.add('activeTab');
-                }
-            }).catch((err) => console.log(err));
-        }
-        tabTitle.addEventListener('click', () => {
-            if (!show_saved_windows) {
-                if (!el.url.match('https://gx-corner.opera.com/')) {
-                    chrome.tabs.update(el.id, { active: true }, (tab) => {
-                        chrome.windows.update(tab.windowId, { focused: true });
-                    });
-                    if (!storage.popup) {
-                        close();
-                    }
-                }
-            } else {
-                chrome.windows.create({
-                    focused: true,
-                    incognito: windowObj.incognito,
-                    state: "maximized",
-                    url: el.url
-                });
+        tab.addEventListener('mouseleave', () => {
+            if (!checkTab.checked) {
+                checkTab.replaceWith(favicon);
             }
         });
+    }
 
-        icons.classList.add('icons');
+    favicon.classList.add('favicon');
+    favicon.alt = 'favicon';
+    favicon.src = (tabObj.favIconUrl) ? tabObj.favIconUrl : chrome.runtime.getURL('icons/generic_tab.svg');
+    favicon.onerror = () => {
+        favicon.src = chrome.runtime.getURL('icons/generic_tab.svg');
+    }
 
+    checkTab.classList.add('checkTab');
+    checkTab.type = 'checkbox';
+
+    tabTitle.innerText = tabObj.title;
+    tabTitle.title = tabObj.title;
+    if (!show_saved_windows) {
+        chrome.windows.getCurrent().then((currentWindow) => {
+            if (tabObj.active && currentWindow.id === windowObj.id) {
+                tabTitle.classList.add('activeTab');
+            }
+        }).catch((err) => console.log(err));
+    }
+    tabTitle.addEventListener('click', () => {
         if (!show_saved_windows) {
-            for (const key in assets) {
-                if (assets[key].tabEvent && key !== 'delete') {
-                    const icon = document.createElement('img');
-                    icon.classList.add('icon');
-                    icon.src = assets[key].src;
-                    icon.title = assets[key].title_tab;
-                    icon.alt = 'tab_action_icon';
-                    icon.addEventListener('click', () => {
-                        switch (key) {
-                            case 'close':
-                                assets[key].tabEvent(el, windowObj, tabsEl);
-                                break;
-                            case 'reload':
-                                assets[key].tabEvent(el);
-                                break;
-                            case 'edit':
-                                assets[key].tabEvent(el, tab, tabTitle);
-                                break;
-                            case 'clone':
-                                assets[key].tabEvent(el);
-                                break;
-                        }
-                    });
-                    if (!el.url.match('https://gx-corner.opera.com/') && !el.url.match('chrome://*/')) {
-                        icons.append(icon);
-                    } else if (el.url.match('chrome://*/') && key !== 'edit') {
-                        icons.append(icon)
-                    } else if (el.url.match('https://gx-corner.opera.com/') && key === 'reload') {
-                        icons.append(icon);
-                    }
+            if (!tabObj.url.match('https://gx-corner.opera.com/')) {
+                chrome.tabs.update(tabObj.id, { active: true }, (tab) => {
+                    chrome.windows.update(tab.windowId, { focused: true });
+                });
+                if (!storage.popup) {
+                    close();
                 }
             }
         } else {
-            for (const key in assets) {
-                if (key !== 'delete' && key !== 'edit') continue;
+            chrome.windows.create({
+                focused: true,
+                incognito: windowObj.incognito,
+                state: "maximized",
+                url: tabObj.url
+            });
+        }
+    });
+
+    icons.classList.add('icons');
+
+    if (!show_saved_windows) {
+        for (const key in assets) {
+            if(key === 'close' && tabsList.classList.contains('searchedTabs')) continue;
+            if (assets[key].tabEvent && key !== 'delete') {
                 const icon = document.createElement('img');
                 icon.classList.add('icon');
                 icon.src = assets[key].src;
-                icon.title = (key === 'edit') ? 'Edit Tab' : assets[key].title_tab;
+                icon.title = assets[key].title_tab;
                 icon.alt = 'tab_action_icon';
                 icon.addEventListener('click', () => {
                     switch (key) {
-                        case 'delete':
-                            assets[key].tabEvent(windowObj, el);
+                        case 'close':
+                            assets[key].tabEvent(tabObj, windowObj, tabsList);
+                            break;
+                        case 'reload':
+                            assets[key].tabEvent(tabObj);
                             break;
                         case 'edit':
-                            assets[key].savedWindowTabEvent(windowObj, el);
+                            assets[key].tabEvent(tabObj, tab, tabTitle);
+                            break;
+                        case 'clone':
+                            assets[key].tabEvent(tabObj);
                             break;
                     }
                 });
-                icons.prepend(icon);
+                if (!tabObj.url.match('https://gx-corner.opera.com/') && !tabObj.url.match('chrome://*/')) {
+                    icons.append(icon);
+                } else if (tabObj.url.match('chrome://*/') && key !== 'edit') {
+                    icons.append(icon)
+                } else if (tabObj.url.match('https://gx-corner.opera.com/') && key === 'reload') {
+                    icons.append(icon);
+                }
             }
         }
-        tabsEl.append(tab);
-    });
+    } else {
+        for (const key in assets) {
+            if(windowObj.tabs.length === 1 && key === 'delete') continue;
+            if (key !== 'delete' && key !== 'edit') continue;
+            const icon = document.createElement('img');
+            icon.classList.add('icon');
+            icon.src = assets[key].src;
+            icon.title = (key === 'edit') ? 'Edit Tab' : assets[key].title_tab;
+            icon.alt = 'tab_action_icon';
+            icon.addEventListener('click', () => {
+                switch (key) {
+                    case 'delete':
+                        assets[key].tabEvent(windowObj, tabObj);
+                        break;
+                    case 'edit':
+                        assets[key].savedWindowTabEvent(windowObj, tabObj);
+                        break;
+                }
+            });
+            icons.prepend(icon);
+        }
+    }
 
-    return tabsEl;
-
+    return tab;
 }
 
 export function setTitle(newTitle) {
@@ -457,20 +431,20 @@ async function search() {
                 populate: true,
                 windowTypes: ['normal']
             }).then(async window => {
-                const search = { windowId: window.id, tabs: [] };
                 if (!window.incognito && !storage.options.privacy.include_incognito) {
                     filteredWindows = filteredWindows.filter(window => !window.incognito);
                 } else if (window.incognito && storage.options.privacy.only_incognito) {
                     filteredWindows = filteredWindows.filter(window => window.incognito);
                 }
-                for (const window of filteredWindows) {
-                    for (const tab of window.tabs) {
-                        if (tab.title.toLocaleLowerCase().includes(searchInput.value.toLocaleLowerCase()) && !tab.url.match('https://gx-corner.opera.com/')) {
-                            search.tabs.push(tab);
-                        }
-                    }
-                }
-                renderSearch(search);
+                // for (const window of filteredWindows) {
+                //     for (const tab of window.tabs) {
+                //         if (tab.title.toLocaleLowerCase().includes(searchInput.value.toLocaleLowerCase()) && !tab.url.match('https://gx-corner.opera.com/')) {
+                //             search.tabs.push(tab);
+                //         }
+                //     }
+                // }
+                // renderSearch(search);
+                renderSearch(filteredWindows, searchInput);
             });
         } else {
             await render();
@@ -486,7 +460,7 @@ async function search() {
     searchInput.focus();
 }
 
-function renderSearch(search) {
+function renderSearch(window_arr, searchInput) {
     const list = document.querySelector('.list');
     const searchEl = document.createElement('div');
     const searchTitle = document.createElement('span');
@@ -497,57 +471,20 @@ function renderSearch(search) {
     searchEl.classList.add('searchEl');
     tabs.classList.add('searchedTabs');
 
-    searchTitle.innerText = `[Search (${search.tabs.length})]`;
-
-    search.tabs.forEach(el => {
-        const tab = document.createElement('div');
-        const favicon = document.createElement('img');
-        const tabTitle = document.createElement('span');
-
-        tab.classList = 'tab';
-
-        tab.setAttribute('id', el.id);
-        tab.append(favicon, tabTitle);
-
-        favicon.classList.add('favicon');
-        favicon.alt = 'favicon';
-        favicon.src = (el.favIconUrl) ? el.favIconUrl : chrome.runtime.getURL('icons/generic_tab.svg');
-        favicon.onerror = () => {
-            favicon.src = chrome.runtime.getURL('icons/generic_tab.svg');
-        }
-
-        tabTitle.innerText = el.title;
-        tabTitle.title = el.title;
-        if (el.active && el.windowId === search.windowId) {
-            tabTitle.classList.add('activeTab');
-        }
-
-        tabTitle.addEventListener('click', () => {
-            if (!el.url.match('https://gx-corner.opera.com/')) {
-                if (!show_saved_windows) {
-                    chrome.windows.update(el.windowId, {
-                        focused: true
-                    }, () => {
-                        chrome.tabs.update(el.id, { active: true });
-                        if (!storage.popup) {
-                            close();
-                        }
-                    });
-                } else {
-                    chrome.windows.create({
-                        focused: true,
-                        incognito: el.incognito,
-                        state: "maximized",
-                        url: el.url
-                    });
-                }
-            }
-        });
-
-        tabs.append(tab);
-    });
-
     searchEl.append(searchTitle, tabs);
+
+    let tabsFound = 0;
+    for(const window of window_arr) {
+        for(const tab of window.tabs) {
+            if(tab.title.toLocaleLowerCase().includes(searchInput.value.toLocaleLowerCase()) && !tab.url.match('https://gx-corner.opera.com/')) {
+                tabs.append(createTab(tab, window, searchEl.children[1]));
+                tabsFound++;
+            }
+        }
+    }
+
+    searchTitle.innerText = `[Search (${tabsFound})]`;
+
     list.append(searchEl);
 }
 

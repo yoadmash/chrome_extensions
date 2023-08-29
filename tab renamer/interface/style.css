@@ -26,17 +26,18 @@ body {
 #scrollToTop {
     display: none;
     position: fixed;
-    bottom: 20px;
-    right: 5px;
+    bottom: calc(100vh / 2 - 25px);
+    right: 0px;
     z-index: 99;
     border: none;
     outline: none;
     background-color: black;
     color: white;
     cursor: pointer;
-    padding: 5px;
+    padding: 3px;
     border-radius: 10px;
     font-size: 16px;
+    height: 50px;
   }
 
 .options, .backup {
@@ -99,14 +100,6 @@ label {
     align-items: center;
     gap: 10px;
     width: fit-content;
-}
-
-.transfer-to, .scroll-to > select {
-    width: 125px;
-}
-
-.transfer-to option:first-child {
-    display: none;
 }
 
 .title {
