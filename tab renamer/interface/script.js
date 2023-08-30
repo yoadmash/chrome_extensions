@@ -482,7 +482,7 @@ function renderSearch(window_arr, searchInput) {
     }
 
     searchTitle.innerText = `[Search (${tabsFound})]`;
-    if(show_saved_windows) {
+    if(show_saved_windows && tabsUrls.length > 0) {
         searchTitle.classList.add('title');
         searchTitle.addEventListener('click', async () => {
             const currentWindow = await chrome.windows.getCurrent();
