@@ -95,10 +95,6 @@ label {
     cursor: default;
 }
 
-.searchEl {
-    min-height: 300px;
-}
-
 .windowTitle {
     display: flex;
     align-items: center;
@@ -200,6 +196,7 @@ label {
     width: 3% !important;
 }
 
+.edit_window>.form,
 .edit_tab>.form {
     z-index: 2;
     position: fixed;
@@ -217,6 +214,7 @@ label {
 }
 
 @media screen and (min-height: 600px) {
+    .edit_window>.form,
     .edit_tab>.form {
         top: 30%;
     }
@@ -232,6 +230,7 @@ label {
     gap: 5px;
 }
 
+.edit_window .overlay,
 .edit_tab .overlay {
     position: fixed;
     top: 0;

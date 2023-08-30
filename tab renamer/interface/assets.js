@@ -1,24 +1,27 @@
 import { renderWindow, renderWindowTabs, reorderWindows, setTitle, render } from "./script.js";
 import edit_tab_popup from './edit_tab_popup.js';
+import edit_window_popup from './edit_window_popup.js';
 
 export const assets = {
     checkTabs: {
         title_window: 'Check \\ Uncheck All Tabs',
         src: `${chrome.runtime.getURL(`icons/check_tabs.svg`)}`,
         windowEvent: (window, windowIndex, tabsElement) => {
-            if (tabsElement.contains(tabsElement.querySelector('.favicon'))) {
+            if (tabsElement.contains(tabsElement.querySelector('.favicon')) && !tabsElement.contains(tabsElement.querySelector('.checkTab'))) {
                 for (const tab of tabsElement.children) {
-                    const favicon = tab.querySelector('.favicon');
-                    const checkTab = document.createElement('input');
-                    checkTab.classList = 'checkTab';
-                    checkTab.type = 'checkbox';
-                    checkTab.checked = true;
-                    favicon?.replaceWith(checkTab);
-                    checkTab.addEventListener('input', (event) => {
-                        if (!event.target.checked) {
-                            checkTab.replaceWith(favicon);
-                        }
-                    });
+                    if (!tab.children[1].classList.contains('activeTab') && tab.children[1].title !== 'GX Corner') {
+                        const favicon = tab.querySelector('.favicon');
+                        const checkTab = document.createElement('input');
+                        checkTab.classList = 'checkTab';
+                        checkTab.type = 'checkbox';
+                        checkTab.checked = true;
+                        favicon?.replaceWith(checkTab);
+                        checkTab.addEventListener('input', (event) => {
+                            if (!event.target.checked) {
+                                checkTab.replaceWith(favicon);
+                            }
+                        });
+                    }
                 }
             } else {
                 document.getElementById(window.id).replaceWith(renderWindow(window, windowIndex, renderWindowTabs(window)));
@@ -32,7 +35,7 @@ export const assets = {
             const storage = await chrome.storage.local.get();
             const savedWindows = storage.savedWindows;
             window.id = (savedWindows[savedWindows.length - 1]) ? savedWindows[savedWindows.length - 1].id + 1 : 100;
-            const windowToSave = formatSavedWindow(window);
+            const windowToSave = formatWindowObj(window, true);
             savedWindows.push(windowToSave);
             await navigator.clipboard.writeText(JSON.stringify(savedWindows));
             chrome.storage.local.set({
@@ -68,8 +71,53 @@ export const assets = {
         }
     },
     edit: {
+        title_window: 'Edit Window Tabs',
         title_tab: 'Edit Title',
         src: `${chrome.runtime.getURL(`icons/edit.svg`)}`,
+        windowEvent: async (window) => {
+            document.getElementById('root').style.minHeight = '300px';
+            const edit_window = new DOMParser().parseFromString(edit_window_popup, "text/html").body.firstChild;
+            document.body.append(edit_window);
+            disableScorlling(true);
+
+            const tabsArray = document.getElementById('edit_window_tabs_array_input');
+            tabsArray.focus();
+
+            const saveBtn = document.getElementById('edit_window_add');
+            saveBtn.addEventListener('click', async () => {
+                try {
+                    if (JSON.parse(tabsArray.value)) {
+                        const parsedArr = JSON.parse(tabsArray.value);
+                        for (const tab of parsedArr) {
+                            if (checkTabObjStructure(tab) && !tab.url.match('https://gx-corner.opera.com/')) {
+                                chrome.tabs.create({
+                                    url: tab.url,
+                                    windowId: window.id
+                                });
+                            }
+                        }
+                    }
+                    edit_window.remove();
+                    disableScorlling(false);
+                    document.getElementById('root').removeAttribute('style');
+                } catch (err) {
+                    if (err) {
+                        tabsArray.value = '';
+                        tabsArray.placeholder = 'ERROR: Invalid Array';
+                        setTimeout(() => {
+                            tabsArray.placeholder = '';
+                        }, 1500);
+                    }
+                }
+            })
+
+            const cancelBtn = document.getElementById('edit_window_cancel');
+            cancelBtn.addEventListener('click', () => {
+                edit_window.remove();
+                disableScorlling(false);
+                document.getElementById('root').removeAttribute('style');
+            })
+        },
         tabEvent: async (tab, tabEl, tabTitle) => {
             const editMode = (tabEl.childNodes[1].nodeName.toLocaleLowerCase() === 'span');
             let newEl = tabEl.children[1];
@@ -112,6 +160,7 @@ export const assets = {
             }
         },
         savedWindowTabEvent: async (savedWindow, tab) => {
+            document.getElementById('root').style.minHeight = '400px';
             const edit_tab = new DOMParser().parseFromString(edit_tab_popup, "text/html").body.firstChild;
             document.body.append(edit_tab);
             disableScorlling(true);
@@ -139,7 +188,7 @@ export const assets = {
                     tab.favIconUrl = faviconInput.value;
                     document.getElementById(tab.id).children[0].src = faviconInput.value;
                     document.getElementById(tab.id).children[1].innerText = titleInput.value;
-                    document.getElementById(tab.id).children[1].removeAttribute('style');
+                    document.getElementById(tab.id).classList.remove('page-not-found');
 
                     const savedTabToUpdateIndex = savedWindow.tabs.findIndex(savedTab => savedTab.id === tab.id);
                     savedWindow.tabs[savedTabToUpdateIndex] = tab;
@@ -154,12 +203,14 @@ export const assets = {
                 }
                 edit_tab.remove();
                 disableScorlling(false);
+                document.getElementById('root').removeAttribute('style');
             })
 
             const cancelBtn = document.getElementById('edit_tab_cancel');
             cancelBtn.addEventListener('click', () => {
                 edit_tab.remove();
                 disableScorlling(false);
+                document.getElementById('root').removeAttribute('style');
             })
 
             const pasteBtn = document.getElementById('edit_tab_fill');
@@ -186,8 +237,13 @@ export const assets = {
         }
     },
     clone: {
+        title_window: 'Clone Window Tabs',
         title_tab: 'Clone Tab Data',
         src: `${chrome.runtime.getURL(`icons/clone.svg`)}`,
+        windowEvent: async (window) => {
+            const clonedWindow = formatWindowObj(window, false);
+            navigator.clipboard.writeText(JSON.stringify(clonedWindow.tabs));
+        },
         tabEvent: async (tab) => {
             const clonedData = {
                 title: tab.title,
@@ -225,27 +281,25 @@ export const assets = {
                 if (arr.length !== tabsElement.children.length) {
                     for (let j = 0; j < arr.length; j++) {
                         const tabToClose = await chrome.tabs.get(Number(arr[j].parentElement.id));
-                        if (!tabToClose.url.match('https://gx-corner.opera.com/')) {
+                        if (!tabToClose.url.match('https://gx-corner.opera.com/') && !tabToClose.active) {
                             chrome.tabs.remove(tabToClose.id).then(() => {
                                 document.getElementById(tabToClose.id).remove();
                                 document.getElementById(window.id).querySelector('.title').innerText = `[Window ${windowIndex}${(window.incognito) ? ' - incognito' : ''} | ${window.state} | ${tabsElement.children.length} tabs]`;
                             });
                         }
                     }
-                    if (tabsElement.children.length - arr.length === 1) {
-                        document.getElementById(window.id).querySelector('.icons').remove();
-                    }
+                    await render();
                 } else {
                     chrome.windows.remove(window.id);
                     document.getElementById(window.id).remove();
                     reorderWindows();
                 }
+                await render();
             }
         },
-        tabEvent: (tab, window, tabsEl) => {
+        tabEvent: async (tab, window, tabsEl) => {
             if (tabsEl.children.length > 1) {
-                chrome.tabs.remove(tab.id);
-                document.getElementById(tab.id).remove();
+                chrome.tabs.remove(tab.id).then(async () => { await render(); });
             } else {
                 chrome.windows.remove(window.id);
                 document.getElementById(window.id).remove();
@@ -282,32 +336,42 @@ function markNotFound(tab, titleEl) {
     });
 }
 
-function formatSavedWindow(savedWindow) {
-    const formattedSavedWindow = {};
+function formatWindowObj(windowObj, isSavedWindow) {
+    const formattedWindowObj = {};
     const allowedWindowProps = ['id', 'incognito', 'tabs'];
     const allowedTabProps = ['favIconUrl', 'id', 'incognito', 'title', 'url', 'windowId'];
 
-    for (const window_key in savedWindow) {
+    for (const window_key in windowObj) {
         if (allowedWindowProps.includes(window_key)) {
             if (window_key === 'tabs') {
-                formattedSavedWindow['tabs'] = [];
-                savedWindow['tabs'].forEach((tab, index) => {
+                formattedWindowObj['tabs'] = [];
+                windowObj['tabs'].forEach((tab, index) => {
                     const formattedTab = {};
                     for (const tab_key in tab) {
                         if (allowedTabProps.includes(tab_key)) {
                             formattedTab[tab_key] =
-                                (tab_key === 'windowId') ? savedWindow.id
-                                    : (tab_key === 'id') ? `T${index + 1}W${savedWindow.id}`
+                                (tab_key === 'windowId') ? windowObj.id
+                                    : (tab_key === 'id' && isSavedWindow) ? `T${index + 1}W${windowObj.id}`
                                         : tab[tab_key];
                         }
                     }
-                    formattedSavedWindow['tabs'].push(formattedTab);
+                    formattedWindowObj['tabs'].push(formattedTab);
                 });
                 continue;
             }
-            formattedSavedWindow[window_key] = savedWindow[window_key];
+            formattedWindowObj[window_key] = windowObj[window_key];
         }
     }
 
-    return formattedSavedWindow;
+    return formattedWindowObj;
+}
+
+function checkTabObjStructure(tabObj) {
+    const allowedTabProps = ['favIconUrl', 'id', 'incognito', 'title', 'url', 'windowId'];
+    for (const tab_key in tabObj) {
+        if (!allowedTabProps.includes(tab_key)) {
+            return false;
+        }
+    }
+    return true;
 }
