@@ -256,7 +256,7 @@ function createTab(tabObj, windowObj, tabsList) {
     tab.setAttribute('id', tabObj.id);
     tab.append(favicon, tabTitle, icons);
 
-    if (!show_saved_windows) {
+    if (!show_saved_windows && !tabsList.classList.contains('searchedTabs')) {
         if (windowObj.tabs.length > 1) {
             tab.addEventListener('mouseenter', () => {
                 if (!checkTab.checked) {
