@@ -186,9 +186,11 @@ export const assets = {
                     tab.title = titleInput.value;
                     tab.url = urlInput.value;
                     tab.favIconUrl = faviconInput.value;
-                    document.getElementById(tab.id).children[0].src = faviconInput.value;
-                    document.getElementById(tab.id).children[1].innerText = titleInput.value;
-                    document.getElementById(tab.id).classList.remove('page-not-found');
+                    const tabEl = document.getElementById(tab.id);
+                    tabEl.children[0].src = faviconInput.value;
+                    const newTitle = (tabEl.parentElement.classList.contains('searchedTabs')) ? `[${tabEl.children[1].getAttribute('origin')}] ${titleInput.value}` : titleInput.value;
+                    tabEl.children[1].innerText = newTitle;
+                    tabEl.classList.remove('page-not-found');
 
                     const savedTabToUpdateIndex = savedWindow.tabs.findIndex(savedTab => savedTab.id === tab.id);
                     savedWindow.tabs[savedTabToUpdateIndex] = tab;

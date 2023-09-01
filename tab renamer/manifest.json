@@ -10,6 +10,7 @@
         "128": "icons/tab_renamer128.png"
     },
     "action": {
+        "default_title": "Tabs Manager",
         "default_popup": "interface/popup.html"
     },
     "background": {
@@ -24,7 +25,12 @@
         "bypass_cache_reload": {
             "suggested_key": "Ctrl+Shift+R",
             "description": "Bypass local caching on reload"
+        },
+        "open_show_saved_windows_expanded": {
+            "suggested_key": "Ctrl+Shift+S",
+            "description": "Show saved windows popup expanded"
         }
+        
     },
     "permissions": [
         "tabs",

@@ -71,7 +71,7 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
         fetch(message.url)
             .then(response => response.text())
             .then(data => sendResponse(data.includes('Post Not Found')));
-            return true;
+        return true;
     }
 });
 
@@ -97,6 +97,22 @@ chrome.commands.onCommand.addListener((command, tab) => {
                 break;
             case "bypass_cache_reload":
                 chrome.tabs.reload(tab.id, { bypassCache: true });
+                break;
+            case "open_show_saved_windows_expanded":
+                chrome.windows.get(tab.windowId).then(window => {
+                    chrome.windows.create({
+                        focused: true,
+                        state: 'normal',
+                        type: 'popup',
+                        top: window.height / 2 - 800 / 2,
+                        left: window.width / 2 - 500 / 2,
+                        height: 800,
+                        width: 650,
+                        url: `/interface/popup.html?view=saved_windows`
+                    }).then(popup => {
+                        chrome.storage.local.set({ popup: popup.id });
+                    });
+                });
                 break;
         }
     }

@@ -73,10 +73,14 @@ function scrollToSavedWindow() {
     const scrollToSavedWindowEl = document.createElement('div');
     scrollToSavedWindowEl.classList.add('scroll-to');
 
-    const label = document.createElement('label');
-    label.innerText = 'Scroll to saved window: ';
-
     const savedWindowsSelection = document.createElement('select');
+    const defualtValue = document.createElement('option');
+    defualtValue.innerText = 'Scroll to saved window';
+    defualtValue.setAttribute('selected', true);
+    defualtValue.setAttribute('disabled', true);
+    defualtValue.setAttribute('hidden', true);
+
+    savedWindowsSelection.append(defualtValue);
 
     for (let window of storage.savedWindows) {
         const option = document.createElement('option');
@@ -92,9 +96,10 @@ function scrollToSavedWindow() {
             left: 0,
             behavior: 'smooth'
         });
+        savedWindowsSelection.value = event.target[0].innerText;
     });
 
-    scrollToSavedWindowEl.append(label, savedWindowsSelection);
+    scrollToSavedWindowEl.append(savedWindowsSelection);
     root.append(scrollToSavedWindowEl);
 }
 
@@ -274,6 +279,10 @@ function createTab(tabObj, windowObj, tabsList) {
     checkTab.classList.add('checkTab');
     checkTab.type = 'checkbox';
 
+    if(tabsList.classList.contains('searchedTabs')) {
+        tabTitle.setAttribute('origin', `${windowObj.id}_${windowObj.tabs.length}`);
+    }
+
     tabTitle.innerText = tabsList.classList.contains('searchedTabs') ? `[${windowObj.id}_${windowObj.tabs.length}] ${tabObj.title}` : tabObj.title;
     tabTitle.title = tabObj.title;
     if (!show_saved_windows && !tabsList.classList.contains('searchedTabs')) {
@@ -389,7 +398,7 @@ function expand() {
     icon.classList.add('icon');
     icon.title = 'Expand';
     icon.src = `${chrome.runtime.getURL('icons/expand.svg')}`;
-    icon.addEventListener('click', () => {
+    icon.addEventListener('click', (event) => {
         chrome.windows.create({
             focused: true,
             state: 'normal',
@@ -398,7 +407,7 @@ function expand() {
             left: screen.width / 2 - 500 / 2,
             height: 800,
             width: 650,
-            url: `/interface/popup.html`
+            url: `/interface/popup.html${(event.ctrlKey) ? '?view=saved_windows' : ''}`
         }).then(popup => {
             chrome.storage.local.set({ popup: popup.id });
         });
@@ -496,6 +505,10 @@ function renderSearch(window_arr, searchInput) {
     }
 
     list.append(searchEl);
+
+    if(root.contains(document.querySelector('.searchedTabs')) && root.contains(document.querySelector('.scroll-to'))) {
+        document.querySelector('.scroll-to').remove();
+    }
 }
 
 async function options() {
