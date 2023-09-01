@@ -38,7 +38,7 @@ body {
     border-radius: 10px;
     font-size: 16px;
     height: 50px;
-  }
+}
 
 .options, .backup {
     display: flex;
@@ -61,7 +61,7 @@ body {
     margin-bottom: 10px;
 }
 
-.totalTabs > span {
+.totalTabs>span {
     cursor: default;
 }
 
@@ -218,6 +218,7 @@ label {
 }
 
 @media screen and (min-height: 600px) {
+
     .edit_window>.form,
     .edit_tab>.form {
         top: 30%;

@@ -30,7 +30,6 @@
             "suggested_key": "Ctrl+Shift+S",
             "description": "Show saved windows popup expanded"
         }
-        
     },
     "permissions": [
         "tabs",

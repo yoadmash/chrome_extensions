@@ -85,7 +85,7 @@ function render() {
             backup: {
                 data: (storage.savedWindows.length !== 0) ? storage.backup.data : [],
                 date: (storage.savedWindows.length !== 0) ? storage.backup.date : null
-            } 
+            }
         });
     });
 }

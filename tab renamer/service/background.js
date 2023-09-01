@@ -100,7 +100,7 @@ chrome.commands.onCommand.addListener((command, tab) => {
                 break;
             case "open_show_saved_windows_expanded":
                 chrome.storage.local.get().then(storage => {
-                    if(!storage.popup) {
+                    if (!storage.popup) {
                         chrome.windows.get(tab.windowId).then(window => {
                             chrome.windows.create({
                                 focused: true,
@@ -116,7 +116,14 @@ chrome.commands.onCommand.addListener((command, tab) => {
                             });
                         });
                     } else {
-                        chrome.windows.update(storage.popup, {focused: true});
+                        chrome.windows.get(storage.popup, { populate: true, windowTypes: ['popup'] })
+                            .then(window => {
+                                if (window.focused) {
+                                    chrome.windows.remove(window.id)
+                                } else {
+                                    chrome.windows.update(window.id, { focused: true });
+                                }
+                            })
                     }
                 })
                 break;

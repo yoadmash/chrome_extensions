@@ -57,7 +57,7 @@ async function updateOpenedWindows() {
 function calculateTotalTabs(windows_arr) {
     const totalTabsEl = document.createElement('div');
     const str = document.createElement('span');
-    
+
     totalTabsEl.classList.add('totalTabs');
 
     totalTabsEl.append(str);
@@ -85,15 +85,15 @@ function scrollToSavedWindow() {
     const savedWindowsSelection = document.createElement('select');
     const defualtValue = document.createElement('option');
     defualtValue.innerText = 'Scroll to saved window';
-    defualtValue.setAttribute('selected', true);
-    defualtValue.setAttribute('disabled', true);
-    defualtValue.setAttribute('hidden', true);
+    defualtValue.setAttribute('selected', '');
+    defualtValue.setAttribute('disabled', '');
+    defualtValue.setAttribute('hidden', '');
 
     savedWindowsSelection.append(defualtValue);
 
     for (let window of storage.savedWindows) {
         const option = document.createElement('option');
-        option.innerText = `${window.id} (tabs: ${window.tabs.length})`;
+        option.innerText = `ID: ${window.id} (tabs: ${window.tabs.length})`;
         option.value = window.id;
         savedWindowsSelection.append(option);
     }
@@ -288,7 +288,7 @@ function createTab(tabObj, windowObj, tabsList) {
     checkTab.classList.add('checkTab');
     checkTab.type = 'checkbox';
 
-    if(tabsList.classList.contains('searchedTabs')) {
+    if (tabsList.classList.contains('searchedTabs')) {
         tabTitle.setAttribute('origin', `${windowObj.id}_${windowObj.tabs.length}`);
     }
 
@@ -500,7 +500,7 @@ function renderSearch(window_arr, searchInput) {
     }
 
     searchTitle.innerText = `[Search (${tabsFound})]`;
-    if(show_saved_windows && tabsUrls.length > 0) {
+    if (show_saved_windows && tabsUrls.length > 0) {
         searchTitle.classList.add('title');
         searchTitle.addEventListener('click', async () => {
             const currentWindow = await chrome.windows.getCurrent();
@@ -515,7 +515,7 @@ function renderSearch(window_arr, searchInput) {
 
     list.append(searchEl);
 
-    if(root.contains(document.querySelector('.searchedTabs')) && root.contains(document.querySelector('.scroll-to'))) {
+    if (root.contains(document.querySelector('.searchedTabs')) && root.contains(document.querySelector('.scroll-to'))) {
         document.querySelector('.scroll-to').remove();
     }
 }
