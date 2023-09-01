@@ -56,17 +56,26 @@ async function updateOpenedWindows() {
 
 function calculateTotalTabs(windows_arr) {
     const totalTabsEl = document.createElement('div');
-
+    const str = document.createElement('span');
+    
     totalTabsEl.classList.add('totalTabs');
 
-    totalTabsEl.append(document.createElement('span'));
+    totalTabsEl.append(str);
 
     let totalTabsSum = 0;
     windows_arr.forEach(window => totalTabsSum += window.tabs.length);
 
-    totalTabsEl.firstChild.innerText = 'Total tabs: ' + totalTabsSum;
+    str.innerText = `Total tabs: ${totalTabsSum}`;
+    str.title = `Extension storage usage: ${calculateUsedStorageSize()}`;
 
     root.append(totalTabsEl);
+}
+
+function calculateUsedStorageSize() {
+    const size = new Blob([JSON.stringify(storage)]).size;
+    const sizeToMB = (size / Math.pow(1000, 2)).toFixed(2) * 1;
+
+    return `${sizeToMB}MB / 10MB`;
 }
 
 function scrollToSavedWindow() {
@@ -632,7 +641,6 @@ async function backup() {
         btn.innerText = item.title;
         if (item.id === 'restore') btn.title = `Backed up at: ${new Date(storage.backup.date).toLocaleString('en-GB')}`;
         btn.addEventListener('click', async () => {
-            console.log(JSON.stringify(storage.savedWindows));
             if (btn.id === 'backup') {
                 await navigator.clipboard.writeText(JSON.stringify(storage.savedWindows));
                 await chrome.storage.local.set({
