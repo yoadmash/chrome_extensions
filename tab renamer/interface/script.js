@@ -518,6 +518,10 @@ function renderSearch(window_arr, searchInput) {
     if (root.contains(document.querySelector('.searchedTabs')) && root.contains(document.querySelector('.scroll-to'))) {
         document.querySelector('.scroll-to').remove();
     }
+
+    if (root.contains(document.querySelector('.searchedTabs')) && root.contains(document.querySelector('.totalTabs'))) {
+        document.querySelector('.totalTabs').remove();
+    }
 }
 
 async function options() {
