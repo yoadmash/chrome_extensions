@@ -77,7 +77,7 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
 
 chrome.windows.onRemoved.addListener(async (windowId) => {
     chrome.storage.local.get().then(storage => {
-        const popupId = storage.popup;
+        const popupId = storage.popup?.id;
         if (popupId === windowId) {
             chrome.storage.local.set({ popup: null });
         }
@@ -111,12 +111,12 @@ chrome.commands.onCommand.addListener((command, tab) => {
                                 height: 800,
                                 width: 650,
                                 url: `/interface/popup.html?view=saved_windows`
-                            }).then(popup => {
-                                chrome.storage.local.set({ popup: popup.id });
+                            }).then(async popup => {
+                                chrome.storage.local.set({ popup: { id: popup.id, incognito: window.incognito } });
                             });
                         });
                     } else {
-                        chrome.windows.get(storage.popup, { populate: true, windowTypes: ['popup'] })
+                        chrome.windows.get(storage.popup.id, { populate: true, windowTypes: ['popup'] })
                             .then(window => {
                                 if (window.focused) {
                                     chrome.windows.remove(window.id)
@@ -146,7 +146,8 @@ function reloadPopupHtmlWindow() {
 function checkPopupWindow() {
     chrome.storage.local.get().then(storage => {
         chrome.windows.getAll({ populate: true, windowTypes: ['popup'] }).then(windows => {
-            const popupWindow = windows.findIndex(window => window.id === storage.popup);
+            const popupWindow = windows.findIndex(window => window.id === storage.popup.id);
+            console.log(popupWindow);
             if (popupWindow === -1) {
                 chrome.storage.local.set({ popup: null });
             }

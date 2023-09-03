@@ -417,8 +417,9 @@ function expand() {
             height: 800,
             width: 650,
             url: `/interface/popup.html${(event.ctrlKey) ? '?view=saved_windows' : ''}`
-        }).then(popup => {
-            chrome.storage.local.set({ popup: popup.id });
+        }).then(async popup => {
+            const currentWindow = await chrome.windows.getCurrent();
+            chrome.storage.local.set({ popup: { id: popup.id, incognito: currentWindow.incognito } });
         });
         close();
     });
@@ -474,7 +475,7 @@ async function search() {
     searchInput.focus();
 }
 
-function renderSearch(window_arr, searchInput) {
+function renderSearch(windows_arr, searchInput) {
     const list = document.querySelector('.list');
     const searchEl = document.createElement('div');
     const searchTitle = document.createElement('span');
@@ -488,11 +489,13 @@ function renderSearch(window_arr, searchInput) {
     searchEl.append(searchTitle, tabs);
 
     let tabsFound = 0;
+    const tabsObjs = [];
     const tabsUrls = [];
-    for (const window of window_arr) {
+    for (const window of windows_arr) {
         for (const tab of window.tabs) {
             if (tab.title.toLocaleLowerCase().includes(searchInput.value.toLocaleLowerCase()) && !tab.url.match('https://gx-corner.opera.com/')) {
                 tabs.append(createTab(tab, window, searchEl.children[1]));
+                tabsObjs.push(tab);
                 tabsUrls.push(tab.url);
                 tabsFound++;
             }
@@ -506,10 +509,15 @@ function renderSearch(window_arr, searchInput) {
             const currentWindow = await chrome.windows.getCurrent();
             chrome.windows.create({
                 focused: true,
-                incognito: currentWindow.incognito,
+                incognito: (storage.popup) ? storage.popup.incognito : currentWindow.incognito,
                 state: "maximized",
                 url: tabsUrls
             });
+        });
+
+        searchTitle.addEventListener('contextmenu', async (event) => {
+            event.preventDefault();
+            assets.validate.windowEvent(tabsObjs);
         });
     }
 
@@ -552,7 +560,7 @@ async function renderOptions(options) {
         { id: 'saved_windows', label: `Show saved windows (${showSavedWindowsCount()})`, element_type: ['input', 'checkbox'] },
         { id: 'deleted_windows', label: 'Show deleted saved windows', element_type: ['input', 'checkbox'] },
         { id: 'include_incognito', label: 'Show incognito windows', element_type: ['input', 'checkbox'] },
-        { id: 'only_incognito', label: 'Show only incognito windows', element_type: ['input', 'checkbox'] }
+        { id: 'only_incognito', label: 'Show only incognito windows', element_type: ['input', 'checkbox'] },
     ]
 
     optionsMap.forEach(option => {
@@ -703,6 +711,10 @@ window.onload = async () => {
             behavior: 'smooth'
         });
     });
+
+    if(storage.popup?.id && storage.popup.incognito) {
+        document.title += ' (incognito)';
+    }
 }
 
 window.onscroll = () => {
