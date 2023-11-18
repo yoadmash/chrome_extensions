@@ -260,14 +260,14 @@ export function renderWindowTabs(windowObj) {
     const tabsEl = document.createElement('div');
     tabsEl.classList.add('currentTabs');
 
-    windowObj.tabs.forEach((tab) => {
-        tabsEl.append(createTab(tab, windowObj, tabsEl));
+    windowObj.tabs.forEach((tab, index) => {
+        tabsEl.append(createTab(tab, index, windowObj, tabsEl));
     });
 
     return tabsEl;
 }
 
-function createTab(tabObj, windowObj, tabsList) {
+function createTab(tabObj, tabIndex, windowObj, tabsList) {
     const tab = document.createElement('div');
     const checkTab = document.createElement('input');
     const favicon = document.createElement('img');
@@ -289,10 +289,10 @@ function createTab(tabObj, windowObj, tabsList) {
     checkTab.type = 'checkbox';
 
     if (tabsList.classList.contains('searchedTabs')) {
-        tabTitle.setAttribute('origin', `${windowObj.id}_${windowObj.tabs.length}`);
+        tab.setAttribute('original_index', tabIndex);
     }
 
-    tabTitle.innerText = (tabsList.classList.contains('searchedTabs') && show_saved_windows) ? `[${windowObj.id}_${windowObj.tabs.length}] ${tabObj.title}` : tabObj.title;
+    tabTitle.innerText = (tabsList.classList.contains('searchedTabs') && show_saved_windows) ? `[${windowObj.id}_${tabIndex+1}_${windowObj.tabs.length}] ${tabObj.title}` : tabObj.title;
     tabTitle.title = tabObj.title;
     if (!show_saved_windows && !tabsList.classList.contains('searchedTabs')) {
         chrome.windows.getCurrent().then((currentWindow) => {
@@ -492,9 +492,9 @@ function renderSearch(windows_arr, searchInput) {
     const tabsObjs = [];
     const tabsUrls = [];
     for (const window of windows_arr) {
-        for (const tab of window.tabs) {
+        for (const [tabIndex, tab] of window.tabs.entries()) {
             if (tab.title.toLocaleLowerCase().includes(searchInput.value.toLocaleLowerCase()) && !tab.url.match('https://gx-corner.opera.com/')) {
-                tabs.append(createTab(tab, window, searchEl.children[1]));
+                tabs.append(createTab(tab, tabIndex, window, searchEl.children[1]));
                 tabsObjs.push(tab);
                 tabsUrls.push(tab.url);
                 tabsFound++;
