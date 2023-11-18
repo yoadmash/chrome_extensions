@@ -165,7 +165,7 @@ export function renderWindow(windowObj, windowIndex, tabsElement) {
         } else {
             const urls = [];
             windowObj.tabs.forEach(tab => {
-                if (!tab.url.match('https://gx-corner.opera.com/')) {
+                if (!tab.url.match('https://gxcorner.games/')) {
                     urls.push(tab.url);
                 }
             });
@@ -289,7 +289,7 @@ function createTab(tabObj, tabIndex, windowObj, tabsList) {
     checkTab.type = 'checkbox';
 
     if (tabsList.classList.contains('searchedTabs')) {
-        tab.setAttribute('original_index', tabIndex);
+        tabTitle.setAttribute('origin', `${windowObj.id}_${tabIndex+1}_${windowObj.tabs.length}`);
     }
 
     tabTitle.innerText = (tabsList.classList.contains('searchedTabs') && show_saved_windows) ? `[${windowObj.id}_${tabIndex+1}_${windowObj.tabs.length}] ${tabObj.title}` : tabObj.title;
@@ -300,7 +300,7 @@ function createTab(tabObj, tabIndex, windowObj, tabsList) {
                 tabTitle.classList.add('activeTab');
             }
             else {
-                if (windowObj.tabs.length > 1 && !tabObj.url.match('https://gx-corner.opera.com/')) {
+                if (windowObj.tabs.length > 1 && !tabObj.url.match('https://gxcorner.games/')) {
                     tab.addEventListener('mouseenter', () => {
                         if (!checkTab.checked) {
                             favicon.replaceWith(checkTab);
@@ -318,7 +318,7 @@ function createTab(tabObj, tabIndex, windowObj, tabsList) {
     }
     tabTitle.addEventListener('click', () => {
         if (!show_saved_windows) {
-            if (!tabObj.url.match('https://gx-corner.opera.com/')) {
+            if (!tabObj.url.match('https://gxcorner.games/')) {
                 chrome.tabs.update(tabObj.id, { active: true }, (tab) => {
                     chrome.windows.update(tab.windowId, { focused: true });
                 });
@@ -363,11 +363,11 @@ function createTab(tabObj, tabIndex, windowObj, tabsList) {
                             break;
                     }
                 });
-                if (!tabObj.url.match('https://gx-corner.opera.com/') && !tabObj.url.match('chrome://*/')) {
+                if (!tabObj.url.match('https://gxcorner.games/') && !tabObj.url.match('chrome://*/')) {
                     icons.append(icon);
                 } else if (tabObj.url.match('chrome://*/') && key !== 'edit') {
                     icons.append(icon)
-                } else if (tabObj.url.match('https://gx-corner.opera.com/') && key === 'reload') {
+                } else if (tabObj.url.match('https://gxcorner.games/') && key === 'reload') {
                     icons.append(icon);
                 }
             }
@@ -493,7 +493,7 @@ function renderSearch(windows_arr, searchInput) {
     const tabsUrls = [];
     for (const window of windows_arr) {
         for (const [tabIndex, tab] of window.tabs.entries()) {
-            if (tab.title.toLocaleLowerCase().includes(searchInput.value.toLocaleLowerCase()) && !tab.url.match('https://gx-corner.opera.com/')) {
+            if (tab.title.toLocaleLowerCase().includes(searchInput.value.toLocaleLowerCase()) && !tab.url.match('https://gxcorner.games/')) {
                 tabs.append(createTab(tab, tabIndex, window, searchEl.children[1]));
                 tabsObjs.push(tab);
                 tabsUrls.push(tab.url);
