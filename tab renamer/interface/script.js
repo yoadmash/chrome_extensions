@@ -289,10 +289,10 @@ function createTab(tabObj, tabIndex, windowObj, tabsList) {
     checkTab.type = 'checkbox';
 
     if (tabsList.classList.contains('searchedTabs')) {
-        tabTitle.setAttribute('origin', `${windowObj.id}_${tabIndex+1}_${windowObj.tabs.length}`);
+        tabTitle.setAttribute('origin', `${windowObj.id}_${tabIndex + 1}_${windowObj.tabs.length}`);
     }
 
-    tabTitle.innerText = (tabsList.classList.contains('searchedTabs') && show_saved_windows) ? `[${windowObj.id}_${tabIndex+1}_${windowObj.tabs.length}] ${tabObj.title}` : tabObj.title;
+    tabTitle.innerText = (tabsList.classList.contains('searchedTabs') && show_saved_windows) ? `[${windowObj.id}_${tabIndex + 1}_${windowObj.tabs.length}] ${tabObj.title}` : tabObj.title;
     tabTitle.title = tabObj.title;
     if (!show_saved_windows && !tabsList.classList.contains('searchedTabs')) {
         chrome.windows.getCurrent().then((currentWindow) => {
@@ -316,23 +316,49 @@ function createTab(tabObj, tabIndex, windowObj, tabsList) {
             }
         }).catch((err) => console.log(err));
     }
-    tabTitle.addEventListener('click', () => {
-        if (!show_saved_windows) {
-            if (!tabObj.url.match('https://gxcorner.games/')) {
-                chrome.tabs.update(tabObj.id, { active: true }, (tab) => {
-                    chrome.windows.update(tab.windowId, { focused: true });
-                });
-                if (!storage.popup) {
-                    close();
+    tabTitle.addEventListener('mousedown', (e) => {
+        switch (e.button) {
+            case 0:
+                if (!show_saved_windows) {
+                    if (!tabObj.url.match('https://gxcorner.games/')) {
+                        chrome.tabs.update(tabObj.id, { active: true }, (tab) => {
+                            chrome.windows.update(tab.windowId, { focused: true });
+                        });
+                        if (!storage.popup) {
+                            close();
+                        }
+                    }
+                } else {
+                    chrome.windows.create({
+                        focused: true,
+                        incognito: windowObj.incognito,
+                        state: "maximized",
+                        url: tabObj.url
+                    });
                 }
-            }
-        } else {
-            chrome.windows.create({
-                focused: true,
-                incognito: windowObj.incognito,
-                state: "maximized",
-                url: tabObj.url
-            });
+                break;
+            case 1:
+                if (show_saved_windows) {
+                    if (!tabObj.url.match('https://gxcorner.games/')) {
+                        chrome.tabs.create({
+                            active: false,
+                            url: tabObj.url,
+                        })
+                    }
+                }
+                break;
+            case 2:
+                if (show_saved_windows && !storage.popup) {
+                    if (!tabObj.url.match('https://gxcorner.games/')) {
+                        chrome.tabs.update({
+                            active: false,
+                            url: tabObj.url,
+                        })
+                    }
+                }
+                break;
+            default:
+                break;
         }
     });
 
@@ -712,9 +738,11 @@ window.onload = async () => {
         });
     });
 
-    if(storage.popup?.id && storage.popup.incognito) {
+    if (storage.popup?.id && storage.popup.incognito) {
         document.title += ' (incognito)';
     }
+
+    document.addEventListener('contextmenu', (e) => e.preventDefault());
 }
 
 window.onscroll = () => {
