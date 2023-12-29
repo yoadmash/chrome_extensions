@@ -343,7 +343,8 @@ function createTab(tabObj, tabIndex, windowObj, tabsList) {
                         chrome.tabs.create({
                             active: false,
                             url: tabObj.url,
-                        })
+                        });
+                        close();
                     }
                 }
                 break;
@@ -353,7 +354,8 @@ function createTab(tabObj, tabIndex, windowObj, tabsList) {
                         chrome.tabs.update({
                             active: false,
                             url: tabObj.url,
-                        })
+                        });
+                        close();
                     }
                 }
                 break;
