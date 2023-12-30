@@ -338,13 +338,14 @@ function createTab(tabObj, tabIndex, windowObj, tabsList) {
                 }
                 break;
             case 1:
+                e.preventDefault();
                 if (show_saved_windows) {
                     if (!tabObj.url.match('https://gxcorner.games/')) {
                         chrome.tabs.create({
                             active: false,
+                            windowId: storage.currentWindow.id,
                             url: tabObj.url,
                         });
-                        close();
                     }
                 }
                 break;
@@ -352,7 +353,6 @@ function createTab(tabObj, tabIndex, windowObj, tabsList) {
                 if (show_saved_windows && !storage.popup) {
                     if (!tabObj.url.match('https://gxcorner.games/')) {
                         chrome.tabs.update({
-                            active: false,
                             url: tabObj.url,
                         });
                         close();

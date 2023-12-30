@@ -2,6 +2,10 @@ chrome.runtime.onInstalled.addListener(async () => {
     const data = await chrome.storage.local.get();
     if (Object.entries(data).length === 0) {
         chrome.storage.local.set({
+            currentWindow: {
+                id: null,
+                incognito: null,
+            },
             options: {
                 auto_scroll: true,
                 privacy: {
@@ -40,27 +44,7 @@ chrome.tabs.onActivated.addListener(async () => {
 
 chrome.tabs.onUpdated.addListener(async (tabId, changeInfo, tab) => {
     await saveCurrentWindows('tabs.onUpdated event');
-    // chrome.storage.local.get()
-    // .then(storage => {
-    //     if(storage.popup) {
-    //         chrome.windows.get(storage.popup, {populate: true, windowTypes: ['popup']})
-    //         .then(window => {
-    //             if(tabId !== window.tabs[0].id) {
-    //                 reloadPopupHtmlWindow();
-    //             }
-    //         });
-    //     }
-    // });
 });
-
-// chrome.tabs.onRemoved.addListener(async (tabId, removeInfo) => {
-//     chrome.storage.local.get()
-//     .then(storage => {
-//         if(storage.popup !== removeInfo.windowId) {
-//             reloadPopupHtmlWindow();
-//         }
-//     });
-// });
 
 chrome.storage.onChanged.addListener((changes) => {
     console.log(changes);
@@ -72,6 +56,19 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
             .then(response => response.text())
             .then(data => sendResponse(data.includes('Post Not Found')));
         return true;
+    }
+});
+
+chrome.windows.onFocusChanged.addListener(async (windowId) => {
+    const storage = await chrome.storage.local.get();
+    if(windowId !== -1 && windowId !== storage.popup?.id) {
+        const windowObj = await chrome.windows.get(windowId);
+        chrome.storage.local.set({
+            currentWindow: {
+                id: windowId,
+                incognito: windowObj.incognito
+            }
+        })
     }
 });
 
